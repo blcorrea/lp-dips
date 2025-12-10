@@ -37,20 +37,20 @@ export default function Hero() {
                             </p>
                         </div>
 
-                        <div className="pt-8 pl-12 lg:pl-24 w-full">
-                            <Button size="lg" className="w-full bg-brand-purple hover:bg-brand-purple/90 text-white rounded-full py-8 text-3xl font-bold shadow-lg transition-transform hover:scale-105">
-                                {t('cta')} <ShoppingCart className="ml-4 w-8 h-8" />
+                        <div className="pt-8 pl-0 lg:pl-24 w-full flex justify-center lg:block">
+                            <Button size="lg" className="w-full lg:w-auto px-12 bg-brand-purple hover:bg-brand-purple/90 text-white rounded-full py-8 text-2xl lg:text-3xl font-bold shadow-lg transition-transform hover:scale-105">
+                                {t('cta')} <ShoppingCart className="ml-4 w-6 h-6 lg:w-8 lg:h-8" />
                             </Button>
                         </div>
                     </div>
 
                     {/* Image Right Area */}
-                    <div className="relative h-[600px] w-full flex items-center justify-center lg:justify-end">
+                    <div className="relative h-[400px] lg:h-[600px] w-full flex items-center justify-center lg:justify-end">
                         {/* Top Orange Circle Blob */}
-                        <div className="absolute top-10 left-10 lg:left-20 w-48 h-48 bg-brand-orange rounded-full  z-10"></div>
+                        <div className="absolute top-10 left-10 lg:left-20 w-24 h-24 lg:w-48 lg:h-48 bg-brand-orange rounded-full z-10"></div>
 
                         {/* Main Circular Image */}
-                        <div className="relative w-[450px] h-[450px] lg:w-[550px] lg:h-[550px] rounded-full overflow-hidden  shadow-2xl z-5">
+                        <div className="relative w-[300px] h-[300px] lg:w-[550px] lg:h-[550px] rounded-full overflow-hidden shadow-2xl z-5">
                             <Image
                                 src="/images/hero-1.png"
                                 alt="Couple sharing chocolate"
@@ -61,7 +61,7 @@ export default function Hero() {
                         </div>
 
                         {/* Bottom Orange Circle Blob */}
-                        <div className="absolute bottom-20 right-0 lg:-right-10 w-56 h-56 bg-brand-orange rounded-full z-10"></div>
+                        <div className="absolute bottom-10 right-10 lg:bottom-20 lg:-right-10 w-32 h-32 lg:w-56 lg:h-56 bg-brand-orange rounded-full z-10"></div>
 
 
 
