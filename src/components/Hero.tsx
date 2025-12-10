@@ -15,13 +15,6 @@ export default function Hero() {
 
                     {/* Content Left */}
                     <div className="space-y-6 lg:space-y-8 z-20 relative">
-                        <div className="w-24 mb-4">
-                            <div className="text-4xl font-extrabold text-brand-purple tracking-tighter flex items-center">
-                                Dips
-                                <span className="w-2 h-2 bg-brand-orange rounded-full ml-1 inline-block"></span>
-                            </div>
-                        </div>
-
                         <h1 className="flex flex-col text-7xl lg:text-9xl font-bold text-brand-purple leading-[0.85] tracking-tight">
                             <span>{t('headlinePart1')}</span>
                             <span className="pl-12 lg:pl-24">{t('headlinePart2')}</span>

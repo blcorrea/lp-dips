@@ -14,7 +14,7 @@ export default function ProductSection() {
                 <div className="grid lg:grid-cols-2 gap-16 items-center mb-24">
                     {/* Left: Image with Blobs */}
                     <div className="relative flex justify-center lg:justify-end">
-                        <div className="relative w-[400px] h-[400px] lg:w-[500px] lg:h-[500px]">
+                        <div className="relative w-[300px] h-[300px] lg:w-[500px] lg:h-[500px]">
                             {/* Main Circle Image */}
                             <div className="relative w-full h-full rounded-full overflow-hidden z-10 border-4 border-white shadow-xl">
                                 <Image
@@ -26,14 +26,14 @@ export default function ProductSection() {
                             </div>
 
                             {/* Decor Blobs */}
-                            <div className="absolute -top-10 -right-10 w-32 h-32 bg-brand-orange rounded-full z-20"></div>
-                            <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-brand-orange rounded-full z-20"></div>
+                            <div className="absolute -top-6 -right-6 w-24 h-24 lg:-top-10 lg:-right-10 lg:w-32 lg:h-32 bg-brand-orange rounded-full z-20"></div>
+                            <div className="absolute -bottom-6 -left-6 w-28 h-28 lg:-bottom-10 lg:-left-10 lg:w-40 lg:h-40 bg-brand-orange rounded-full z-20"></div>
                         </div>
                     </div>
 
                     {/* Right: Text Content */}
                     <div className="space-y-8 max-w-xl">
-                        <h2 className="text-5xl lg:text-7xl font-bold text-brand-purple leading-tight tracking-tight">
+                        <h2 className="text-3xl lg:text-7xl font-bold text-brand-purple leading-tight tracking-tight break-words">
                             {t('title')}
                         </h2>
 
