@@ -1,0 +1,92 @@
+{
+    "Header": {
+        "about": "About Us",
+        "product": "The Product",
+        "ingredients": "Ingredients",
+        "faq": "FAQ",
+        "cart": "Cart"
+    },
+    "Hero": {
+        "headlinePart1": "Share it.",
+        "headlinePart2": "Feel it.",
+        "headlinePart3": "Love it.",
+        "sub": "A chocolate made to tease.",
+        "description": "Crafted with pure Arriba Cocoa Nibs and natural aphrodisiac ingredients - Maca Root Powder, L-Theanine, Ginger Powder, and Fenugreek Powder - Dips awakens the senses, ignites desire, and turns shared pleasure into an intense and irresistible experience.",
+        "cta": "Order now"
+    },
+    "About": {
+        "title": "Pleasure in its purest Form.",
+        "col1_p1": "Before love became poetry, it was impulse. Since ancient civilizations, chocolate has been celebrated as the 'food of the gods' – a symbol of pleasure, energy, and euphoria.",
+        "col1_p2": "Dips was born from that same instinct: to unite the pleasure of chocolate with the pleasure of connection.",
+        "col2_p1": "The brand blends technical precision, creativity, and ancestral ingredients to create a unique sensory experience: aphrodisiac, natural, and eco-friendly.",
+        "col2_p2": "Each piece is an invitation to feel, to explore, to connect – with the flavor, with your body, and with whoever shares the moment by your side."
+    },
+    "Ingredients": {
+        "title": "The secrets behind desire.",
+        "intro1": "Science confirms what the senses already knew: certain natural ingredients can heighten desire, awaken energy, and amplify pleasure.",
+        "intro2": "Dips blends the most potent ones, in balanced doses, to create a unique, natural, and irresistible experience.",
+        "listTitle": "Ingredients:",
+        "macaTitle": "Maca Root Powder",
+        "macaDesc": "A sacred root from the Andes, symbol of vitality and desire. Naturally enhances energy, libido, and hormonal balance.",
+        "theanineTitle": "L-Theanine",
+        "theanineDesc": "Known as the \"good mood nutrient,\" it promotes mental clarity, focus, and relaxation – helping the body respond more fully to pleasure.",
+        "gingerTitle": "Ginger Powder",
+        "gingerDesc": "Warms the body, awakens the senses, and intensifies the rhythm of passion. A natural aphrodisiac used for centuries across the East.",
+        "fenugreekTitle": "Fenugreek Powder",
+        "fenugreekDesc": "Treasured since Ancient Egypt, rich in saponins and compounds that support hormonal balance and increase testosterone and sexual drive.",
+        "viewPdf": "View Nutritional Info"
+    },
+    "Product": {
+        "title": "Made to be savored by two.",
+        "desc1": "Dips was created to turn every moment into something unforgettable.",
+        "desc2": "Made with <bold>Cocoa Nibs (Arriba) and a Proprietary Blend</bold>, Dips offers the perfect balance of intensity and smoothness.",
+        "desc3": "The result is a sophisticated chocolate, pleasure without guilt, temptation without excess.",
+        "feature1": "Produced in the USA under the highest quality standards.",
+        "feature2": "Made with 100% natural, sustainably sourced ingredients.",
+        "feature3": "Designed for couples seeking a unique, intense, and memorable experience.",
+        "feature4": "Natural aphrodisiac: enhances libido and deepens pleasure in a soft and elegant way."
+    },
+    "FAQ": {
+        "title": "Frequently Asked Questions (F.A.Q.s)",
+        "q1": "Does Dips really have aphrodisiac effects?",
+        "a1": "Dips is made with ingredients traditionally recognized for their natural aphrodisiac properties. Pleasure comes from the harmony between taste, texture, and sensory stimulation – a true invitation for body and mind to connect.",
+        "q2": "Can I enjoy Dips alone?",
+        "a2": "Of course! Pleasure can be individual or shared. But Dips was designed to be savored by two, because when senses meet, flavor transforms.",
+        "q3": "Is the product safe?",
+        "a3": "Yes. Dips is produced in the United States, under strict FDA-compliant quality standards, using only natural and safe ingredients.",
+        "q4": "Is Dips vegan or lactose-free?",
+        "a4": "Our first line contains milk and cocoa butter. Vegan and lactose-free versions will be launched soon – equally seductive.",
+        "q5": "What is the composition?",
+        "a5": "Proprietary Blend: Maca Root Powder, L-Theanine, Ginger Powder, Fenugreek Powder. Ingredients: Cocoa Nibs (Arriba), Sugar, Cocoa Butter, Proprietary Blend, Sunflower Lecithin.",
+        "q6": "Where can I buy Dips?",
+        "a6": "You can order directly from our website. Distributed by Dips Wellness Corp."
+    },
+    "Footer": {
+        "ordersTitle": "Orders",
+        "quickLinksTitle": "Quick Links",
+        "customerCareTitle": "Customer Care",
+        "contactUsTitle": "Contact Us",
+        "trackOrder": "Track Order",
+        "shippingInfo": "Shipping Info",
+        "refunds": "Refunds & Returns",
+        "emailUs": "Email Us",
+        "ingredients": "Ingredients",
+        "whereToBuy": "Where to Buy",
+        "terms": "Terms & Conditions",
+        "privacy": "Privacy Policy",
+        "wholesale": "Wholesale",
+        "affiliates": "Affiliates",
+        "rightsReserved": "All rights reserved.",
+        "madeWith": "Made with pure Arriba cocoa and natural aphrodisiac ingredients.",
+        "productDesigned": "This product is designed to awaken the senses and desire.",
+        "cravingMore": "Craving More?",
+        "letYourNights": "Let your nights (and days) get sweeter with our tempting updates and surprises.",
+        "yourEmail": "Your Email...",
+        "signUp": "Sign up:",
+        "successMsg": "Thank you! You're on the list."
+    },
+    "PdfPage": {
+        "back": "Back to site",
+        "download": "Download PDF"
+    }
+}

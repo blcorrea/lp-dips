@@ -1,0 +1,92 @@
+{
+    "Header": {
+        "about": "Nosotros",
+        "product": "Producto",
+        "ingredients": "Ingredientes",
+        "faq": "FAQ",
+        "cart": "Carrito"
+    },
+    "Hero": {
+        "headlinePart1": "Compártelo.",
+        "headlinePart2": "Siéntelo.",
+        "headlinePart3": "Ámalo.",
+        "sub": "Un chocolate hecho para provocar.",
+        "description": "Elaborado con Nibs de Cacao Arriba puro e ingredientes afrodisíacos naturales - Polvo de Raíz de Maca, L-Teanina, Polvo de Jengibre y Polvo de Fenogreco - Dips despierta los sentidos, enciende el deseo y convierte el placer compartido en una experiencia intensa e irresistible.",
+        "cta": "Ordenar ahora"
+    },
+    "About": {
+        "title": "Placer en su forma pura.",
+        "col1_p1": "Antes de que el amor se convirtiera en poesía, era impulso. Desde las antiguas civilizaciones, el chocolate ha sido celebrado como el 'alimento de los dioses' – un símbolo de placer, energía y euforia.",
+        "col1_p2": "Dips nació de ese mismo instinto: unir el placer del chocolate con el placer de la conexión.",
+        "col2_p1": "La marca combina precisión técnica, creatividad e ingredientes ancestrales para crear una experiencia sensorial única: afrodisíaca, natural y ecológica.",
+        "col2_p2": "Cada pieza es una invitación a sentir, a explorar, a conectar – con el sabor, con tu cuerpo y con quien comparte el momento a tu lado."
+    },
+    "Ingredients": {
+        "title": "Los secretos detrás del deseo.",
+        "intro1": "La ciencia confirma lo que los sentidos ya sabían: ciertos ingredientes naturales pueden aumentar el deseo, despertar la energía y amplificar el placer.",
+        "intro2": "Dips combina los más potentes, en dosis equilibradas, para crear una experiencia única, natural e irresistible.",
+        "listTitle": "Ingredientes:",
+        "macaTitle": "Polvo de Raíz de Maca",
+        "macaDesc": "Una raíz sagrada de los Andes, símbolo de vitalidad y deseo. Mejora naturalmente la energía, la libido y el equilibrio hormonal.",
+        "theanineTitle": "L-Teanina",
+        "theanineDesc": "Conocido como el \"nutriente del buen humor\", promueve la claridad mental, el enfoque y la relajación – ayudando al cuerpo a responder más plenamente al placer.",
+        "gingerTitle": "Polvo de Jengibre",
+        "gingerDesc": "Calienta el cuerpo, despierta los sentidos e intensifica el ritmo de la pasión. Un afrodisíaco natural utilizado durante siglos en Oriente.",
+        "fenugreekTitle": "Polvo de Fenogreco",
+        "fenugreekDesc": "Atesorado desde el Antiguo Egipto, rico en saponinas y compuestos que apoyan el equilibrio hormonal y aumentan la testosterona y el impulso sexual.",
+        "viewPdf": "Ver Info Nutricional"
+    },
+    "Product": {
+        "title": "Hecho para saborearse en pareja.",
+        "desc1": "Dips fue creado para convertir cada momento en algo inolvidable.",
+        "desc2": "Elaborado con <bold>Nibs de Cacao (Arriba) y una Mezcla Exclusiva</bold>, Dips ofrece el equilibrio perfecto entre intensidad y suavidad.",
+        "desc3": "El resultado es un chocolate sofisticado, placer sin culpa, tentación sin excesos.",
+        "feature1": "Producido en EE. UU. bajo los más altos estándares de calidad.",
+        "feature2": "Hecho con ingredientes 100% naturales y de origen sostenible.",
+        "feature3": "Diseñado para parejas que buscan una experiencia única, intensa y memorable.",
+        "feature4": "Afrodisíaco natural: realza la libido y profundiza el placer de manera suave y elegante."
+    },
+    "FAQ": {
+        "title": "Preguntas Frecuentes (FAQ)",
+        "q1": "¿Dips realmente tiene efectos afrodisíacos?",
+        "a1": "Dips está hecho con ingredientes tradicionalmente reconocidos por sus propiedades afrodisíacas naturales. El placer proviene de la armonía entre el sabor, la textura y la estimulación sensorial: una verdadera invitación para que el cuerpo y la mente se conecten.",
+        "q2": "¿Puedo disfrutar de Dips solo?",
+        "a2": "¡Por supuesto! El placer puede ser individual o compartido. Pero Dips fue diseñado para ser saboreado por dos, porque cuando los sentidos se encuentran, el sabor se transforma.",
+        "q3": "¿Es seguro el producto?",
+        "a3": "Sí. Dips se produce en los Estados Unidos, bajo estrictos estándares de calidad que cumplen con la FDA, utilizando solo ingredientes naturales y seguros.",
+        "q4": "¿Dips es vegano o sin lactosa?",
+        "a4": "Nuestra primera línea contiene leche y manteca de cacao. Pronto se lanzarán versiones veganas y sin lactosa, igualmente seductoras.",
+        "q5": "¿Cuál es la composición?",
+        "a5": "Mezcla patentada: Polvo de Raíz de Maca, L-Teanina, Polvo de Jengibre, Polvo de Fenogreco. Ingredientes: Nibs de Cacao (Arriba), Azúcar, Manteca de Cacao, Mezcla Patentada, Lecitina de Girasol.",
+        "q6": "¿Dónde puedo comprar Dips?",
+        "a6": "Puede ordenar directamente desde nuestro sitio web. Distribuido por Dips Wellness Corp."
+    },
+    "Footer": {
+        "ordersTitle": "Pedidos",
+        "quickLinksTitle": "Enlaces Rápidos",
+        "customerCareTitle": "Atención al Cliente",
+        "contactUsTitle": "Contáctenos",
+        "trackOrder": "Rastrear Pedido",
+        "shippingInfo": "Info de Envío",
+        "refunds": "Reembolsos y Devoluciones",
+        "emailUs": "Envíenos un Email",
+        "ingredients": "Ingredientes",
+        "whereToBuy": "Dónde Comprar",
+        "terms": "Términos y Condiciones",
+        "privacy": "Política de Privacidad",
+        "wholesale": "Mayoristas",
+        "affiliates": "Afiliados",
+        "rightsReserved": "Todos los derechos reservados.",
+        "madeWith": "Hecho con cacao Arriba puro e ingredientes afrodisíacos naturales.",
+        "productDesigned": "Este producto está diseñado para despertar los sentidos y el deseo.",
+        "cravingMore": "¿Deseas Más?",
+        "letYourNights": "Deja que tus noches (y días) sean más dulces con nuestras tentadoras actualizaciones y sorpresas.",
+        "yourEmail": "Tu Email...",
+        "signUp": "Regístrate:",
+        "successMsg": "¡Gracias! Estás en la lista."
+    },
+    "PdfPage": {
+        "back": "Volver al sitio",
+        "download": "Descargar PDF"
+    }
+}

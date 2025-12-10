@@ -1,0 +1,92 @@
+{
+    "Header": {
+        "about": "Sobre",
+        "product": "Produto",
+        "ingredients": "Ingredientes",
+        "faq": "FAQ",
+        "cart": "Carrinho"
+    },
+    "Hero": {
+        "headlinePart1": "Divida.",
+        "headlinePart2": "Sinta.",
+        "headlinePart3": "Ame.",
+        "sub": "Um chocolate feito para provocar.",
+        "description": "Feito com Nibs de Cacau Arriba puro e ingredientes afrodisíacos naturais - Maca Peruana, L-Teanina, Gengibre e Feno-grego - Dips desperta os sentidos, acende o desejo e transforma o prazer compartilhado em uma experiência intensa e irresistível.",
+        "cta": "Peça agora"
+    },
+    "About": {
+        "title": "O prazer em sua forma mais pura.",
+        "col1_p1": "Antes do amor virar poesia, era impulso. Desde as civilizações antigas, o chocolate é celebrado como o 'alimento dos deuses' – símbolo de prazer, energia e euforia.",
+        "col1_p2": "A Dips nasceu desse mesmo instinto: unir o prazer do chocolate ao prazer da conexão.",
+        "col2_p1": "A marca une precisão técnica, criatividade e ingredientes ancestrais para criar uma experiência sensorial única: afrodisíaca, natural e ecológica.",
+        "col2_p2": "Cada pedaço é um convite para sentir, para explorar, para conectar – com o sabor, com o corpo e com quem divide o momento ao seu lado."
+    },
+    "Ingredients": {
+        "title": "Os segredos por trás do desejo.",
+        "intro1": "A ciência confirma o que os sentidos já sabiam: certos ingredientes naturais podem aumentar o desejo, despertar a energia e amplificar o prazer.",
+        "intro2": "Dips combina os mais potentes, em doses equilibradas, para criar uma experiência única, natural e irresistível.",
+        "listTitle": "Ingredientes:",
+        "macaTitle": "Maca Peruana",
+        "macaDesc": "Uma raiz sagrada dos Andes, símbolo de vitalidade e desejo. Aumenta naturalmente a energia, a libido e o equilíbrio hormonal.",
+        "theanineTitle": "L-Teanina",
+        "theanineDesc": "Conhecido como o \"nutriente do bom humor\", promove clareza mental, foco e relaxamento – ajudando o corpo a responder mais plenamente ao prazer.",
+        "gingerTitle": "Gengibre em Pó",
+        "gingerDesc": "Aquece o corpo, desperta os sentidos e intensifica o ritmo da paixão. Um afrodisíaco natural usado há séculos no Oriente.",
+        "fenugreekTitle": "Feno-grego",
+        "fenugreekDesc": "Tesouro desde o Antigo Egito, rico em saponinas e compostos que apoiam o equilíbrio hormonal e aumentan a testosterona e o impulso sexual.",
+        "viewPdf": "Ver Info Nutricional"
+    },
+    "Product": {
+        "title": "Feito para ser saboreado a dois.",
+        "desc1": "O Dips foi criado para transformar cada momento em algo inesquecível.",
+        "desc2": "Feito com <bold>Nibs de Cacau (Arriba) e um Blend Exclusivo</bold>, o Dips oferece o equilíbrio perfeito entre intensidade e suavidade.",
+        "desc3": "O resultado é um chocolate sofisticado, prazer sem culpa, tentação sem excessos.",
+        "feature1": "Produzido nos EUA sob os mais altos padrões de qualidade.",
+        "feature2": "Feito com ingredientes 100% naturais e de origem sustentável.",
+        "feature3": "Projetado para casais que buscam uma experiência única, intensa e memorável.",
+        "feature4": "Afrodisíaco natural: realça a libido e aprofunda o prazer de forma suave e elegante."
+    },
+    "FAQ": {
+        "title": "Perguntas Frequentes (FAQ)",
+        "q1": "O Dips realmente tem efeitos afrodisíacos?",
+        "a1": "O Dips é feito com ingredientes tradicionalmente reconhecidos por suas propriedades afrodisíacas naturais. O prazer vem da harmonia entre sabor, textura e estimulação sensorial – um verdadeiro convite para corpo e mente se conectarem.",
+        "q2": "Posso curtir o Dips sozinho?",
+        "a2": "Claro! O prazer pode ser individual ou compartilhado. Mas o Dips foi projetado para ser saboreado a dois, porque quando os sentidos se encontram, o sabor se transforma.",
+        "q3": "O produto é seguro?",
+        "a3": "Sim. O Dips é produzido nos Estados Unidos, sob rigorosos padrões de qualidade compatíveis com a FDA, utilizando apenas ingredientes naturais e seguros.",
+        "q4": "O Dips é vegano ou sem lactose?",
+        "a4": "Nossa primeira linha contém leite e manteiga de cacau. Versões veganas e sem lactose serão lançadas em breve – igualmente sedutoras.",
+        "q5": "Qual é a composição?",
+        "a5": "Blend Proprietário: Pó de Raiz de Maca, L-Teanina, Gengibre em Pó, Feno-grego em Pó. Ingredientes: Nibs de Cacau (Arriba), Açúcar, Manteiga de Cacau, Blend Proprietário, Lecitina de Girassol.",
+        "q6": "Onde posso comprar o Dips?",
+        "a6": "Você pode encomendar diretamente do nosso site. Distribuído pela Dips Wellness Corp."
+    },
+    "Footer": {
+        "ordersTitle": "Pedidos",
+        "quickLinksTitle": "Links Rápidos",
+        "customerCareTitle": "Atendimento",
+        "contactUsTitle": "Fale Conosco",
+        "trackOrder": "Rastrear Pedido",
+        "shippingInfo": "Informações de Envio",
+        "refunds": "Reembolsos e Devoluções",
+        "emailUs": "Envie um Email",
+        "ingredients": "Ingredientes",
+        "whereToBuy": "Onde Comprar",
+        "terms": "Termos e Condições",
+        "privacy": "Política de Privacidade",
+        "wholesale": "Atacado",
+        "affiliates": "Afiliados",
+        "rightsReserved": "Todos os direitos reservados.",
+        "madeWith": "Feito com cacau Arriba puro e ingredientes afrodisíacos naturais.",
+        "productDesigned": "Este produto foi desenvolvido para despertar os sentidos e o desejo.",
+        "cravingMore": "Quer Mais?",
+        "letYourNights": "Deixe suas noites (e dias) mais doces com nossas atualizações tentadoras e surpresas.",
+        "yourEmail": "Seu Email...",
+        "signUp": "Inscreva-se:",
+        "successMsg": "Obrigado! Você está na lista."
+    },
+    "PdfPage": {
+        "back": "Voltar ao site",
+        "download": "Baixar PDF"
+    }
+}
