@@ -5,7 +5,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { routing } from '@/i18n/routing';
 import '../globals.css';
-import { cn } from '@/lib/utils'; // Using shadcn utils
+// import { cn } from '@/lib/utils'; // Using shadcn utils
 
 const fontHeading = Fredoka({
     subsets: ["latin"],

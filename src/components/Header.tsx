@@ -4,6 +4,8 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { ShoppingCart } from 'lucide-react';
 
+import Image from 'next/image';
+
 export default function Header() {
     const t = useTranslations('Header');
 
@@ -12,10 +14,13 @@ export default function Header() {
             <div className="container mx-auto px-4 h-20 flex items-center justify-between">
                 {/* Logo */}
                 <Link href="/" className="flex-shrink-0">
-                    <img
+                    <Image
                         src="/images/logo-header.png"
                         alt="Dips"
+                        width={150}
+                        height={40}
                         className="h-10 w-auto"
+                        priority
                     />
                 </Link>
 
