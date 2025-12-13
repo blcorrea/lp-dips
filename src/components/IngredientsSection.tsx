@@ -3,6 +3,8 @@
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { Link } from '@/i18n/routing';
+import ScrollReveal from './animations/ScrollReveal';
+import ScaleIn from './animations/ScaleIn';
 
 export default function IngredientsSection() {
     const t = useTranslations('Ingredients');
@@ -12,9 +14,11 @@ export default function IngredientsSection() {
             <div className="container mx-auto px-4">
                 <div className="max-w-7xl mx-auto">
                     {/* Orange Title */}
-                    <h2 className="text-5xl lg:text-7xl font-bold text-center lg:text-left text-brand-orange leading-tight tracking-tight mb-16 lg:mb-24">
-                        {t('title')}
-                    </h2>
+                    <ScrollReveal direction="up" delay={0.1} duration={0.8}>
+                        <h2 className="text-5xl lg:text-7xl font-bold text-center lg:text-left text-brand-orange leading-tight tracking-tight mb-16 lg:mb-24">
+                            {t('title')}
+                        </h2>
+                    </ScrollReveal>
 
                     <div className="grid lg:grid-cols-2 gap-16 lg:gap-24">
                         {/* Left Column: Intro + Image */}
@@ -25,18 +29,20 @@ export default function IngredientsSection() {
                             </div>
 
                             {/* Circular Image with Orange Background */}
-                            <div className="relative w-64 h-64 lg:w-96 lg:h-96 mx-auto lg:mx-0">
-                                <div className="absolute inset-0 bg-brand-orange rounded-full"></div>
-                                <div className="relative w-full h-full rounded-full overflow-hidden flex items-center justify-center">
-                                    {/* Placeholder for Hand Image */}
-                                    <Image
-                                        src="/images/hero-1.png"
-                                        alt="Dips Experience"
-                                        fill
-                                        className="object-cover"
-                                    />
+                            <ScaleIn delay={0.3} duration={0.8}>
+                                <div className="relative w-64 h-64 lg:w-96 lg:h-96 mx-auto lg:mx-0">
+                                    <div className="absolute inset-0 bg-brand-orange rounded-full"></div>
+                                    <div className="relative w-full h-full rounded-full overflow-hidden flex items-center justify-center">
+                                        {/* Placeholder for Hand Image */}
+                                        <Image
+                                            src="/images/hero-1.png"
+                                            alt="Dips Experience"
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    </div>
                                 </div>
-                            </div>
+                            </ScaleIn>
                         </div>
 
                         {/* Right Column: Ingredients List */}
