@@ -29,9 +29,9 @@ export default function Footer() {
                         <h4 className="font-bold text-black uppercase tracking-wider">{t('ordersTitle')}</h4>
                         <ul className="space-y-3 text-gray-600 text-sm font-medium">
                             <li><a href="#" className="hover:text-brand-orange transition-colors">{t('trackOrder')}</a></li>
-                            <li><a href="#" className="hover:text-brand-orange transition-colors">{t('shippingInfo')}</a></li>
-                            <li><a href="#" className="hover:text-brand-orange transition-colors">{t('refunds')}</a></li>
-                            <li><a href="#" className="hover:text-brand-orange transition-colors">{t('emailUs')}</a></li>
+                            <li><a href="/shipping-policy" className="hover:text-brand-orange transition-colors">{t('shippingInfo')}</a></li>
+                            <li><a href="/return-policy" className="hover:text-brand-orange transition-colors">{t('refunds')}</a></li>
+                            <li><a href="mailto:info@dipschocolate.com" className="hover:text-brand-orange transition-colors">{t('emailUs')}</a></li>
                         </ul>
                     </div>
 
@@ -49,8 +49,8 @@ export default function Footer() {
                     <div className="space-y-6">
                         <h4 className="font-bold text-black uppercase tracking-wider">{t('customerCareTitle')}</h4>
                         <ul className="space-y-3 text-gray-600 text-sm font-medium">
-                            <li><a href="#" className="hover:text-brand-orange transition-colors">{t('terms')}</a></li>
-                            <li><a href="#" className="hover:text-brand-orange transition-colors">{t('privacy')}</a></li>
+                            <li><a href="/terms" className="hover:text-brand-orange transition-colors">{t('terms')}</a></li>
+                            <li><a href="/privacy" className="hover:text-brand-orange transition-colors">{t('privacy')}</a></li>
                             <li><a href="#" className="hover:text-brand-orange transition-colors">{t('wholesale')}</a></li>
                             <li><a href="#" className="hover:text-brand-orange transition-colors">{t('affiliates')}</a></li>
                         </ul>
@@ -61,6 +61,10 @@ export default function Footer() {
                         <h4 className="font-bold text-black uppercase tracking-wider">{t('contactUsTitle')}</h4>
                         <ul className="space-y-3 text-gray-600 text-sm font-medium">
                             <li><a href="mailto:info@dipschocolate.com" className="hover:text-brand-orange transition-colors">info@dipschocolate.com</a></li>
+                            <li><a href="tel:754-457-6844" className="hover:text-brand-orange transition-colors">754-457-6844</a></li>
+                            <li className="text-gray-500 text-xs pt-2">
+                                {t('supportHours')}
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -76,6 +80,14 @@ export default function Footer() {
                     <p className="text-sm text-gray-600 font-medium">
                         {t('productDesigned')}
                     </p>
+
+                    {/* Company Info */}
+                    <div className="text-xs text-gray-500 space-y-1 pt-4 border-t border-gray-200">
+                        <p className="font-semibold">Dips Wellness Corporation</p>
+                        <p>995 NW 165th Ave, Pembroke Pines, FL 33028</p>
+                        <p>EIN: 41-2647662 | {t('registeredIn')} Florida</p>
+                        <p className="pt-2">{t('ageRestriction')}</p>
+                    </div>
 
                     <div className="pt-8 space-y-4">
                         <h5 className="font-bold text-black uppercase tracking-wider">{t('cravingMore')}</h5>
