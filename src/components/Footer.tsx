@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/routing';
 
 export default function Footer() {
     const t = useTranslations('Footer');
@@ -29,8 +30,8 @@ export default function Footer() {
                         <h4 className="font-bold text-black uppercase tracking-wider">{t('ordersTitle')}</h4>
                         <ul className="space-y-3 text-gray-600 text-sm font-medium">
                             <li><a href="#" className="hover:text-brand-orange transition-colors">{t('trackOrder')}</a></li>
-                            <li><a href="/shipping-policy" className="hover:text-brand-orange transition-colors">{t('shippingInfo')}</a></li>
-                            <li><a href="/return-policy" className="hover:text-brand-orange transition-colors">{t('refunds')}</a></li>
+                            <li><Link href="/shipping-policy" className="hover:text-brand-orange transition-colors">{t('shippingInfo')}</Link></li>
+                            <li><Link href="/return-policy" className="hover:text-brand-orange transition-colors">{t('refunds')}</Link></li>
                             <li><a href="mailto:info@dipschocolate.com" className="hover:text-brand-orange transition-colors">{t('emailUs')}</a></li>
                         </ul>
                     </div>
@@ -49,8 +50,8 @@ export default function Footer() {
                     <div className="space-y-6">
                         <h4 className="font-bold text-black uppercase tracking-wider">{t('customerCareTitle')}</h4>
                         <ul className="space-y-3 text-gray-600 text-sm font-medium">
-                            <li><a href="/terms" className="hover:text-brand-orange transition-colors">{t('terms')}</a></li>
-                            <li><a href="/privacy" className="hover:text-brand-orange transition-colors">{t('privacy')}</a></li>
+                            <li><Link href="/terms" className="hover:text-brand-orange transition-colors">{t('terms')}</Link></li>
+                            <li><Link href="/privacy" className="hover:text-brand-orange transition-colors">{t('privacy')}</Link></li>
                             <li><a href="#" className="hover:text-brand-orange transition-colors">{t('wholesale')}</a></li>
                             <li><a href="#" className="hover:text-brand-orange transition-colors">{t('affiliates')}</a></li>
                         </ul>
