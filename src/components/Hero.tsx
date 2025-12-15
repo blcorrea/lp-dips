@@ -1,6 +1,8 @@
 "use client";
 
 import { useTranslations } from 'next-intl';
+import { useParams } from 'next/navigation';
+import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from './ui/button';
 import { ShoppingCart } from 'lucide-react';
@@ -11,6 +13,8 @@ import { motion } from 'framer-motion';
 
 export default function Hero() {
     const t = useTranslations('Hero');
+    const params = useParams();
+    const locale = params.locale as string;
 
     return (
         <section className="relative pt-12 pb-24 lg:pt-20 lg:pb-32 overflow-visible">
@@ -44,9 +48,11 @@ export default function Hero() {
 
                         <SlideIn direction="up" delay={1.1} duration={0.8}>
                             <div className="pt-8 pl-0 lg:pl-24 w-full flex justify-center lg:block">
-                                <Button size="lg" className="w-full lg:w-auto px-12 bg-brand-purple hover:bg-brand-purple/90 text-white rounded-full py-8 text-2xl lg:text-3xl font-bold shadow-lg transition-transform hover:scale-105">
-                                    {t('cta')} <ShoppingCart className="ml-4 w-6 h-6 lg:w-8 lg:h-8" />
-                                </Button>
+                                <Link href={`/${locale}/shop`}>
+                                    <Button size="lg" className="w-full lg:w-auto px-12 bg-brand-purple hover:bg-brand-purple/90 text-white rounded-full py-8 text-2xl lg:text-3xl font-bold shadow-lg transition-transform hover:scale-105">
+                                        {t('cta')} <ShoppingCart className="ml-4 w-6 h-6 lg:w-8 lg:h-8" />
+                                    </Button>
+                                </Link>
                             </div>
                         </SlideIn>
                     </div>
