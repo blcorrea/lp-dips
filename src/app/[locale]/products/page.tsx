@@ -17,9 +17,6 @@ export default function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showInStockOnly, setShowInStockOnly] = useState(false);
 
-  // Fixed sort by featured (no UI to change it)
-  const sortBy = 'featured';
-
   // Get unique categories
   const categories = useMemo(() => {
     return Array.from(new Set(products.map(p => p.category)));
@@ -39,39 +36,14 @@ export default function ProductsPage() {
       filtered = filtered.filter(p => p.inStock);
     }
 
-    // Sort
-    switch (sortBy) {
-      case 'price-asc':
-        filtered.sort((a, b) => {
-          const priceA = a.promotionalPrice || a.basePrice;
-          const priceB = b.promotionalPrice || b.basePrice;
-          return priceA - priceB;
-        });
-        break;
-      case 'price-desc':
-        filtered.sort((a, b) => {
-          const priceA = a.promotionalPrice || a.basePrice;
-          const priceB = b.promotionalPrice || b.basePrice;
-          return priceB - priceA;
-        });
-        break;
-      case 'name-asc':
-        filtered.sort((a, b) => a.name.localeCompare(b.name));
-        break;
-      case 'rating-desc':
-        filtered.sort((a, b) => b.rating - a.rating);
-        break;
-      case 'featured':
-      default:
-        filtered.sort((a, b) => {
-          if (a.featured === b.featured) return 0;
-          return a.featured ? -1 : 1;
-        });
-        break;
-    }
+    // Sort by featured (default)
+    filtered.sort((a, b) => {
+      if (a.featured === b.featured) return 0;
+      return a.featured ? -1 : 1;
+    });
 
     return filtered;
-  }, [selectedCategory, sortBy, showInStockOnly]);
+  }, [selectedCategory, showInStockOnly]);
 
   return (
     <div className="min-h-screen flex flex-col">
