@@ -5,6 +5,8 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { routing } from '@/i18n/routing';
 import AgeVerificationModal from '@/components/AgeVerificationModal';
+import { CartProvider } from '@/contexts/CartContext';
+import { CustomerProvider } from '@/contexts/CustomerContext';
 import '../globals.css';
 // import { cn } from '@/lib/utils'; // Using shadcn utils
 
@@ -47,8 +49,12 @@ export default async function LocaleLayout({
         <html lang={locale} suppressHydrationWarning>
             <body className={`${fontHeading.variable} ${fontBody.variable} antialiased bg-background text-foreground`}>
                 <NextIntlClientProvider messages={messages} locale={locale}>
-                    <AgeVerificationModal />
-                    {children}
+                    <CustomerProvider>
+                        <CartProvider>
+                            <AgeVerificationModal />
+                            {children}
+                        </CartProvider>
+                    </CustomerProvider>
                 </NextIntlClientProvider>
             </body>
         </html>
