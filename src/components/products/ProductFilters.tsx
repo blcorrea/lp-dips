@@ -91,7 +91,24 @@ export function ProductFilters({
           </div>
         </div>
 
-
+        {/* Sort By */}
+        <div>
+          <Label className="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide block">
+            {t('sortBy')}
+          </Label>
+          <Select value={sortBy} onValueChange={onSortChange}>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="featured">{t('featured')}</SelectItem>
+              <SelectItem value="price-asc">{t('priceLowToHigh')}</SelectItem>
+              <SelectItem value="price-desc">{t('priceHighToLow')}</SelectItem>
+              <SelectItem value="name-asc">{t('nameAZ')}</SelectItem>
+              <SelectItem value="rating-desc">{t('highestRated')}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
         {/* Stock Filter */}
         <div className="flex items-center space-x-2">
