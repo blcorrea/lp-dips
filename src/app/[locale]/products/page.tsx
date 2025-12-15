@@ -15,8 +15,10 @@ export default function ProductsPage() {
   const locale = params.locale as string;
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [sortBy, setSortBy] = useState('featured');
   const [showInStockOnly, setShowInStockOnly] = useState(false);
+
+  // Fixed sort by featured (no UI to change it)
+  const sortBy = 'featured';
 
   // Get unique categories
   const categories = useMemo(() => {
