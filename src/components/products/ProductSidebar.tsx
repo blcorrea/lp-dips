@@ -78,25 +78,6 @@ export function ProductSidebar({
           )}
         </div>
 
-        {/* Sort By */}
-        <div className="mb-6">
-          <Label className="text-sm font-semibold text-gray-700 mb-3 block">
-            {t('sortBy')}
-          </Label>
-          <Select value={sortBy} onValueChange={onSortChange}>
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="featured">{t('featured')}</SelectItem>
-              <SelectItem value="price-asc">{t('priceLowToHigh')}</SelectItem>
-              <SelectItem value="price-desc">{t('priceHighToLow')}</SelectItem>
-              <SelectItem value="name-asc">{t('nameAZ')}</SelectItem>
-              <SelectItem value="rating-desc">{t('highestRated')}</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
         {/* Stock Filter */}
         <div className="pt-4 border-t border-gray-200">
           <div className="flex items-center space-x-2">

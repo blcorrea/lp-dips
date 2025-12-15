@@ -29,7 +29,7 @@ export function CheckoutForm({ onSubmit }: CheckoutFormProps) {
 
     // Simulate payment processing
     setTimeout(() => {
-      onSubmit('credit_card');
+      onSubmit('card');
       setIsProcessing(false);
     }, 2000);
   };
