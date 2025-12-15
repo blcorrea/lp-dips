@@ -94,8 +94,6 @@ export default function ProductsPage() {
               categories={categories}
               selectedCategory={selectedCategory}
               onCategoryChange={setSelectedCategory}
-              sortBy={sortBy}
-              onSortChange={setSortBy}
               showInStockOnly={showInStockOnly}
               onStockFilterChange={setShowInStockOnly}
             />
