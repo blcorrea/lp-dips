@@ -79,6 +79,7 @@ export function ProductSidebar({
         </div>
 
 
+
         {/* Stock Filter */}
         <div className="pt-4 border-t border-gray-200">
           <div className="flex items-center space-x-2">
