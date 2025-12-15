@@ -1,13 +1,6 @@
 "use client";
 
 import { useTranslations } from 'next-intl';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -17,8 +10,6 @@ interface ProductSidebarProps {
   categories: string[];
   selectedCategory: string | null;
   onCategoryChange: (category: string | null) => void;
-  sortBy: string;
-  onSortChange: (sort: string) => void;
   showInStockOnly: boolean;
   onStockFilterChange: (inStock: boolean) => void;
 }
@@ -27,8 +18,6 @@ export function ProductSidebar({
   categories,
   selectedCategory,
   onCategoryChange,
-  sortBy,
-  onSortChange,
   showInStockOnly,
   onStockFilterChange
 }: ProductSidebarProps) {

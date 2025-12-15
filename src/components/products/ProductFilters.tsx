@@ -3,13 +3,6 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Filter, X } from 'lucide-react';
@@ -18,8 +11,6 @@ interface ProductFiltersProps {
   categories: string[];
   selectedCategory: string | null;
   onCategoryChange: (category: string | null) => void;
-  sortBy: string;
-  onSortChange: (sort: string) => void;
   showInStockOnly: boolean;
   onStockFilterChange: (inStock: boolean) => void;
 }
@@ -28,8 +19,6 @@ export function ProductFilters({
   categories,
   selectedCategory,
   onCategoryChange,
-  sortBy,
-  onSortChange,
   showInStockOnly,
   onStockFilterChange
 }: ProductFiltersProps) {
@@ -89,25 +78,6 @@ export function ProductFilters({
               </button>
             )}
           </div>
-        </div>
-
-        {/* Sort By */}
-        <div>
-          <Label className="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide block">
-            {t('sortBy')}
-          </Label>
-          <Select value={sortBy} onValueChange={onSortChange}>
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="featured">{t('featured')}</SelectItem>
-              <SelectItem value="price-asc">{t('priceLowToHigh')}</SelectItem>
-              <SelectItem value="price-desc">{t('priceHighToLow')}</SelectItem>
-              <SelectItem value="name-asc">{t('nameAZ')}</SelectItem>
-              <SelectItem value="rating-desc">{t('highestRated')}</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
 
         {/* Stock Filter */}
