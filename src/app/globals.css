@@ -4,10 +4,52 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ============================= */
+/* FONTS */
+/* ============================= */
+
+@font-face {
+  font-family: 'AllRoundGothic';
+  src: url('/fonts/all-round-gothic-bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'FilsonPro';
+  src: url('/fonts/FilsonProRegular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'FilsonPro';
+  src: url('/fonts/FilsonProMedium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'FilsonPro';
+  src: url('/fonts/FilsonProBold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ============================= */
+/* THEME VARIABLES */
+/* ============================= */
+
 @theme {
-  --font-sans: var(--font-nunito), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-heading: var(--font-heading);
-  --font-body: var(--font-body);
+
+  --font-heading: 'AllRoundGothic', sans-serif;
+  --font-body: 'FilsonPro', sans-serif;
+
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
 
   --radius: 1rem;
   --radius-xl: 1rem;
@@ -48,18 +90,113 @@
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
 
-  /* Brand Colors */
+  /* ============================= */
+  /* BRAND COLORS */
+  /* ============================= */
+
   --color-brand-orange: #f27521;
-  --color-brand-purple: #57126e;
+  --color-brand-purple: #56116E;
+  --color-brand-purple-light: #592B82;
+
   --color-brand-brown: #542b28;
+
   --color-brand-beige: #e4d6cf;
+
+  /* novo fundo claro aprovado no layout */
+  --color-brand-cream: #f3e9e3;
+
+  --color-brand-charcoal: #313131;
   --color-brand-dark: #1A1A1A;
+
+  --color-brand-gray-light: #f5f0ed;
 }
 
-/*
-  The default border color has changed to `currentColor` in Tailwind CSS v4,
-  so we've added these compatibility styles to sure everything works as expected.
-*/
+/* ============================= */
+/* BASE COLORS */
+/* ============================= */
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 240 10% 3.9%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 240 10% 3.9%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 10% 3.9%;
+
+  --primary: 240 5.9% 10%;
+  --primary-foreground: 0 0% 98%;
+
+  --secondary: 240 4.8% 95.9%;
+  --secondary-foreground: 240 5.9% 10%;
+
+  --muted: 240 4.8% 95.9%;
+  --muted-foreground: 240 3.8% 46.1%;
+
+  --accent: 240 4.8% 95.9%;
+  --accent-foreground: 240 5.9% 10%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+
+  --border: 240 5.9% 90%;
+  --input: 240 5.9% 90%;
+
+  --ring: 240 10% 3.9%;
+
+  --chart-1: 12 76% 61%;
+  --chart-2: 173 58% 39%;
+  --chart-3: 197 37% 24%;
+  --chart-4: 43 74% 66%;
+  --chart-5: 27 87% 67%;
+}
+
+/* ============================= */
+/* DARK MODE */
+/* ============================= */
+
+.dark {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+
+  --primary: 0 0% 98%;
+  --primary-foreground: 240 5.9% 10%;
+
+  --secondary: 240 3.7% 15.3%;
+  --secondary-foreground: 0 0% 98%;
+
+  --muted: 240 3.7% 15.3%;
+  --muted-foreground: 240 5% 64.9%;
+
+  --accent: 240 3.7% 15.3%;
+  --accent-foreground: 0 0% 98%;
+
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+
+  --border: 240 3.7% 15.3%;
+  --input: 240 3.7% 15.3%;
+
+  --ring: 240 4.9% 83.9%;
+
+  --chart-1: 220 70% 50%;
+  --chart-2: 160 60% 45%;
+  --chart-3: 30 80% 55%;
+  --chart-4: 280 65% 60%;
+  --chart-5: 340 75% 55%;
+}
+
+/* ============================= */
+/* BASE ELEMENTS */
+/* ============================= */
+
 @layer base {
 
   *,
@@ -68,6 +205,11 @@
   ::backdrop,
   ::file-selector-button {
     border-color: var(--color-gray-200, currentColor);
+  }
+
+  body {
+    font-family: var(--font-body);
+    @apply bg-background text-foreground;
   }
 
   h1,
@@ -80,67 +222,24 @@
   }
 }
 
-:root {
-  --background: 0 0% 100%;
-  --foreground: 240 10% 3.9%;
-  --card: 0 0% 100%;
-  --card-foreground: 240 10% 3.9%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 240 10% 3.9%;
-  --primary: 240 5.9% 10%;
-  --primary-foreground: 0 0% 98%;
-  --secondary: 240 4.8% 95.9%;
-  --secondary-foreground: 240 5.9% 10%;
-  --muted: 240 4.8% 95.9%;
-  --muted-foreground: 240 3.8% 46.1%;
-  --accent: 240 4.8% 95.9%;
-  --accent-foreground: 240 5.9% 10%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 240 5.9% 90%;
-  --input: 240 5.9% 90%;
-  --ring: 240 10% 3.9%;
-  --chart-1: 12 76% 61%;
-  --chart-2: 173 58% 39%;
-  --chart-3: 197 37% 24%;
-  --chart-4: 43 74% 66%;
-  --chart-5: 27 87% 67%;
-  --radius: 1rem;
+/* ============================= */
+/* UTILITIES */
+/* ============================= */
+
+.text-highlight {
+  display: inline;
+  padding: 0.15em 0.4em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
 }
 
-.dark {
-  --background: 240 10% 3.9%;
-  --foreground: 0 0% 98%;
-  --card: 240 10% 3.9%;
-  --card-foreground: 0 0% 98%;
-  --popover: 240 10% 3.9%;
-  --popover-foreground: 0 0% 98%;
-  --primary: 0 0% 98%;
-  --primary-foreground: 240 5.9% 10%;
-  --secondary: 240 3.7% 15.3%;
-  --secondary-foreground: 0 0% 98%;
-  --muted: 240 3.7% 15.3%;
-  --muted-foreground: 240 5% 64.9%;
-  --accent: 240 3.7% 15.3%;
-  --accent-foreground: 0 0% 98%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 240 3.7% 15.3%;
-  --input: 240 3.7% 15.3%;
-  --ring: 240 4.9% 83.9%;
-  --chart-1: 220 70% 50%;
-  --chart-2: 160 60% 45%;
-  --chart-3: 30 80% 55%;
-  --chart-4: 280 65% 60%;
-  --chart-5: 340 75% 55%;
+/* Ingredient card hover */
+
+.ingredient-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground;
-  }
+.ingredient-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(87, 18, 110, 0.15);
 }

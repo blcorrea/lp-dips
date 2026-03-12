@@ -10,41 +10,75 @@
         "headlinePart1": "Compártelo.",
         "headlinePart2": "Siéntelo.",
         "headlinePart3": "Ámalo.",
+        "subtitle": "Placer en su forma más pura.",
         "sub": "Un chocolate hecho para provocar.",
         "description": "Elaborado con Nibs de Cacao Arriba puro e ingredientes afrodisíacos naturales - Polvo de Raíz de Maca, L-Teanina, Polvo de Jengibre y Polvo de Fenogreco - Dips despierta los sentidos, enciende el deseo y convierte el placer compartido en una experiencia intensa e irresistible.",
-        "cta": "Ordenar ahora"
+        "cta": "Añadir al carrito"
     },
     "About": {
-        "title": "Placer en su forma pura.",
-        "col1_p1": "Antes de que el amor se convirtiera en poesía, era impulso. Desde las antiguas civilizaciones, el chocolate ha sido celebrado como el 'alimento de los dioses' – un símbolo de placer, energía y euforia.",
-        "col1_p2": "Dips nació de ese mismo instinto: unir el placer del chocolate con el placer de la conexión.",
-        "col2_p1": "La marca combina precisión técnica, creatividad e ingredientes ancestrales para crear una experiencia sensorial única: afrodisíaca, natural y ecológica.",
-        "col2_p2": "Cada pieza es una invitación a sentir, a explorar, a conectar – con el sabor, con tu cuerpo y con quien comparte el momento a tu lado."
+        "sectionTitle": "Hecho para saborearse en pareja.",
+        "titleLine1": "Hecho para",
+        "titleLine2": "saborearse",
+        "titleLine3": "en pareja.",
+        "p1": "Desde las antiguas civilizaciones, el chocolate ha sido celebrado como el \u201calimento de los dioses\u201d – un símbolo de placer, energía y euforia.",
+        "p2": "Dips nació de ese mismo instinto: unir la riqueza del chocolate premium con la emoción de la conexión íntima.",
+        "p3": "Combinamos precisión técnica, creatividad e ingredientes ancestrales para crear una experiencia sensorial única – afrodisíaca, 100% natural y ecológica. Cada pieza es una invitación – a sentir, a explorar, a conectar – con el sabor, con tu cuerpo y con quien comparte el momento a tu lado.",
+        "p4": "El resultado es un chocolate sofisticado que ofrece placer sin culpa y tentación sin excesos.",
+        "poeticLine1": "Antes de que el amor",
+        "poeticLine2": "se hiciera poesía, fue impulso."
     },
     "Ingredients": {
-        "title": "Los secretos detrás del deseo.",
-        "intro1": "La ciencia confirma lo que los sentidos ya sabían: ciertos ingredientes naturales pueden aumentar el deseo, despertar la energía y amplificar el placer.",
-        "intro2": "Dips combina los más potentes, en dosis equilibradas, para crear una experiencia única, natural e irresistible.",
-        "listTitle": "Ingredientes:",
-        "macaTitle": "Polvo de Raíz de Maca",
-        "macaDesc": "Una raíz sagrada de los Andes, símbolo de vitalidad y deseo. Mejora naturalmente la energía, la libido y el equilibrio hormonal.",
-        "theanineTitle": "L-Teanina",
-        "theanineDesc": "Conocido como el \"nutriente del buen humor\", promueve la claridad mental, el enfoque y la relajación – ayudando al cuerpo a responder más plenamente al placer.",
-        "gingerTitle": "Polvo de Jengibre",
-        "gingerDesc": "Calienta el cuerpo, despierta los sentidos e intensifica el ritmo de la pasión. Un afrodisíaco natural utilizado durante siglos en Oriente.",
-        "fenugreekTitle": "Polvo de Fenogreco",
-        "fenugreekDesc": "Atesorado desde el Antiguo Egipto, rico en saponinas y compuestos que apoyan el equilibrio hormonal y aumentan la testosterona y el impulso sexual.",
-        "viewPdf": "Ver Info Nutricional"
-    },
+    "sectionTitle": "El Arte de la Tentación",
+    "subtitle": "Cada ingrediente es cuidadosamente seleccionado por sus propiedades afrodisíacas y su calidad premium.",
+
+    "cocoa_name": "Nibs de Cacao Arriba Premium",
+    "cocoa_desc": "Sabor rico e intenso del cacao Arriba de origen único: la base gourmet definitiva.",
+    "cocoa_keyword": "RITUAL",
+    "cocoa_originsTitle": "Orígenes y Curiosidades:",
+    "cocoa_origins": "El cacao fue consumido antiguamente en bebidas ceremoniales por culturas ancestrales, simbolizando abundancia, calidez y momentos compartidos de conexión.",
+
+    "maca_name": "Maca Peruana en Polvo",
+    "maca_desc": "Raíz ancestral peruana conocida por aumentar la vitalidad, la energía y la libido, intensificando el deseo.",
+    "maca_keyword": "RESISTENCIA",
+    "maca_originsTitle": "Orígenes y Curiosidades:",
+    "maca_origins": "Originaria de los altos Andes, la maca se consumía tradicionalmente como una raíz nutritiva para sostener la resistencia y la resiliencia.",
+
+    "ginger_name": "Jengibre en Polvo",
+    "ginger_desc": "Especia cálida que estimula la circulación y eleva naturalmente las sensaciones.",
+    "ginger_keyword": "CHISPA",
+    "ginger_originsTitle": "Orígenes y Curiosidades:",
+    "ginger_origins": "Usado durante siglos en muchas culturas, el jengibre es conocido por su naturaleza cálida y su vínculo con la vitalidad y la energía.",
+
+    "theanine_name": "L-Teanina",
+    "theanine_desc": "Aminoácido del “buen humor” que mejora el enfoque y la relajación, ayudándote a disfrutar plenamente el momento.",
+    "theanine_keyword": "PRESENCIA",
+    "theanine_originsTitle": "Orígenes y Curiosidades:",
+    "theanine_origins": "Tradicionalmente asociada con los rituales del té, la L-Teanina ha sido valorada durante mucho tiempo por promover calma, enfoque y presencia consciente.",
+
+    "blend_name": "Mezcla Herbal Afrodisíaca",
+    "blend_desc": "Una mezcla botánica propietaria creada para profundizar la conexión, el placer y la experiencia compartida.",
+    "blend_keyword": "UNIÓN",
+    "blend_originsTitle": "Orígenes y Curiosidades:",
+    "blend_origins": "Las mezclas herbales se han utilizado durante mucho tiempo en rituales tradicionales y preparaciones íntimas para favorecer calidez, presencia y deseo.",
+
+    "fenugreek_name": "Fenogreco en Polvo",
+    "fenugreek_desc": "Tradicionalmente asociado con la vitalidad y el equilibrio hormonal natural, potenciando el deseo con una calidez sutil.",
+    "fenugreek_keyword": "EQUILIBRIO",
+    "fenugreek_originsTitle": "Orígenes y Curiosidades:",
+    "fenugreek_origins": "El fenogreco aparece en antiguas tradiciones alimentarias y herbales, valorado por nutrir, dar calor y restaurar el equilibrio natural.",
+
+    "viewPdf": "Ver Información Nutricional"
+},
     "Product": {
         "title": "Hecho para saborearse en pareja.",
-        "desc1": "Dips fue creado para convertir cada momento en algo inolvidable.",
-        "desc2": "Elaborado con <bold>Nibs de Cacao (Arriba) y una Mezcla Exclusiva</bold>, Dips ofrece el equilibrio perfecto entre intensidad y suavidad.",
-        "desc3": "El resultado es un chocolate sofisticado, placer sin culpa, tentación sin excesos.",
-        "feature1": "Producido en EE. UU. bajo los más altos estándares de calidad.",
-        "feature2": "Hecho con ingredientes 100% naturales y de origen sostenible.",
-        "feature3": "Diseñado para parejas que buscan una experiencia única, intensa y memorable.",
-        "feature4": "Afrodisíaco natural: realza la libido y profundiza el placer de manera suave y elegante."
+        "feature1_title": "Producido en EE. UU.",
+        "feature1_desc": "bajo los más altos estándares de calidad.",
+        "feature2_title": "Hecho con ingredientes 100% naturales,",
+        "feature2_desc": "de origen sostenible.",
+        "feature3_title": "Diseñado para parejas",
+        "feature3_desc": "que buscan una experiencia única, intensa y memorable.",
+        "feature4_title": "Afrodisíaco natural:",
+        "feature4_desc": "realza la libido y profundiza el placer de manera suave y elegante."
     },
     "FAQ": {
         "title": "Preguntas Frecuentes (FAQ)",

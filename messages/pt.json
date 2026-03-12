@@ -10,41 +10,75 @@
         "headlinePart1": "Divida.",
         "headlinePart2": "Sinta.",
         "headlinePart3": "Ame.",
+        "subtitle": "O prazer em sua forma mais pura.",
         "sub": "Um chocolate feito para provocar.",
         "description": "Feito com Nibs de Cacau Arriba puro e ingredientes afrodisíacos naturais - Maca Peruana, L-Teanina, Gengibre e Feno-grego - Dips desperta os sentidos, acende o desejo e transforma o prazer compartilhado em uma experiência intensa e irresistível.",
-        "cta": "Peça agora"
+        "cta": "Adicionar ao carrinho"
     },
     "About": {
-        "title": "O prazer em sua forma mais pura.",
-        "col1_p1": "Antes do amor virar poesia, era impulso. Desde as civilizações antigas, o chocolate é celebrado como o 'alimento dos deuses' – símbolo de prazer, energia e euforia.",
-        "col1_p2": "A Dips nasceu desse mesmo instinto: unir o prazer do chocolate ao prazer da conexão.",
-        "col2_p1": "A marca une precisão técnica, criatividade e ingredientes ancestrais para criar uma experiência sensorial única: afrodisíaca, natural e ecológica.",
-        "col2_p2": "Cada pedaço é um convite para sentir, para explorar, para conectar – com o sabor, com o corpo e com quem divide o momento ao seu lado."
+        "sectionTitle": "Feito para ser saboreado a dois.",
+        "titleLine1": "Feito para",
+        "titleLine2": "ser saboreado",
+        "titleLine3": "a dois.",
+        "p1": "Desde as civilizações antigas, o chocolate é celebrado como o \u201calimento dos deuses\u201d – símbolo de prazer, energia e euforia.",
+        "p2": "Dips nasceu desse mesmo instinto: unir a riqueza do chocolate premium com a emoção da conexão íntima.",
+        "p3": "Unimos precisão técnica, criatividade e ingredientes ancestrais para criar uma experiência sensorial única – afrodisíaca, 100% natural e ecológica. Cada pedaço é um convite – para sentir, para explorar, para conectar – com o sabor, com o corpo e com quem divide o momento ao seu lado.",
+        "p4": "O resultado é um chocolate sofisticado que oferece prazer sem culpa e tentação sem excessos.",
+        "poeticLine1": "Antes do amor virar",
+        "poeticLine2": "poesia, era impulso."
     },
     "Ingredients": {
-        "title": "Os segredos por trás do desejo.",
-        "intro1": "A ciência confirma o que os sentidos já sabiam: certos ingredientes naturais podem aumentar o desejo, despertar a energia e amplificar o prazer.",
-        "intro2": "Dips combina os mais potentes, em doses equilibradas, para criar uma experiência única, natural e irresistível.",
-        "listTitle": "Ingredientes:",
-        "macaTitle": "Maca Peruana",
-        "macaDesc": "Uma raiz sagrada dos Andes, símbolo de vitalidade e desejo. Aumenta naturalmente a energia, a libido e o equilíbrio hormonal.",
-        "theanineTitle": "L-Teanina",
-        "theanineDesc": "Conhecido como o \"nutriente do bom humor\", promove clareza mental, foco e relaxamento – ajudando o corpo a responder mais plenamente ao prazer.",
-        "gingerTitle": "Gengibre em Pó",
-        "gingerDesc": "Aquece o corpo, desperta os sentidos e intensifica o ritmo da paixão. Um afrodisíaco natural usado há séculos no Oriente.",
-        "fenugreekTitle": "Feno-grego",
-        "fenugreekDesc": "Tesouro desde o Antigo Egito, rico em saponinas e compostos que apoiam o equilíbrio hormonal e aumentan a testosterona e o impulso sexual.",
-        "viewPdf": "Ver Info Nutricional"
-    },
+    "sectionTitle": "A Arte da Tentação",
+    "subtitle": "Cada ingrediente é cuidadosamente selecionado por suas propriedades afrodisíacas e qualidade premium.",
+
+    "cocoa_name": "Nibs de Cacau Arriba Premium",
+    "cocoa_desc": "Sabor rico e intenso do cacau Arriba de origem única – a base gourmet definitiva.",
+    "cocoa_keyword": "RITUAL",
+    "cocoa_originsTitle": "Origens & Curiosidades:",
+    "cocoa_origins": "O cacau já foi consumido em bebidas cerimoniais por culturas antigas, simbolizando abundância, calor e momentos compartilhados de conexão.",
+
+    "maca_name": "Maca Peruana em Pó",
+    "maca_desc": "Raiz ancestral peruana conhecida por aumentar vitalidade, energia e libido, intensificando o desejo.",
+    "maca_keyword": "RESISTÊNCIA",
+    "maca_originsTitle": "Origens & Curiosidades:",
+    "maca_origins": "Nativa dos altos Andes, a maca era tradicionalmente consumida como raiz nutritiva para sustentar resistência e resiliência.",
+
+    "ginger_name": "Gengibre em Pó",
+    "ginger_desc": "Especiaria quente que estimula a circulação e intensifica naturalmente as sensações.",
+    "ginger_keyword": "FAÍSCA",
+    "ginger_originsTitle": "Origens & Curiosidades:",
+    "ginger_origins": "Utilizado há séculos em diversas culturas, o gengibre é conhecido por sua natureza aquecedora e por sua ligação com vitalidade e energia.",
+
+    "theanine_name": "L-Teanina",
+    "theanine_desc": "Aminoácido do “bom humor” que melhora foco e relaxamento, ajudando você a aproveitar plenamente o momento.",
+    "theanine_keyword": "PRESENÇA",
+    "theanine_originsTitle": "Origens & Curiosidades:",
+    "theanine_origins": "Tradicionalmente associada aos rituais do chá, a L-Teanina é valorizada há muito tempo por promover calma, foco e presença atenta.",
+
+    "blend_name": "Blend Herbal Afrodisíaco",
+    "blend_desc": "Uma combinação botânica proprietária criada para aprofundar conexão, prazer e experiência compartilhada.",
+    "blend_keyword": "UNIÃO",
+    "blend_originsTitle": "Origens & Curiosidades:",
+    "blend_origins": "Misturas herbais são usadas há muito tempo em rituais tradicionais e preparações íntimas para apoiar calor, presença e desejo.",
+
+    "fenugreek_name": "Feno-grego em Pó",
+    "fenugreek_desc": "Tradicionalmente associado à vitalidade e ao equilíbrio hormonal natural, ampliando o desejo com calor sutil.",
+    "fenugreek_keyword": "EQUILÍBRIO",
+    "fenugreek_originsTitle": "Origens & Curiosidades:",
+    "fenugreek_origins": "O feno-grego aparece em antigas tradições alimentares e herbais, valorizado por nutrir, aquecer e restaurar o equilíbrio natural.",
+
+    "viewPdf": "Ver Informação Nutricional"
+},
     "Product": {
         "title": "Feito para ser saboreado a dois.",
-        "desc1": "O Dips foi criado para transformar cada momento em algo inesquecível.",
-        "desc2": "Feito com <bold>Nibs de Cacau (Arriba) e um Blend Exclusivo</bold>, o Dips oferece o equilíbrio perfeito entre intensidade e suavidade.",
-        "desc3": "O resultado é um chocolate sofisticado, prazer sem culpa, tentação sem excessos.",
-        "feature1": "Produzido nos EUA sob os mais altos padrões de qualidade.",
-        "feature2": "Feito com ingredientes 100% naturais e de origem sustentável.",
-        "feature3": "Projetado para casais que buscam uma experiência única, intensa e memorável.",
-        "feature4": "Afrodisíaco natural: realça a libido e aprofunda o prazer de forma suave e elegante."
+        "feature1_title": "Produzido nos EUA",
+        "feature1_desc": "sob os mais altos padrões de qualidade.",
+        "feature2_title": "Feito com ingredientes 100% naturais,",
+        "feature2_desc": "de origem sustentável.",
+        "feature3_title": "Projetado para casais",
+        "feature3_desc": "que buscam uma experiência única, intensa e memorável.",
+        "feature4_title": "Afrodisíaco natural:",
+        "feature4_desc": "realça a libido e aprofunda o prazer de forma suave e elegante."
     },
     "FAQ": {
         "title": "Perguntas Frequentes (FAQ)",

@@ -1,98 +1,55 @@
 "use client";
 
 import { useTranslations } from 'next-intl';
-import Image from 'next/image';
 import ScrollReveal from './animations/ScrollReveal';
-import ScaleIn from './animations/ScaleIn';
+import BuyNowButton from './BuyNowButton';
 
 export default function ProductSection() {
     const t = useTranslations('Product');
 
+    const features = [
+        { titleKey: 'feature1_title', descKey: 'feature1_desc' },
+        { titleKey: 'feature2_title', descKey: 'feature2_desc' },
+        { titleKey: 'feature3_title', descKey: 'feature3_desc' },
+        { titleKey: 'feature4_title', descKey: 'feature4_desc' },
+    ];
+
     return (
-        <section id="product" className="py-20 lg:py-32 overflow-hidden bg-white">
-            <div className="container mx-auto px-4">
+        <section id="product" className="bg-brand-purple py-10 lg:py-14">
+            <div className="container mx-auto px-6">
 
-                {/* Top Block: Image & Text */}
-                <div className="grid lg:grid-cols-2 gap-16 items-center mb-24">
-                    {/* Left: Image with Blobs */}
-                    <ScaleIn delay={0.2} duration={0.8}>
-                        <div className="relative flex justify-center lg:justify-end">
-                            <div className="relative w-[300px] h-[300px] lg:w-[500px] lg:h-[500px]">
-                                {/* Main Circle Image */}
-                                <div className="relative w-full h-full rounded-full overflow-hidden z-10 border-4 border-white shadow-xl">
-                                    <Image
-                                        src="/images/hero-1.png"
-                                        alt="Couple Moment"
-                                        fill
-                                        className="object-cover"
-                                    />
-                                </div>
-
-                                {/* Decor Blobs */}
-                                <div className="absolute -top-6 -right-6 w-24 h-24 lg:-top-10 lg:-right-10 lg:w-32 lg:h-32 bg-brand-orange rounded-full z-20"></div>
-                                <div className="absolute -bottom-6 -left-6 w-28 h-28 lg:-bottom-10 lg:-left-10 lg:w-40 lg:h-40 bg-brand-orange rounded-full z-20"></div>
-                            </div>
-                        </div>
-                    </ScaleIn>
-
-                    {/* Right: Text Content */}
-                    <ScrollReveal direction="right" delay={0.1} duration={0.8}>
-                        <div className="space-y-8 max-w-xl">
-                            <h2 className="text-3xl lg:text-7xl font-bold text-brand-purple leading-tight tracking-tight break-words">
-                                {t('title')}
-                            </h2>
-
-                            <div className="space-y-6 text-lg text-gray-700 font-medium leading-relaxed">
-                                <p>{t('desc1')}</p>
-                                <p>
-                                    {t.rich('desc2', {
-                                        bold: (chunks) => <strong className="text-black font-bold">{chunks}</strong>
-                                    })}
+                {/* FEATURES */}
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10 max-w-7xl mx-auto">
+                    {features.map((feature, index) => (
+                        <ScrollReveal
+                            key={feature.titleKey}
+                            direction="up"
+                            delay={0.1 + index * 0.1}
+                            duration={0.6}
+                        >
+                            <div className="text-white">
+                                <p className="text-[15px] lg:text-base leading-relaxed">
+                                    <span className="font-bold">
+                                        {t(feature.titleKey)}
+                                    </span>{" "}
+                                    <span className="font-normal text-white/90">
+                                        {t(feature.descKey)}
+                                    </span>
                                 </p>
-                                <p>{t('desc3')}</p>
                             </div>
-                        </div>
-                    </ScrollReveal>
+                        </ScrollReveal>
+                    ))}
                 </div>
 
-                {/* Bottom Block: 4 Circular Features */}
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-                    {/* Circle 1 - Purple */}
-                    <ScaleIn delay={0.1} duration={0.6} initialScale={0.7}>
-                        <div className="bg-brand-purple rounded-full aspect-square flex items-center justify-center p-8 text-center shadow-lg transition-transform hover:scale-105">
-                            <p className="text-white text-lg font-medium leading-snug">
-                                {t('feature1')}
-                            </p>
-                        </div>
-                    </ScaleIn>
-
-                    {/* Circle 2 - Orange */}
-                    <ScaleIn delay={0.2} duration={0.6} initialScale={0.7}>
-                        <div className="bg-brand-orange rounded-full aspect-square flex items-center justify-center p-8 text-center shadow-lg transition-transform hover:scale-105">
-                            <p className="text-white text-lg font-medium leading-snug">
-                                {t('feature2')}
-                            </p>
-                        </div>
-                    </ScaleIn>
-
-                    {/* Circle 3 - Purple */}
-                    <ScaleIn delay={0.3} duration={0.6} initialScale={0.7}>
-                        <div className="bg-brand-purple rounded-full aspect-square flex items-center justify-center p-8 text-center shadow-lg transition-transform hover:scale-105">
-                            <p className="text-white text-lg font-medium leading-snug">
-                                {t('feature3')}
-                            </p>
-                        </div>
-                    </ScaleIn>
-
-                    {/* Circle 4 - Orange */}
-                    <ScaleIn delay={0.4} duration={0.6} initialScale={0.7}>
-                        <div className="bg-brand-orange rounded-full aspect-square flex items-center justify-center p-8 text-center shadow-lg transition-transform hover:scale-105">
-                            <p className="text-white text-lg font-medium leading-snug">
-                                {t('feature4')}
-                            </p>
-                        </div>
-                    </ScaleIn>
-                </div>
+                {/* CTA */}
+                <ScrollReveal direction="up" delay={0.5} duration={0.6}>
+                    <div className="flex justify-center mt-10 lg:mt-12">
+                        <BuyNowButton
+                            label={t('cta')}
+                            className="inline-flex items-center justify-center rounded-full bg-brand-orange px-10 py-4 text-base sm:text-lg font-bold text-brand-purple tracking-wide shadow-[0_10px_30px_rgba(242,117,33,0.28)] transition-all duration-300 hover:scale-[1.02] hover:bg-brand-orange/90 hover:shadow-[0_14px_34px_rgba(242,117,33,0.34)] disabled:opacity-60"
+                        />
+                    </div>
+                </ScrollReveal>
 
             </div>
         </section>

@@ -40,3 +40,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 nul
+
+# local tools / temp / references
+.claude/
+src/components/*.backup.tsx
+pdf-reference.png
+design_system.html
+SHOPIFY_SETUP.md
