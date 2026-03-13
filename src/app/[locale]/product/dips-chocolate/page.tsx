@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { getPurchasableDipsProduct } from '@/lib/shopify-product';
-import BuyNowButton from '@/components/BuyNowButton';
+import ProductPurchaseBox from '@/components/ProductPurchaseBox';
 
 export default async function DipsProductPage() {
   const product = await getPurchasableDipsProduct();
@@ -44,22 +44,11 @@ export default async function DipsProductPage() {
             </p>
 
             <div className="mt-8">
-              <BuyNowButton />
-            </div>
-
-            <div className="mt-8 text-sm text-brand-charcoal/70 space-y-2">
-              <p>
-                Availability:{' '}
-                <span className="font-semibold text-brand-purple">
-                  {product.availableForSale ? 'In stock' : 'Unavailable'}
-                </span>
-              </p>
-              <p>
-                Currency:{' '}
-                <span className="font-semibold text-brand-purple">
-                  {product.currencyCode}
-                </span>
-              </p>
+              <ProductPurchaseBox
+                 priceAmount={product.priceAmount}
+                 currencyCode={product.currencyCode}
+                 buttonLabel="Buy now"
+              />
             </div>
           </div>
         </div>
