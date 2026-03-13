@@ -4,6 +4,26 @@ import { GET_PRODUCT_BY_HANDLE_QUERY } from './shopify-queries';
 export const SHOPIFY_PRODUCT_HANDLE =
   process.env.SHOPIFY_PRODUCT_HANDLE || 'dips-chocolate';
 
+/**
+ * Compat layer for older components still using link-based helpers.
+ * These now prefer internal site routes instead of Shopify redirects.
+ */
+export function getShopifyBuyUrl(fallback: string = '/en/product/dips-chocolate'): string {
+  return fallback;
+}
+
+export function getShopifyShopUrl(fallback: string = '/en/product/dips-chocolate'): string {
+  return fallback;
+}
+
+export function getShopifyCartUrl(fallback: string = '/en/product/dips-chocolate'): string {
+  return fallback;
+}
+
+export function isShopifyConfigured(): boolean {
+  return true;
+}
+
 type ShopifyMoney = {
   amount: string;
   currencyCode: string;
