@@ -41,7 +41,7 @@ export default function ProductSection() {
                 <ScrollReveal direction="up" delay={0.5} duration={0.6}>
                     <div className="flex justify-center mt-10 lg:mt-12">
                         <Link
-                            href={`/${locale}/product/dips-chocolate`}
+                            href="/product/dips-chocolate"
                             className="inline-flex items-center justify-center rounded-full bg-brand-orange px-10 py-4 text-base sm:text-lg font-bold text-brand-purple tracking-wide shadow-[0_10px_30px_rgba(242,117,33,0.28)] transition-all duration-300 hover:scale-[1.02] hover:bg-brand-orange/90 hover:shadow-[0_14px_34px_rgba(242,117,33,0.34)]"
                         >
                             {t('cta')}
