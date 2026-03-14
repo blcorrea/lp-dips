@@ -39,7 +39,6 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages} locale={locale}>
           <CustomerProvider>
             <CartProvider>
-              <AgeVerificationModal />
               {children}
             </CartProvider>
           </CustomerProvider>
