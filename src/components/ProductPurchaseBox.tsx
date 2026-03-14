@@ -1,19 +1,20 @@
 "use client";
 
 import { useMemo, useState } from 'react';
+import { useTranslations, useLocale } from 'next-intl';
 import BuyNowButton from './BuyNowButton';
 
 type ProductPurchaseBoxProps = {
   priceAmount: number;
   currencyCode?: string;
-  buttonLabel?: string;
 };
 
 export default function ProductPurchaseBox({
   priceAmount,
   currencyCode = 'USD',
-  buttonLabel = 'Buy now',
 }: ProductPurchaseBoxProps) {
+  const t = useTranslations('ProductPage');
+  const locale = useLocale();
   const [quantity, setQuantity] = useState(1);
 
   function decrease() {
@@ -24,24 +25,27 @@ export default function ProductPurchaseBox({
     setQuantity((prev) => Math.min(10, prev + 1));
   }
 
+  const formatLocale =
+    locale === 'pt' ? 'pt-BR' : locale === 'es' ? 'es-ES' : 'en-US';
+
   const formattedUnitPrice = useMemo(() => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat(formatLocale, {
       style: 'currency',
       currency: currencyCode,
     }).format(priceAmount);
-  }, [priceAmount, currencyCode]);
+  }, [priceAmount, currencyCode, formatLocale]);
 
   const formattedTotal = useMemo(() => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat(formatLocale, {
       style: 'currency',
       currency: currencyCode,
     }).format(priceAmount * quantity);
-  }, [priceAmount, quantity, currencyCode]);
+  }, [priceAmount, quantity, currencyCode, formatLocale]);
 
   return (
     <div className="space-y-5">
       <div>
-        <p className="mb-2 text-sm text-brand-charcoal/70">Quantity</p>
+        <p className="mb-2 text-sm text-brand-charcoal/70">{t('quantity')}</p>
 
         <div className="inline-flex items-center overflow-hidden rounded-full border border-brand-purple/15 bg-white shadow-sm">
           <button
@@ -70,19 +74,19 @@ export default function ProductPurchaseBox({
 
       <div className="rounded-2xl border border-brand-purple/10 bg-white px-5 py-4 shadow-sm">
         <div className="flex items-center justify-between text-sm text-brand-charcoal/70">
-          <span>Unit price</span>
+          <span>{t('unitPrice')}</span>
           <span className="font-medium text-brand-charcoal">{formattedUnitPrice}</span>
         </div>
 
         <div className="mt-2 flex items-center justify-between text-base">
-          <span className="font-semibold text-brand-purple">Total</span>
+          <span className="font-semibold text-brand-purple">{t('total')}</span>
           <span className="text-xl font-bold text-brand-purple">{formattedTotal}</span>
         </div>
       </div>
 
       <BuyNowButton
         quantity={quantity}
-        label={buttonLabel}
+        label={t('buyNow')}
         className="inline-flex items-center justify-center rounded-full bg-brand-orange px-8 py-4 text-base sm:text-lg font-bold text-brand-purple tracking-wide shadow-[0_10px_30px_rgba(242,117,33,0.28)] transition-all duration-300 hover:scale-[1.02] hover:bg-brand-orange/90 hover:shadow-[0_14px_34px_rgba(242,117,33,0.34)] disabled:opacity-60"
       />
     </div>

@@ -405,5 +405,11 @@
         "browseProducts": "Explorar Produtos",
         "tipTitle": "Dica Rápida",
         "tipDesc": "Clique no ícone de coração em qualquer produto para adicioná-lo aos favoritos"
+    },
+    "ProductPage": {
+        "quantity": "Quantidade",
+        "unitPrice": "Preço unitário",
+        "total": "Total",
+        "buyNow": "Comprar agora"
     }
 }

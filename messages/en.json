@@ -405,5 +405,11 @@
         "browseProducts": "Browse Products",
         "tipTitle": "Quick Tip",
         "tipDesc": "Click the heart icon on any product to add it to your wishlist"
+    },
+    "ProductPage": {
+        "quantity": "Quantity",
+        "unitPrice": "Unit price",
+        "total": "Total",
+        "buyNow": "Buy now"
     }
 }
