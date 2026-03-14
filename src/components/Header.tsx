@@ -5,9 +5,8 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
-import { ShoppingCart, User, Heart, Package, Menu, X } from 'lucide-react';
+import { ShoppingCart, Menu, X } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
-import { useCustomer } from '@/contexts/CustomerContext';
 
 export default function Header() {
     const t = useTranslations('Header');
@@ -15,9 +14,6 @@ export default function Header() {
     const locale = (params.locale as string) || 'en';
 
     const { itemCount } = useCart();
-    const { customer } = useCustomer();
-
-    const [showUserMenu, setShowUserMenu] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
 
     return (
@@ -26,10 +22,10 @@ export default function Header() {
                 {/* Left: Logo */}
                 <Link href={`/${locale}`} className="flex-shrink-0 flex items-center">
                     <Image
-                        src="/images/logo-header-new.png"
+                        src="/images/DIPS-LOGO-final.png"
                         alt="Dips"
-                        width={96}
-                        height={34}
+                        width={120}
+                        height={40}
                         className="h-8 lg:h-9 w-auto"
                         priority
                     />
@@ -84,69 +80,6 @@ export default function Header() {
                         <Link href="/pt" className="hover:text-brand-orange transition-colors">PT</Link>
                     </div>
 
-                    {/* User Menu */}
-                    {customer ? (
-                        <div className="relative">
-                            <button
-                                onClick={() => setShowUserMenu(!showUserMenu)}
-                                className="flex items-center text-brand-purple hover:text-brand-orange transition-colors"
-                                aria-label="User menu"
-                                type="button"
-                            >
-                                <User className="w-[17px] h-[17px]" />
-                            </button>
-
-                            {showUserMenu && (
-                                <>
-                                    <div
-                                        className="fixed inset-0 z-40"
-                                        onClick={() => setShowUserMenu(false)}
-                                    />
-                                    <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl py-2 z-50 border border-brand-purple/10">
-                                        <Link
-                                            href={`/${locale}/profile`}
-                                            className="block px-4 py-2.5 text-gray-900 hover:bg-brand-cream transition-colors"
-                                            onClick={() => setShowUserMenu(false)}
-                                        >
-                                            <div className="flex items-center gap-2">
-                                                <User className="w-4 h-4 text-brand-purple" />
-                                                My Profile
-                                            </div>
-                                        </Link>
-                                        <Link
-                                            href={`/${locale}/orders`}
-                                            className="block px-4 py-2.5 text-gray-900 hover:bg-brand-cream transition-colors"
-                                            onClick={() => setShowUserMenu(false)}
-                                        >
-                                            <div className="flex items-center gap-2">
-                                                <Package className="w-4 h-4 text-brand-purple" />
-                                                My Orders
-                                            </div>
-                                        </Link>
-                                        <Link
-                                            href={`/${locale}/wishlist`}
-                                            className="block px-4 py-2.5 text-gray-900 hover:bg-brand-cream transition-colors"
-                                            onClick={() => setShowUserMenu(false)}
-                                        >
-                                            <div className="flex items-center gap-2">
-                                                <Heart className="w-4 h-4 text-brand-purple" />
-                                                Wishlist
-                                            </div>
-                                        </Link>
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    ) : (
-                        <Link
-                            href={`/${locale}/profile`}
-                            className="flex text-brand-purple hover:text-brand-orange transition-colors"
-                            aria-label="Profile"
-                        >
-                            <User className="w-[17px] h-[17px]" />
-                        </Link>
-                    )}
-
                     {/* Cart */}
                     <Link
                         href={`/${locale}/product/dips-chocolate`}
@@ -164,14 +97,6 @@ export default function Header() {
 
                 {/* Mobile actions */}
                 <div className="flex md:hidden items-center gap-3">
-                    <Link
-                        href={`/${locale}/profile`}
-                        className="text-brand-purple hover:text-brand-orange transition-colors"
-                        aria-label="Profile"
-                    >
-                        <User className="w-[18px] h-[18px]" />
-                    </Link>
-
                     <Link
                         href={`/${locale}/product/dips-chocolate`}
                         className="relative text-brand-purple hover:text-brand-orange transition-colors"
