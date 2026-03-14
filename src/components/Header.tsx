@@ -20,7 +20,7 @@ export default function Header() {
         <header className="sticky top-0 z-50 w-full bg-brand-cream border-b border-brand-purple/8">
             <div className="container mx-auto px-5 sm:px-6 h-[58px] lg:h-[64px] flex items-center justify-between">
                 {/* Left: Logo */}
-                <Link href={`/${locale}`} className="flex-shrink-0 flex items-center">
+                <Link href="/en" className="flex-shrink-0 flex items-center">
                     <Image
                         src="/images/logo-header-new.png"
                         alt="Dips"
