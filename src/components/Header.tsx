@@ -22,7 +22,7 @@ export default function Header() {
                 {/* Left: Logo */}
                 <Link href={`/${locale}`} className="flex-shrink-0 flex items-center">
                     <Image
-                        src="/images/DIPS-LOGO-final.png"
+                        src="/images/logo-header-new.png"
                         alt="Dips"
                         width={120}
                         height={40}
