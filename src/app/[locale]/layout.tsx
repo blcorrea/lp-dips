@@ -4,7 +4,6 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { routing } from '@/i18n/routing';
 
-import AgeVerificationModal from '@/components/AgeVerificationModal';
 import { CartProvider } from '@/contexts/CartContext';
 import { CustomerProvider } from '@/contexts/CustomerContext';
 
