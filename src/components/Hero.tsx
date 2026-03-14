@@ -7,7 +7,6 @@ import { Link } from '@/i18n/routing';
 
 export default function Hero() {
     const t = useTranslations('Hero');
-    
 
     return (
         <section className="relative w-full overflow-hidden bg-brand-cream">
@@ -23,7 +22,7 @@ export default function Hero() {
                 <div className="absolute inset-0 bg-black/30" />
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(0,0,0,0.18)_100%)]" />
 
-                <div className="absolute inset-0 flex items-center justify-center px-6 pt-14 pb-10">
+                <div className="absolute inset-0 flex items-center justify-center px-5 sm:px-6 pt-14 pb-14 sm:pb-10">
                     <div className="w-full max-w-5xl text-center flex flex-col items-center">
                         <motion.div
                             initial={{ opacity: 0, y: 28 }}
@@ -52,7 +51,7 @@ export default function Hero() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.75, delay: 0.55 }}
-                            className="mt-10 sm:mt-12 lg:mt-16"
+                            className="mt-8 sm:mt-10 lg:mt-16"
                         >
                             <span className="text-brand-orange text-2xl sm:text-3xl lg:text-[38px] font-bold tracking-tight">
                                 {t('sub')}
@@ -74,11 +73,11 @@ export default function Hero() {
                             initial={{ opacity: 0, scale: 0.96 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ duration: 0.65, delay: 1.0 }}
-                            className="mt-6 sm:mt-7"
+                            className="mt-6 sm:mt-7 w-full flex justify-center"
                         >
                             <Link
                                 href="/product/dips-chocolate"
-                                className="inline-flex items-center justify-center rounded-full bg-brand-orange px-8 sm:px-10 py-3.5 sm:py-4 text-base sm:text-lg font-bold text-brand-purple tracking-wide shadow-[0_10px_30px_rgba(242,117,33,0.28)] transition-all duration-300 hover:scale-[1.02] hover:bg-brand-orange/90 hover:shadow-[0_14px_34px_rgba(242,117,33,0.34)]"
+                                className="inline-flex max-w-[92vw] items-center justify-center rounded-full bg-brand-orange px-6 sm:px-8 lg:px-10 py-3.5 sm:py-4 min-h-[52px] text-sm sm:text-base lg:text-lg font-bold text-brand-purple text-center tracking-wide shadow-[0_10px_30px_rgba(242,117,33,0.28)] transition-all duration-300 hover:scale-[1.02] hover:bg-brand-orange/90 hover:shadow-[0_14px_34px_rgba(242,117,33,0.34)]"
                             >
                                 {t('cta')}
                             </Link>
