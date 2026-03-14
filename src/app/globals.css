@@ -85,6 +85,7 @@
     font-family: var(--font-body);
     background: var(--color-brand-cream);
     color: var(--color-brand-charcoal);
+    overflow-x: hidden;
   }
 
   h1,

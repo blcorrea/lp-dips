@@ -1,18 +1,16 @@
 "use client";
 
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { Link } from "@/i18n/routing";
 
 export default function Hero() {
   const t = useTranslations("Hero");
-  const locale = useLocale();
-  const isLongLocale = locale === "pt" || locale === "es";
 
   return (
-    <section className="relative w-full overflow-hidden bg-brand-cream">
-      <div className="relative w-full h-[470px] sm:h-[560px] lg:h-[640px]">
+    <section className="relative w-full overflow-x-hidden bg-brand-cream">
+      <div className="relative w-full h-[620px] sm:h-[560px] lg:h-[640px] overflow-hidden">
         <Image
           src="/images/fundo-hero-dips-edit.jpg"
           alt="Dips Chocolate Experience"
@@ -21,7 +19,6 @@ export default function Hero() {
           className="object-cover object-[center_42%]"
         />
 
-        {/* overlays para aproximar o contraste do figma */}
         <div className="absolute inset-0 bg-black/28" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/42 via-transparent to-black/42" />
 
@@ -32,8 +29,19 @@ export default function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.15 }}
+              className="w-full"
             >
-              <h1 className="font-heading whitespace-nowrap text-white text-[42px] sm:text-[52px] lg:text-[72px] xl:text-[82px] font-bold leading-[0.95] tracking-[-0.04em] drop-shadow-[0_4px_18px_rgba(0,0,0,0.18)]">
+              {/* Mobile / tablet */}
+              <h1 className="font-heading text-white text-[52px] sm:text-[64px] font-bold leading-[0.92] tracking-[-0.05em] drop-shadow-[0_4px_18px_rgba(0,0,0,0.18)] lg:hidden">
+                {t("headlinePart1")}
+                <br />
+                {t("headlinePart2")}
+                <br />
+                {t("headlinePart3")}
+              </h1>
+
+              {/* Desktop */}
+              <h1 className="hidden lg:block font-heading whitespace-nowrap text-white text-[72px] xl:text-[82px] font-bold leading-[0.95] tracking-[-0.04em] drop-shadow-[0_4px_18px_rgba(0,0,0,0.18)]">
                 {t("headlinePart1")} {t("headlinePart2")} {t("headlinePart3")}
               </h1>
             </motion.div>
@@ -55,9 +63,9 @@ export default function Hero() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.75, delay: 0.5 }}
-              className="mt-[160px] sm:mt-[205px] lg:mt-[225px]"
+              className="mt-[170px] sm:mt-[210px] lg:mt-[238px]"
             >
-              <span className="font-heading text-brand-orange text-[24px] sm:text-[34px] lg:text-[46px] font-bold tracking-[-0.03em]">
+              <span className="font-heading text-brand-orange text-[28px] sm:text-[34px] lg:text-[46px] font-bold tracking-[-0.03em]">
                 {t("sub")}
               </span>
             </motion.div>
@@ -67,9 +75,9 @@ export default function Hero() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.75, delay: 0.7 }}
-              className={`mt-3 ${isLongLocale ? "max-w-[700px]" : "max-w-[640px]"}`}
+              className="mt-3 max-w-[680px] px-1"
             >
-              <p className="font-body text-white/92 text-[10.5px] sm:text-[13px] lg:text-[15px] font-semibold leading-[1.42] text-center">
+              <p className="font-body text-white/92 text-[13px] sm:text-[13px] lg:text-[15px] font-semibold leading-[1.45] text-center">
                 {t("description")}
               </p>
             </motion.div>
@@ -79,11 +87,11 @@ export default function Hero() {
               initial={{ opacity: 0, scale: 0.97 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.65, delay: 0.95 }}
-              className="mt-5 sm:mt-6"
+              className="mt-6 sm:mt-6"
             >
               <Link
                 href="/product/dips-chocolate"
-                className="inline-flex items-center justify-center rounded-[20px] bg-brand-orange px-6 sm:px-8 py-3 sm:py-3.5 min-h-[54px] min-w-[165px] sm:min-w-[195px] max-w-[230px] sm:max-w-[280px] text-center font-body text-[12px] sm:text-[14px] font-bold text-brand-purple leading-[1.1] whitespace-normal shadow-[0_10px_24px_rgba(242,117,33,0.22)] transition-all duration-300 hover:scale-[1.02] hover:bg-brand-orange/90"
+                className="inline-flex items-center justify-center rounded-[20px] bg-brand-orange px-8 sm:px-8 py-3.5 sm:py-3.5 min-h-[56px] min-w-[210px] max-w-[280px] text-center font-body text-[15px] sm:text-[14px] font-bold text-brand-purple leading-[1.1] whitespace-nowrap shadow-[0_10px_24px_rgba(242,117,33,0.22)] transition-all duration-300 hover:scale-[1.02] hover:bg-brand-orange/90"
               >
                 {t("cta")}
               </Link>
