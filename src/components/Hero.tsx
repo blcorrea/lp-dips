@@ -1,16 +1,19 @@
 "use client";
 
 import { useTranslations } from 'next-intl';
-import Image from 'next/image';
 import { motion } from 'framer-motion';
-import BuyNowButton from './BuyNowButton';
+import { useParams } from 'next/navigation';
+import Image from 'next/image';
+import { Link } from '@/i18n/routing';
 
 export default function Hero() {
     const t = useTranslations('Hero');
+    const params = useParams();
+    const locale = (params.locale as string) || 'en';
 
     return (
         <section className="relative w-full overflow-hidden bg-brand-cream">
-            <div className="relative w-full h-[78vh] min-h-[560px] max-h-[820px]">
+            <div className="relative w-full min-h-[560px] h-[78vh] max-h-[820px]">
                 <Image
                     src="/images/hero-product.png"
                     alt="Dips Chocolate Experience"
@@ -22,7 +25,7 @@ export default function Hero() {
                 <div className="absolute inset-0 bg-black/30" />
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(0,0,0,0.18)_100%)]" />
 
-                <div className="absolute inset-0 flex items-center justify-center px-6 pt-16">
+                <div className="absolute inset-0 flex items-center justify-center px-6 pt-14 pb-10">
                     <div className="w-full max-w-5xl text-center flex flex-col items-center">
                         <motion.div
                             initial={{ opacity: 0, y: 28 }}
@@ -42,7 +45,7 @@ export default function Hero() {
                             transition={{ duration: 0.7, delay: 0.35 }}
                             className="mt-4"
                         >
-                            <span className="text-brand-orange/90 text-base sm:text-xl lg:text-2xl italic font-medium tracking-[0.02em]">
+                            <span className="text-brand-orange/95 text-base sm:text-xl lg:text-2xl italic font-medium tracking-[0.02em]">
                                 {t('subtitle')}
                             </span>
                         </motion.div>
@@ -51,7 +54,7 @@ export default function Hero() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.75, delay: 0.55 }}
-                            className="mt-16 sm:mt-20 lg:mt-24"
+                            className="mt-10 sm:mt-12 lg:mt-16"
                         >
                             <span className="text-brand-orange text-2xl sm:text-3xl lg:text-[38px] font-bold tracking-tight">
                                 {t('sub')}
@@ -62,9 +65,9 @@ export default function Hero() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.75, delay: 0.75 }}
-                            className="mt-5 max-w-2xl"
+                            className="mt-4 max-w-2xl"
                         >
-                            <p className="text-white/92 text-sm sm:text-base lg:text-[17px] font-medium leading-[1.75] text-center">
+                            <p className="text-white/92 text-sm sm:text-base lg:text-[17px] font-medium leading-[1.7] text-center">
                                 {t('description')}
                             </p>
                         </motion.div>
@@ -73,12 +76,14 @@ export default function Hero() {
                             initial={{ opacity: 0, scale: 0.96 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ duration: 0.65, delay: 1.0 }}
-                            className="mt-8"
+                            className="mt-6 sm:mt-7"
                         >
-                            <BuyNowButton
-                                label={t('cta')}
-                                className="inline-flex items-center justify-center rounded-full bg-brand-orange px-10 py-4 text-base sm:text-lg font-bold text-brand-purple tracking-wide shadow-[0_10px_30px_rgba(242,117,33,0.28)] transition-all duration-300 hover:scale-[1.02] hover:bg-brand-orange/90 hover:shadow-[0_14px_34px_rgba(242,117,33,0.34)] disabled:opacity-60"
-                            />
+                            <Link
+                                href={`/${locale}/product/dips-chocolate`}
+                                className="inline-flex items-center justify-center rounded-full bg-brand-orange px-8 sm:px-10 py-3.5 sm:py-4 text-base sm:text-lg font-bold text-brand-purple tracking-wide shadow-[0_10px_30px_rgba(242,117,33,0.28)] transition-all duration-300 hover:scale-[1.02] hover:bg-brand-orange/90 hover:shadow-[0_14px_34px_rgba(242,117,33,0.34)]"
+                            >
+                                {t('cta')}
+                            </Link>
                         </motion.div>
                     </div>
                 </div>

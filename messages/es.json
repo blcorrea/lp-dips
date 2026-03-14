@@ -68,7 +68,8 @@
     "fenugreek_origins": "El fenogreco aparece en antiguas tradiciones alimentarias y herbales, valorado por nutrir, dar calor y restaurar el equilibrio natural.",
 
     "viewPdf": "Ver Información Nutricional"
-},
+}
+,
     "Product": {
         "title": "Hecho para saborearse en pareja.",
         "feature1_title": "Producido en EE. UU.",
@@ -79,6 +80,7 @@
         "feature3_desc": "que buscan una experiencia única, intensa y memorable.",
         "feature4_title": "Afrodisíaco natural:",
         "feature4_desc": "realza la libido y profundiza el placer de manera suave y elegante."
+         "cta": "Ver producto"
     },
     "FAQ": {
         "title": "Preguntas Frecuentes (FAQ)",

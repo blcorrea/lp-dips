@@ -1,11 +1,14 @@
 "use client";
 
 import { useTranslations } from 'next-intl';
+import { useParams } from 'next/navigation';
+import { Link } from '@/i18n/routing';
 import ScrollReveal from './animations/ScrollReveal';
-import BuyNowButton from './BuyNowButton';
 
 export default function ProductSection() {
     const t = useTranslations('Product');
+    const params = useParams();
+    const locale = (params.locale as string) || 'en';
 
     const features = [
         { titleKey: 'feature1_title', descKey: 'feature1_desc' },
@@ -17,8 +20,6 @@ export default function ProductSection() {
     return (
         <section id="product" className="bg-brand-purple py-10 lg:py-14">
             <div className="container mx-auto px-6">
-
-                {/* FEATURES */}
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10 max-w-7xl mx-auto">
                     {features.map((feature, index) => (
                         <ScrollReveal
@@ -29,28 +30,24 @@ export default function ProductSection() {
                         >
                             <div className="text-white">
                                 <p className="text-[15px] lg:text-base leading-relaxed">
-                                    <span className="font-bold">
-                                        {t(feature.titleKey)}
-                                    </span>{" "}
-                                    <span className="font-normal text-white/90">
-                                        {t(feature.descKey)}
-                                    </span>
+                                    <span className="font-bold">{t(feature.titleKey)}</span>{' '}
+                                    <span className="font-normal text-white/90">{t(feature.descKey)}</span>
                                 </p>
                             </div>
                         </ScrollReveal>
                     ))}
                 </div>
 
-                {/* CTA */}
                 <ScrollReveal direction="up" delay={0.5} duration={0.6}>
                     <div className="flex justify-center mt-10 lg:mt-12">
-                        <BuyNowButton
-                            label={t('cta')}
-                            className="inline-flex items-center justify-center rounded-full bg-brand-orange px-10 py-4 text-base sm:text-lg font-bold text-brand-purple tracking-wide shadow-[0_10px_30px_rgba(242,117,33,0.28)] transition-all duration-300 hover:scale-[1.02] hover:bg-brand-orange/90 hover:shadow-[0_14px_34px_rgba(242,117,33,0.34)] disabled:opacity-60"
-                        />
+                        <Link
+                            href={`/${locale}/product/dips-chocolate`}
+                            className="inline-flex items-center justify-center rounded-full bg-brand-orange px-10 py-4 text-base sm:text-lg font-bold text-brand-purple tracking-wide shadow-[0_10px_30px_rgba(242,117,33,0.28)] transition-all duration-300 hover:scale-[1.02] hover:bg-brand-orange/90 hover:shadow-[0_14px_34px_rgba(242,117,33,0.34)]"
+                        >
+                            {t('cta')}
+                        </Link>
                     </div>
                 </ScrollReveal>
-
             </div>
         </section>
     );
