@@ -70,17 +70,17 @@
     "viewPdf": "View Nutritional Info"
 },
     "Product": {
-        "title": "Made to be savored by two.",
-        "feature1_title": "Produced in the USA",
-        "feature1_desc": "under the highest quality standards.",
-        "feature2_title": "Made with 100% natural,",
-        "feature2_desc": "sustainably sourced ingredients.",
-        "feature3_title": "Designed for couples",
-        "feature3_desc": "seeking a unique, intense, and memorable experience.",
-        "feature4_title": "Natural aphrodisiac:",
-        "feature4_desc": "enhances libido and deepens pleasure in a soft and elegant way."
-         "cta": "View product"
-    },
+  "title": "Made to be savored by two.",
+  "feature1_title": "Produced in the USA",
+  "feature1_desc": "under the highest quality standards.",
+  "feature2_title": "Made with 100% natural,",
+  "feature2_desc": "sustainably sourced ingredients.",
+  "feature3_title": "Designed for couples",
+  "feature3_desc": "seeking a unique, intense, and memorable experience.",
+  "feature4_title": "Natural aphrodisiac:",
+  "feature4_desc": "enhances libido and deepens pleasure in a soft and elegant way.",
+  "cta": "View product"
+},
     "FAQ": {
         "title": "Frequently Asked Questions (F.A.Q.s)",
         "q1": "Q1: Does DIPS really have aphrodisiac effects?",

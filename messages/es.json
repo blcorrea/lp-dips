@@ -71,17 +71,17 @@
 }
 ,
     "Product": {
-        "title": "Hecho para saborearse en pareja.",
-        "feature1_title": "Producido en EE. UU.",
-        "feature1_desc": "bajo los más altos estándares de calidad.",
-        "feature2_title": "Hecho con ingredientes 100% naturales,",
-        "feature2_desc": "de origen sostenible.",
-        "feature3_title": "Diseñado para parejas",
-        "feature3_desc": "que buscan una experiencia única, intensa y memorable.",
-        "feature4_title": "Afrodisíaco natural:",
-        "feature4_desc": "realza la libido y profundiza el placer de manera suave y elegante."
-         "cta": "Ver producto"
-    },
+  "title": "Hecho para disfrutarse entre dos.",
+  "feature1_title": "Producido en EE. UU.",
+  "feature1_desc": "bajo los más altos estándares de calidad.",
+  "feature2_title": "Elaborado con ingredientes 100% naturales,",
+  "feature2_desc": "de origen sostenible.",
+  "feature3_title": "Diseñado para parejas",
+  "feature3_desc": "que buscan una experiencia única, intensa e inolvidable.",
+  "feature4_title": "Afrodisíaco natural:",
+  "feature4_desc": "estimula la libido y profundiza el placer de forma suave y elegante.",
+  "cta": "Ver producto"
+},
     "FAQ": {
         "title": "Preguntas Frecuentes (FAQ)",
         "q1": "¿Dips realmente tiene efectos afrodisíacos?",

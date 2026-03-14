@@ -70,16 +70,17 @@
     "viewPdf": "Ver Informação Nutricional"
 },
     "Product": {
-        "title": "Feito para ser saboreado a dois.",
-        "feature1_title": "Produzido nos EUA",
-        "feature1_desc": "sob os mais altos padrões de qualidade.",
-        "feature2_title": "Feito com ingredientes 100% naturais,",
-        "feature2_desc": "de origem sustentável.",
-        "feature3_title": "Projetado para casais",
-        "feature3_desc": "que buscam uma experiência única, intensa e memorável.",
-        "feature4_title": "Afrodisíaco natural:",
-        "feature4_desc": "realça a libido e aprofunda o prazer de forma suave e elegante."
-         "cta": "Ver produto
+  "title": "Feito para ser saboreado a dois.",
+  "feature1_title": "Produzido nos EUA",
+  "feature1_desc": "sob os mais altos padrões de qualidade.",
+  "feature2_title": "Feito com ingredientes 100% naturais,",
+  "feature2_desc": "de origem sustentável.",
+  "feature3_title": "Desenvolvido para casais",
+  "feature3_desc": "que buscam uma experiência única, intensa e memorável.",
+  "feature4_title": "Afrodisíaco natural:",
+  "feature4_desc": "estimula a libido e aprofunda o prazer de forma suave e elegante.",
+  "cta": "Ver produto"
+},
     "FAQ": {
         "title": "Perguntas Frequentes (FAQ)",
         "q1": "O Dips realmente tem efeitos afrodisíacos?",
