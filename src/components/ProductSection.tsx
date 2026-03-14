@@ -1,14 +1,13 @@
 "use client";
 
 import { useTranslations } from 'next-intl';
-import { useParams } from 'next/navigation';
 import { Link } from '@/i18n/routing';
 import ScrollReveal from './animations/ScrollReveal';
 
 export default function ProductSection() {
     const t = useTranslations('Product');
-    const params = useParams();
-    const locale = (params.locale as string) || 'en';
+   
+    
 
     const features = [
         { titleKey: 'feature1_title', descKey: 'feature1_desc' },

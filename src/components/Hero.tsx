@@ -2,14 +2,12 @@
 
 import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
-import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import { Link } from '@/i18n/routing';
 
 export default function Hero() {
     const t = useTranslations('Hero');
-    const params = useParams();
-    const locale = (params.locale as string) || 'en';
+    
 
     return (
         <section className="relative w-full overflow-hidden bg-brand-cream">
