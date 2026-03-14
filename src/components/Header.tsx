@@ -2,83 +2,81 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import { ShoppingCart, User, Heart, Package, Menu, X } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useCustomer } from '@/contexts/CustomerContext';
-import { getShopifyShopUrl, getShopifyCartUrl, isShopifyConfigured } from '@/lib/shopify';
 
 export default function Header() {
     const t = useTranslations('Header');
     const params = useParams();
     const locale = (params.locale as string) || 'en';
+
     const { itemCount } = useCart();
     const { customer } = useCustomer();
+
     const [showUserMenu, setShowUserMenu] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
 
-    const shopUrl = getShopifyShopUrl(`/${locale}/products`);
-    const cartUrl = getShopifyCartUrl(`/${locale}/cart`);
-    const isExternal = isShopifyConfigured();
-
-    const externalProps = isExternal ? { target: '_blank' as const, rel: 'noopener noreferrer' } : {};
-
     return (
-        <header className="sticky top-0 z-50 w-full border-b border-brand-purple/8 bg-brand-cream/95 backdrop-blur-md">
-            <div className="container mx-auto flex h-[76px] items-center justify-between px-6 lg:px-8">
-                {/* Logo */}
-                <Link href={`/${locale}`} className="flex-shrink-0">
+        <header className="sticky top-0 z-50 w-full bg-brand-cream border-b border-brand-purple/8">
+            <div className="container mx-auto px-5 sm:px-6 h-[58px] lg:h-[64px] flex items-center justify-between">
+                {/* Left: Logo */}
+                <Link href={`/${locale}`} className="flex-shrink-0 flex items-center">
                     <Image
-                        src="/images/logo-header.png"
+                        src="/images/logo-header-new.png"
                         alt="Dips"
-                        width={112}
+                        width={96}
                         height={34}
-                        className="h-8 w-auto lg:h-9"
+                        className="h-8 lg:h-9 w-auto"
                         priority
                     />
                 </Link>
 
-                {/* Navigation - Desktop */}
-                <nav className="hidden md:flex items-center gap-8 lg:gap-10">
-                    <Link
-                        href={`/${locale}#about`}
-                        className="text-brand-purple text-[14px] lg:text-[15px] font-semibold tracking-[0.02em] hover:text-brand-orange transition-colors duration-200"
-                    >
-                        {t('about')}
-                    </Link>
-                    <Link
-                        href={`/${locale}#product`}
-                        className="text-brand-purple text-[14px] lg:text-[15px] font-semibold tracking-[0.02em] hover:text-brand-orange transition-colors duration-200"
-                    >
-                        {t('product')}
-                    </Link>
-                    <Link
-                        href={`/${locale}#ingredients`}
-                        className="text-brand-purple text-[14px] lg:text-[15px] font-semibold tracking-[0.02em] hover:text-brand-orange transition-colors duration-200"
-                    >
-                        {t('ingredients')}
-                    </Link>
-                    <Link
-                        href={`/${locale}#faq`}
-                        className="text-brand-purple text-[14px] lg:text-[15px] font-semibold tracking-[0.02em] hover:text-brand-orange transition-colors duration-200"
-                    >
-                        {t('faq')}
-                    </Link>
-                    <a
-                        href={shopUrl}
-                        {...externalProps}
-                        className="text-brand-purple text-[14px] lg:text-[15px] font-semibold tracking-[0.02em] hover:text-brand-orange transition-colors duration-200"
-                    >
-                        Shop
-                    </a>
-                </nav>
+                {/* Right side: desktop nav + actions */}
+                <div className="hidden md:flex items-center gap-6 lg:gap-8 ml-auto">
+                    {/* Navigation */}
+                    <nav className="flex items-center gap-5 lg:gap-7">
+                        <Link
+                            href={`/${locale}#about`}
+                            className="text-brand-purple font-semibold text-[11px] lg:text-[12px] tracking-[0.01em] hover:text-brand-orange transition-colors duration-200"
+                        >
+                            {t('about')}
+                        </Link>
 
-                {/* Right Actions */}
-                <div className="flex items-center gap-3 sm:gap-4">
+                        <Link
+                            href={`/${locale}#product`}
+                            className="text-brand-purple font-semibold text-[11px] lg:text-[12px] tracking-[0.01em] hover:text-brand-orange transition-colors duration-200"
+                        >
+                            {t('product')}
+                        </Link>
+
+                        <Link
+                            href={`/${locale}#ingredients`}
+                            className="text-brand-purple font-semibold text-[11px] lg:text-[12px] tracking-[0.01em] hover:text-brand-orange transition-colors duration-200"
+                        >
+                            {t('ingredients')}
+                        </Link>
+
+                        <Link
+                            href={`/${locale}#faq`}
+                            className="text-brand-purple font-semibold text-[11px] lg:text-[12px] tracking-[0.01em] hover:text-brand-orange transition-colors duration-200"
+                        >
+                            {t('faq')}
+                        </Link>
+
+                        <Link
+                            href={`/${locale}/product/dips-chocolate`}
+                            className="text-brand-purple font-semibold text-[11px] lg:text-[12px] tracking-[0.01em] hover:text-brand-orange transition-colors duration-200"
+                        >
+                            Shop
+                        </Link>
+                    </nav>
+
                     {/* Language Selector */}
-                    <div className="hidden md:flex items-center gap-2 text-brand-purple text-[13px] font-semibold tracking-[0.04em]">
+                    <div className="flex items-center gap-2 text-brand-purple font-semibold text-[11px] lg:text-[12px]">
                         <Link href="/en" className="hover:text-brand-orange transition-colors">EN</Link>
                         <span className="opacity-30">|</span>
                         <Link href="/es" className="hover:text-brand-orange transition-colors">ES</Link>
@@ -87,14 +85,15 @@ export default function Header() {
                     </div>
 
                     {/* User Menu */}
-                    {customer && (
+                    {customer ? (
                         <div className="relative">
                             <button
                                 onClick={() => setShowUserMenu(!showUserMenu)}
-                                className="flex items-center gap-2 text-brand-purple hover:text-brand-orange transition-colors"
+                                className="flex items-center text-brand-purple hover:text-brand-orange transition-colors"
                                 aria-label="User menu"
+                                type="button"
                             >
-                                <User className="w-[18px] h-[18px]" />
+                                <User className="w-[17px] h-[17px]" />
                             </button>
 
                             {showUserMenu && (
@@ -103,33 +102,33 @@ export default function Header() {
                                         className="fixed inset-0 z-40"
                                         onClick={() => setShowUserMenu(false)}
                                     />
-                                    <div className="absolute right-0 top-full mt-3 w-52 rounded-2xl border border-brand-purple/10 bg-white shadow-[0_12px_40px_rgba(0,0,0,0.10)] py-2 z-50">
+                                    <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl py-2 z-50 border border-brand-purple/10">
                                         <Link
                                             href={`/${locale}/profile`}
-                                            className="block px-4 py-3 text-brand-charcoal hover:bg-brand-cream transition-colors"
+                                            className="block px-4 py-2.5 text-gray-900 hover:bg-brand-cream transition-colors"
                                             onClick={() => setShowUserMenu(false)}
                                         >
-                                            <div className="flex items-center gap-2.5">
+                                            <div className="flex items-center gap-2">
                                                 <User className="w-4 h-4 text-brand-purple" />
                                                 My Profile
                                             </div>
                                         </Link>
                                         <Link
                                             href={`/${locale}/orders`}
-                                            className="block px-4 py-3 text-brand-charcoal hover:bg-brand-cream transition-colors"
+                                            className="block px-4 py-2.5 text-gray-900 hover:bg-brand-cream transition-colors"
                                             onClick={() => setShowUserMenu(false)}
                                         >
-                                            <div className="flex items-center gap-2.5">
+                                            <div className="flex items-center gap-2">
                                                 <Package className="w-4 h-4 text-brand-purple" />
                                                 My Orders
                                             </div>
                                         </Link>
                                         <Link
                                             href={`/${locale}/wishlist`}
-                                            className="block px-4 py-3 text-brand-charcoal hover:bg-brand-cream transition-colors"
+                                            className="block px-4 py-2.5 text-gray-900 hover:bg-brand-cream transition-colors"
                                             onClick={() => setShowUserMenu(false)}
                                         >
-                                            <div className="flex items-center gap-2.5">
+                                            <div className="flex items-center gap-2">
                                                 <Heart className="w-4 h-4 text-brand-purple" />
                                                 Wishlist
                                             </div>
@@ -138,77 +137,109 @@ export default function Header() {
                                 </>
                             )}
                         </div>
+                    ) : (
+                        <Link
+                            href={`/${locale}/profile`}
+                            className="flex text-brand-purple hover:text-brand-orange transition-colors"
+                            aria-label="Profile"
+                        >
+                            <User className="w-[17px] h-[17px]" />
+                        </Link>
                     )}
 
                     {/* Cart */}
-                    <a
-                        href={cartUrl}
-                        {...externalProps}
+                    <Link
+                        href={`/${locale}/product/dips-chocolate`}
                         className="relative flex items-center text-brand-purple hover:text-brand-orange transition-colors"
+                        aria-label="Cart"
+                    >
+                        <ShoppingCart className="w-[17px] h-[17px]" />
+                        {itemCount > 0 && (
+                            <span className="absolute -top-2 -right-2 bg-brand-orange text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                                {itemCount}
+                            </span>
+                        )}
+                    </Link>
+                </div>
+
+                {/* Mobile actions */}
+                <div className="flex md:hidden items-center gap-3">
+                    <Link
+                        href={`/${locale}/profile`}
+                        className="text-brand-purple hover:text-brand-orange transition-colors"
+                        aria-label="Profile"
+                    >
+                        <User className="w-[18px] h-[18px]" />
+                    </Link>
+
+                    <Link
+                        href={`/${locale}/product/dips-chocolate`}
+                        className="relative text-brand-purple hover:text-brand-orange transition-colors"
                         aria-label="Cart"
                     >
                         <ShoppingCart className="w-[18px] h-[18px]" />
                         {itemCount > 0 && (
-                            <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-brand-orange text-[11px] font-bold text-white shadow-sm">
+                            <span className="absolute -top-2 -right-2 bg-brand-orange text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
                                 {itemCount}
                             </span>
                         )}
-                    </a>
+                    </Link>
 
-                    {/* Mobile menu button */}
                     <button
-                        className="md:hidden text-brand-purple hover:text-brand-orange transition-colors"
+                        className="text-brand-purple"
                         onClick={() => setMobileOpen(!mobileOpen)}
                         aria-label="Toggle menu"
+                        type="button"
                     >
-                        {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                        {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                     </button>
                 </div>
             </div>
 
             {/* Mobile Navigation */}
             {mobileOpen && (
-                <div className="md:hidden border-t border-brand-purple/8 bg-brand-cream/98 backdrop-blur-md px-6 py-6">
-                    <nav className="space-y-4">
-                        <Link
-                            href={`/${locale}#about`}
-                            className="block text-brand-purple text-base font-semibold hover:text-brand-orange transition-colors"
-                            onClick={() => setMobileOpen(false)}
-                        >
-                            {t('about')}
-                        </Link>
-                        <Link
-                            href={`/${locale}#product`}
-                            className="block text-brand-purple text-base font-semibold hover:text-brand-orange transition-colors"
-                            onClick={() => setMobileOpen(false)}
-                        >
-                            {t('product')}
-                        </Link>
-                        <Link
-                            href={`/${locale}#ingredients`}
-                            className="block text-brand-purple text-base font-semibold hover:text-brand-orange transition-colors"
-                            onClick={() => setMobileOpen(false)}
-                        >
-                            {t('ingredients')}
-                        </Link>
-                        <Link
-                            href={`/${locale}#faq`}
-                            className="block text-brand-purple text-base font-semibold hover:text-brand-orange transition-colors"
-                            onClick={() => setMobileOpen(false)}
-                        >
-                            {t('faq')}
-                        </Link>
-                        <a
-                            href={shopUrl}
-                            {...externalProps}
-                            className="block text-brand-purple text-base font-semibold hover:text-brand-orange transition-colors"
-                            onClick={() => setMobileOpen(false)}
-                        >
-                            Shop
-                        </a>
-                    </nav>
+                <div className="md:hidden bg-brand-cream border-t border-brand-purple/8 px-5 py-5 space-y-4">
+                    <Link
+                        href={`/${locale}#about`}
+                        className="block text-brand-purple font-semibold text-sm hover:text-brand-orange transition-colors"
+                        onClick={() => setMobileOpen(false)}
+                    >
+                        {t('about')}
+                    </Link>
 
-                    <div className="mt-5 flex items-center gap-3 border-t border-brand-purple/10 pt-4 text-brand-purple text-sm font-semibold tracking-[0.04em]">
+                    <Link
+                        href={`/${locale}#product`}
+                        className="block text-brand-purple font-semibold text-sm hover:text-brand-orange transition-colors"
+                        onClick={() => setMobileOpen(false)}
+                    >
+                        {t('product')}
+                    </Link>
+
+                    <Link
+                        href={`/${locale}#ingredients`}
+                        className="block text-brand-purple font-semibold text-sm hover:text-brand-orange transition-colors"
+                        onClick={() => setMobileOpen(false)}
+                    >
+                        {t('ingredients')}
+                    </Link>
+
+                    <Link
+                        href={`/${locale}#faq`}
+                        className="block text-brand-purple font-semibold text-sm hover:text-brand-orange transition-colors"
+                        onClick={() => setMobileOpen(false)}
+                    >
+                        {t('faq')}
+                    </Link>
+
+                    <Link
+                        href={`/${locale}/product/dips-chocolate`}
+                        className="block text-brand-purple font-semibold text-sm hover:text-brand-orange transition-colors"
+                        onClick={() => setMobileOpen(false)}
+                    >
+                        Shop
+                    </Link>
+
+                    <div className="flex items-center gap-3 pt-2 text-brand-purple font-semibold text-sm border-t border-brand-purple/10">
                         <Link href="/en" className="hover:text-brand-orange transition-colors">EN</Link>
                         <span className="opacity-30">|</span>
                         <Link href="/es" className="hover:text-brand-orange transition-colors">ES</Link>
