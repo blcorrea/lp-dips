@@ -13,23 +13,14 @@ export default function Footer() {
   return (
     <footer className="bg-brand-cream pt-16 pb-12">
       <div className="container mx-auto px-6">
-
-        {/* TOP GRID */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 max-w-6xl mx-auto">
-
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4 max-w-6xl mx-auto">
           {/* ORDERS */}
           <div>
-            <h3 className="text-brand-purple text-xs font-bold uppercase mb-4">
+            <h3 className="mb-4 text-xs font-bold uppercase text-brand-purple">
               {t("ordersTitle")}
             </h3>
 
             <ul className="space-y-2 text-sm text-brand-charcoal">
-              <li>
-                <Link href={`/${locale}/orders`}>
-                  {t("trackOrder")}
-                </Link>
-              </li>
-
               <li>
                 <Link href={`/${locale}/shipping-policy`}>
                   {t("shippingInfo")}
@@ -44,15 +35,13 @@ export default function Footer() {
             </ul>
           </div>
 
-
           {/* QUICK LINKS */}
           <div>
-            <h3 className="text-brand-purple text-xs font-bold uppercase mb-4">
+            <h3 className="mb-4 text-xs font-bold uppercase text-brand-purple">
               {t("quickLinksTitle")}
             </h3>
 
             <ul className="space-y-2 text-sm text-brand-charcoal">
-
               <li>
                 <a href={`/${locale}#faq`}>
                   F.A.Q.
@@ -77,18 +66,21 @@ export default function Footer() {
                 </Link>
               </li>
 
+              <li>
+                <Link href={`/${locale}/terms`}>
+                  {t("terms")}
+                </Link>
+              </li>
             </ul>
           </div>
 
-
           {/* CONTACT */}
           <div>
-            <h3 className="text-brand-purple text-xs font-bold uppercase mb-4">
+            <h3 className="mb-4 text-xs font-bold uppercase text-brand-purple">
               {t("contactUsTitle")}
             </h3>
 
             <ul className="space-y-2 text-sm text-brand-charcoal">
-
               <li>
                 <a href="mailto:info@dipschocolate.com">
                   info@dipschocolate.com
@@ -100,24 +92,20 @@ export default function Footer() {
                   754-457-6844
                 </a>
               </li>
-
             </ul>
           </div>
 
-
           {/* NEWSLETTER */}
           <div>
-
-            <h3 className="text-brand-purple text-xs font-bold uppercase mb-4">
+            <h3 className="mb-4 text-xs font-bold uppercase text-brand-purple">
               {t("cravingMore")}
             </h3>
 
-            <p className="text-sm text-brand-charcoal mb-4 max-w-[250px]">
+            <p className="mb-4 max-w-[250px] text-sm text-brand-charcoal">
               {t("letYourNights")}
             </p>
 
             <form className="flex items-center gap-2">
-
               <input
                 type="email"
                 placeholder={t("yourEmail")}
@@ -126,21 +114,16 @@ export default function Footer() {
 
               <button
                 type="submit"
-                className="h-[40px] px-5 rounded-full bg-brand-purple text-white text-xs font-bold whitespace-nowrap hover:bg-brand-purple/90 transition"
+                className="h-[40px] rounded-full bg-brand-purple px-6 text-xs font-bold text-white whitespace-nowrap transition hover:bg-brand-purple/90"
               >
                 {t("signUp")}
               </button>
-
             </form>
-
           </div>
-
         </div>
 
-
         {/* LOGO */}
-        <div className="flex justify-center mt-12 mb-4">
-
+        <div className="mt-12 mb-4 flex justify-center">
           <Image
             src="/images/logo-header-new.png"
             alt="Dips"
@@ -148,47 +131,27 @@ export default function Footer() {
             height={40}
             className="h-10 w-auto"
           />
-
         </div>
 
-
         {/* LEGAL TEXT */}
-        <div className="text-center text-xs text-brand-charcoal leading-relaxed max-w-xl mx-auto">
-
+        <div className="mx-auto max-w-xl text-center text-xs leading-relaxed text-brand-charcoal">
           <p>
             © 2025 – Dips Chocolate. {t("rightsReserved")}
           </p>
 
-          <p>
-            {t("madeWith")}
-          </p>
+          <p>{t("madeWith")}</p>
 
-          <p>
-            {t("productDesigned")}
-          </p>
+          <p>{t("productDesigned")}</p>
 
           <div className="mt-3">
-
-            <p className="font-semibold">
-              Dips Wellness Corporation
-            </p>
-
-            <p>
-              995 NW 165th Ave, Pembroke Pines, FL 33028
-            </p>
-
+            <p className="font-semibold">Dips Wellness Corporation</p>
+            <p>995 NW 165th Ave, Pembroke Pines, FL 33028</p>
             <p>
               EIN: 41-2647662 | {t("registeredIn")} Florida
             </p>
-
-            <p>
-              {t("ageRestriction")}
-            </p>
-
+            <p>{t("ageRestriction")}</p>
           </div>
-
         </div>
-
       </div>
     </footer>
   );
