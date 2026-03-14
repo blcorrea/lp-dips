@@ -45,9 +45,8 @@ export default async function DipsProductPage() {
 
             <div className="mt-8">
               <ProductPurchaseBox
-                 priceAmount={product.priceAmount}
-                 currencyCode={product.currencyCode}
-                 buttonLabel="Buy now"
+                priceAmount={product.priceAmount}
+                currencyCode={product.currencyCode}
               />
             </div>
           </div>
