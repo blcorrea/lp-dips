@@ -21,9 +21,10 @@ export default async function LegalPageLayout({
     <div className="min-h-screen bg-brand-cream flex flex-col">
       <Header />
 
-      <main className="flex-1">
+      <main className="flex-1 bg-brand-cream">
         <section className="container mx-auto px-6 py-14 lg:py-20">
           <div className="mx-auto max-w-4xl">
+
             <Link
               href="/"
               className="inline-block text-sm font-medium text-brand-orange hover:underline mb-6"
@@ -32,13 +33,26 @@ export default async function LegalPageLayout({
             </Link>
 
             <div className="rounded-[28px] border border-brand-purple/10 bg-brand-cream p-8 lg:p-12 shadow-sm">
-              <h1 className="text-brand-purple text-4xl lg:text-5xl font-bold tracking-tight mb-8">
+
+              <h1 className="text-brand-purple text-4xl lg:text-5xl font-bold tracking-tight mb-10">
                 {title}
               </h1>
 
-              <div className="prose prose-neutral max-w-none prose-headings:text-brand-purple prose-headings:font-bold prose-p:text-brand-charcoal prose-li:text-brand-charcoal">
+              <div
+                className="
+                prose 
+                max-w-none
+                prose-p:text-brand-charcoal
+                prose-li:text-brand-charcoal
+                prose-headings:text-brand-purple
+                prose-headings:font-bold
+                prose-strong:text-brand-purple
+                prose-strong:font-semibold
+                "
+              >
                 {children}
               </div>
+
             </div>
           </div>
         </section>
