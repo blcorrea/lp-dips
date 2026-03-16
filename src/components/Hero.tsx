@@ -78,7 +78,7 @@ export default function Hero() {
               className="mt-4 max-w-[620px] px-2"
             >
               <p className="font-body text-white/95 text-[15px] sm:text-[16px] lg:text-[20px] font-semibold leading-[1.45] text-center">
-                Crafted with natural aphrodisiac ingredients to awaken the senses.
+                {t("shortDescription")}
               </p>
             </motion.div>
 
@@ -105,7 +105,7 @@ export default function Hero() {
               className="mt-4"
             >
               <p className="font-body text-white/80 text-[12px] sm:text-[13px] lg:text-[14px] font-medium tracking-[0.01em]">
-                Natural ingredients · Secure checkout
+                {t("trustLine")}
               </p>
             </motion.div>
           </div>
