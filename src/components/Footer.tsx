@@ -145,9 +145,9 @@ export default function Footer() {
 
           <div className="mt-3">
             <p className="font-semibold">Dips Wellness Corporation</p>
-            <p>995 NW 165th Ave, Pembroke Pines, FL 33028</p>
+            <p>8211 NW 64th Street Unit 4, Miami, FL 33166</p>
             <p>
-              EIN: 41-2647662 | {t("registeredIn")} Florida
+              {t("registeredIn")} Florida
             </p>
             <p>{t("ageRestriction")}</p>
           </div>
