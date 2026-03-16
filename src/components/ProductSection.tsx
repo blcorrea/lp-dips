@@ -6,8 +6,6 @@ import ScrollReveal from './animations/ScrollReveal';
 
 export default function ProductSection() {
     const t = useTranslations('Product');
-   
-    
 
     const features = [
         { titleKey: 'feature1_title', descKey: 'feature1_desc' },
@@ -17,7 +15,7 @@ export default function ProductSection() {
     ];
 
     return (
-        <section id="product" className="bg-brand-purple py-10 lg:py-14">
+        <section id="product" className="bg-brand-orange/5 py-10 lg:py-14">
             <div className="container mx-auto px-6">
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10 max-w-7xl mx-auto">
                     {features.map((feature, index) => (
@@ -27,10 +25,10 @@ export default function ProductSection() {
                             delay={0.1 + index * 0.1}
                             duration={0.6}
                         >
-                            <div className="text-white">
+                            <div className="text-brand-purple">
                                 <p className="text-[15px] lg:text-base leading-relaxed">
                                     <span className="font-bold">{t(feature.titleKey)}</span>{' '}
-                                    <span className="font-normal text-white/90">{t(feature.descKey)}</span>
+                                    <span className="font-normal text-brand-charcoal/85">{t(feature.descKey)}</span>
                                 </p>
                             </div>
                         </ScrollReveal>

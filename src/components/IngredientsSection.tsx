@@ -27,14 +27,6 @@ export default function IngredientsSection() {
         return () => window.removeEventListener('resize', checkScreen);
     }, []);
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setActiveIndex((prev) => (prev + 1) % ingredients.length);
-        }, 5000);
-
-        return () => clearInterval(interval);
-    }, []);
-
     const ingredients: Ingredient[] = [
         {
             nameKey: 'cocoa_name',
@@ -85,6 +77,14 @@ export default function IngredientsSection() {
             originsKey: 'fenugreek_origins',
         },
     ];
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setActiveIndex((prev) => (prev + 1) % ingredients.length);
+        }, 5000);
+
+        return () => clearInterval(interval);
+    }, [ingredients.length]);
 
     const goNext = () => setActiveIndex((prev) => (prev + 1) % ingredients.length);
     const goPrev = () => setActiveIndex((prev) => (prev - 1 + ingredients.length) % ingredients.length);
@@ -142,7 +142,7 @@ export default function IngredientsSection() {
     };
 
     return (
-        <section id="ingredients" className="bg-brand-cream py-20 lg:py-28">
+        <section id="ingredients" className="bg-white py-20 lg:py-28">
             <div className="container mx-auto px-6">
                 <div className="max-w-7xl mx-auto">
                     <ScrollReveal direction="up" delay={0.1} duration={0.8}>
@@ -169,7 +169,7 @@ export default function IngredientsSection() {
                                     key={`${ingredient.nameKey}-${index}`}
                                     type="button"
                                     onClick={() => setActiveIndex(index)}
-                                    className={`group absolute left-1/2 top-0 w-[250px] sm:w-[310px] lg:w-[350px] -ml-[125px] sm:-ml-[155px] lg:-ml-[175px] overflow-hidden rounded-[32px] border bg-brand-cream text-left transition-all duration-700 ease-[cubic-bezier(.22,1,.36,1)] flex flex-col shadow-sm hover:shadow-md ${
+                                    className={`group absolute left-1/2 top-0 w-[250px] sm:w-[310px] lg:w-[350px] -ml-[125px] sm:-ml-[155px] lg:-ml-[175px] overflow-hidden rounded-[32px] border bg-white text-left transition-all duration-700 ease-[cubic-bezier(.22,1,.36,1)] flex flex-col shadow-sm hover:shadow-md ${
                                         isActive ? 'border-brand-purple/20' : 'border-brand-purple/10'
                                     }`}
                                     style={style}
@@ -184,26 +184,26 @@ export default function IngredientsSection() {
                                         />
                                     </div>
 
-                                    <div className="px-5 pb-5 pt-1 lg:px-6 lg:pb-6 flex flex-col flex-1 text-center">
-                                        <h3 className="text-lg lg:text-xl font-bold text-brand-purple mb-2 leading-tight">
-                                            {t(ingredient.nameKey)}
-                                        </h3>
-
-                                        <p className="text-brand-charcoal/80 text-sm lg:text-[14px] leading-[1.55] mb-3">
-                                            {t(ingredient.descKey)}
-                                        </p>
-
-                                        <div className="mb-3">
-                                            <span className="text-brand-purple text-[11px] lg:text-xs font-bold tracking-[0.38em] uppercase">
+                                    <div className="px-5 pb-5 pt-2 lg:px-6 lg:pb-6 flex flex-col flex-1 text-center">
+                                        <div className="mb-2">
+                                            <span className="text-brand-orange text-[12px] lg:text-[13px] font-bold tracking-[0.18em] uppercase">
                                                 {t(ingredient.keywordKey)}
                                             </span>
                                         </div>
 
+                                        <h3 className="text-[24px] sm:text-[28px] lg:text-[32px] font-bold text-brand-purple mb-3 leading-[0.95] tracking-[-0.03em]">
+                                            {t(ingredient.nameKey)}
+                                        </h3>
+
+                                        <p className="text-brand-charcoal/85 text-[16px] sm:text-[17px] lg:text-[18px] leading-[1.45] mb-4">
+                                            {t(ingredient.descKey)}
+                                        </p>
+
                                         <div className="mt-auto">
-                                            <h4 className="text-xs lg:text-sm font-bold text-brand-purple mb-1">
+                                            <h4 className="text-[15px] lg:text-[16px] font-bold text-brand-purple mb-2 leading-tight">
                                                 {t(ingredient.originsTitleKey)}
                                             </h4>
-                                            <p className="text-brand-charcoal/65 text-xs lg:text-[13px] leading-[1.55] line-clamp-4">
+                                            <p className="text-brand-charcoal/75 text-[14px] lg:text-[15px] leading-[1.55] line-clamp-4">
                                                 {t(ingredient.originsKey)}
                                             </p>
                                         </div>
