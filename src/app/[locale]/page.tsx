@@ -1,8 +1,9 @@
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import AboutSection from '@/components/AboutSection';
-import ProductSection from '@/components/ProductSection';
 import IngredientsSection from '@/components/IngredientsSection';
+import ProductSection from '@/components/ProductSection';
+import WhyDipsSection from "@/components/WhyDipsSection";
 import FAQSection from '@/components/FAQSection';
 import Footer from '@/components/Footer';
 
@@ -12,8 +13,9 @@ export default function HomePage() {
             <Header />
             <Hero />
             <AboutSection />
-            <ProductSection />
             <IngredientsSection />
+            <ProductSection />
+            <WhyDipsSection />
             <FAQSection />
             <Footer />
         </main>
