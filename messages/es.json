@@ -417,12 +417,12 @@
     },
     "BuySection": {
         "eyebrow": "La Experiencia Dips",
-        "title": "Lleva Dips a casa.",
+        "title": "Lleva la experiencia a casa.",
         "subtitle": "Elige tu cantidad y comienza la experiencia con nuestro chocolate sensual premium, creado para compartirse.",
         "benefit1": "Ingredientes naturales",
         "benefit2": "Pago seguro",
         "benefit3": "Hecho para compartir",
         "startingAt": "Desde",
-        "perBox": "por caja"
+        "perBox": "caja"
     }
 }
