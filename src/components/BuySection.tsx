@@ -1,7 +1,7 @@
-import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { getPurchasableDipsProduct } from "@/lib/shopify-product";
 import ProductPurchaseBox from "@/components/ProductPurchaseBox";
+import BuyImageGallery from "@/components/BuyImageGallery";
 
 type BuySectionProps = {
   locale: string;
@@ -21,24 +21,29 @@ export default async function BuySection({ locale }: BuySectionProps) {
     }
   ).format(product.priceAmount);
 
+  const galleryImages = [
+    {
+      src: "/images/buy-main.png",
+      alt: "Dips premium chocolate box",
+    },
+    {
+      src: "/images/buy-open-box.png",
+      alt: "Dips box partially opened",
+    },
+    {
+      src: "/images/buy-detail.png",
+      alt: "Close-up detail of Dips chocolate",
+    },
+  ];
+
   return (
     <section id="buy" className="bg-brand-purple py-20 lg:py-28 scroll-mt-28">
       <div className="container mx-auto px-6">
         <div className="mx-auto max-w-6xl rounded-[32px] bg-brand-cream p-6 sm:p-8 lg:p-12 shadow-[0_20px_60px_rgba(0,0,0,0.18)]">
-          <div className="grid items-start gap-10 lg:grid-cols-[1fr_1fr] lg:gap-14">
-            {/* Image */}
+          <div className="grid items-start gap-10 lg:grid-cols-[1.02fr_0.98fr] lg:gap-14">
+            {/* Gallery */}
             <div className="rounded-[28px] border border-brand-purple/10 bg-white p-5 sm:p-6 lg:p-8 shadow-sm">
-              <div className="relative aspect-square w-full overflow-hidden rounded-[22px] bg-white">
-                {product.imageUrl ? (
-                  <Image
-                    src={product.imageUrl}
-                    alt={product.imageAlt || product.title}
-                    fill
-                    sizes="(max-width: 1023px) 100vw, 50vw"
-                    className="object-contain p-4 sm:p-6"
-                  />
-                ) : null}
-              </div>
+              <BuyImageGallery images={galleryImages} />
             </div>
 
             {/* Copy + Purchase */}
