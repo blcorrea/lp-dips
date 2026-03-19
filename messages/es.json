@@ -30,60 +30,60 @@
         "poeticLine2": "se hiciera poesía, fue impulso."
     },
     "Ingredients": {
-    "sectionTitle": "El Arte de la Tentación",
-    "subtitle": "Cada ingrediente es cuidadosamente seleccionado por sus propiedades afrodisíacas y su calidad premium.",
+        "sectionTitle": "El Arte de la Tentación",
+        "subtitle": "Cada ingrediente es cuidadosamente seleccionado por sus propiedades afrodisíacas y su calidad premium.",
 
-    "cocoa_name": "Nibs de Cacao Arriba Premium",
-    "cocoa_desc": "Sabor rico e intenso del cacao Arriba de origen único: la base gourmet definitiva.",
-    "cocoa_keyword": "RITUAL",
-    "cocoa_originsTitle": "Orígenes y Curiosidades:",
-    "cocoa_origins": "El cacao fue consumido antiguamente en bebidas ceremoniales por culturas ancestrales, simbolizando abundancia, calidez y momentos compartidos de conexión.",
+        "cocoa_name": "Nibs de Cacao Arriba Premium",
+        "cocoa_desc": "Sabor rico e intenso del cacao Arriba de origen único: la base gourmet definitiva.",
+        "cocoa_keyword": "RITUAL",
+        "cocoa_originsTitle": "Orígenes y Curiosidades:",
+        "cocoa_origins": "El cacao fue consumido antiguamente en bebidas ceremoniales por culturas ancestrales, simbolizando abundancia, calidez y momentos compartidos de conexión.",
 
-    "maca_name": "Maca Peruana en Polvo",
-    "maca_desc": "Raíz ancestral peruana conocida por aumentar la vitalidad, la energía y la libido, intensificando el deseo.",
-    "maca_keyword": "RESISTENCIA",
-    "maca_originsTitle": "Orígenes y Curiosidades:",
-    "maca_origins": "Originaria de los altos Andes, la maca se consumía tradicionalmente como una raíz nutritiva para sostener la resistencia y la resiliencia.",
+        "maca_name": "Maca Peruana en Polvo",
+        "maca_desc": "Raíz ancestral peruana conocida por aumentar la vitalidad, la energía y la libido, intensificando el deseo.",
+        "maca_keyword": "RESISTENCIA",
+        "maca_originsTitle": "Orígenes y Curiosidades:",
+        "maca_origins": "Originaria de los altos Andes, la maca se consumía tradicionalmente como una raíz nutritiva para sostener la resistencia y la resiliencia.",
 
-    "ginger_name": "Jengibre en Polvo",
-    "ginger_desc": "Especia cálida que estimula la circulación y eleva naturalmente las sensaciones.",
-    "ginger_keyword": "CHISPA",
-    "ginger_originsTitle": "Orígenes y Curiosidades:",
-    "ginger_origins": "Usado durante siglos en muchas culturas, el jengibre es conocido por su naturaleza cálida y su vínculo con la vitalidad y la energía.",
+        "ginger_name": "Jengibre en Polvo",
+        "ginger_desc": "Especia cálida que estimula la circulación y eleva naturalmente las sensaciones.",
+        "ginger_keyword": "CHISPA",
+        "ginger_originsTitle": "Orígenes y Curiosidades:",
+        "ginger_origins": "Usado durante siglos en muchas culturas, el jengibre es conocido por su naturaleza cálida y su vínculo con la vitalidad y la energía.",
 
-    "theanine_name": "L-Teanina",
-    "theanine_desc": "Aminoácido del “buen humor” que mejora el enfoque y la relajación, ayudándote a disfrutar plenamente el momento.",
-    "theanine_keyword": "PRESENCIA",
-    "theanine_originsTitle": "Orígenes y Curiosidades:",
-    "theanine_origins": "Tradicionalmente asociada con los rituales del té, la L-Teanina ha sido valorada durante mucho tiempo por promover calma, enfoque y presencia consciente.",
+        "theanine_name": "L-Teanina",
+        "theanine_desc": "Aminoácido del “buen humor” que mejora el enfoque y la relajación, ayudándote a disfrutar plenamente el momento.",
+        "theanine_keyword": "PRESENCIA",
+        "theanine_originsTitle": "Orígenes y Curiosidades:",
+        "theanine_origins": "Tradicionalmente asociada con los rituales del té, la L-Teanina ha sido valorada durante mucho tiempo por promover calma, enfoque y presencia consciente.",
 
-    "blend_name": "Mezcla Herbal Afrodisíaca",
-    "blend_desc": "Una mezcla botánica propietaria creada para profundizar la conexión, el placer y la experiencia compartida.",
-    "blend_keyword": "UNIÓN",
-    "blend_originsTitle": "Orígenes y Curiosidades:",
-    "blend_origins": "Las mezclas herbales se han utilizado durante mucho tiempo en rituales tradicionales y preparaciones íntimas para favorecer calidez, presencia y deseo.",
+        "blend_name": "Mezcla Herbal Afrodisíaca",
+        "blend_desc": "Una mezcla botánica propietaria creada para profundizar la conexión, el placer y la experiencia compartida.",
+        "blend_keyword": "UNIÓN",
+        "blend_originsTitle": "Orígenes y Curiosidades:",
+        "blend_origins": "Las mezclas herbales se han utilizado durante mucho tiempo en rituales tradicionales y preparaciones íntimas para favorecer calidez, presencia y deseo.",
 
-    "fenugreek_name": "Fenogreco en Polvo",
-    "fenugreek_desc": "Tradicionalmente asociado con la vitalidad y el equilibrio hormonal natural, potenciando el deseo con una calidez sutil.",
-    "fenugreek_keyword": "EQUILIBRIO",
-    "fenugreek_originsTitle": "Orígenes y Curiosidades:",
-    "fenugreek_origins": "El fenogreco aparece en antiguas tradiciones alimentarias y herbales, valorado por nutrir, dar calor y restaurar el equilibrio natural.",
+        "fenugreek_name": "Fenogreco en Polvo",
+        "fenugreek_desc": "Tradicionalmente asociado con la vitalidad y el equilibrio hormonal natural, potenciando el deseo con una calidez sutil.",
+        "fenugreek_keyword": "EQUILIBRIO",
+        "fenugreek_originsTitle": "Orígenes y Curiosidades:",
+        "fenugreek_origins": "El fenogreco aparece en antiguas tradiciones alimentarias y herbales, valorado por nutrir, dar calor y restaurar el equilibrio natural.",
 
-    "viewPdf": "Ver Información Nutricional"
-}
+        "viewPdf": "Ver Información Nutricional"
+    }
 ,
     "Product": {
-  "title": "Hecho para disfrutarse entre dos.",
-  "feature1_title": "Producido en EE. UU.",
-  "feature1_desc": "bajo los más altos estándares de calidad.",
-  "feature2_title": "Elaborado con ingredientes 100% naturales,",
-  "feature2_desc": "de origen sostenible.",
-  "feature3_title": "Diseñado para parejas",
-  "feature3_desc": "que buscan una experiencia única, intensa e inolvidable.",
-  "feature4_title": "Afrodisíaco natural:",
-  "feature4_desc": "estimula la libido y profundiza el placer de forma suave y elegante.",
-  "cta": "Ver producto"
-},
+        "title": "Hecho para disfrutarse entre dos.",
+        "feature1_title": "Producido en EE. UU.",
+        "feature1_desc": "bajo los más altos estándares de calidad.",
+        "feature2_title": "Elaborado con ingredientes 100% naturales,",
+        "feature2_desc": "de origen sostenible.",
+        "feature3_title": "Diseñado para parejas",
+        "feature3_desc": "que buscan una experiencia única, intensa e inolvidable.",
+        "feature4_title": "Afrodisíaco natural:",
+        "feature4_desc": "estimula la libido y profundiza el placer de forma suave y elegante.",
+        "cta": "Ver producto"
+    },
     "FAQ": {
         "title": "Preguntas Frecuentes (FAQ)",
         "q1": "¿Dips realmente tiene efectos afrodisíacos?",
@@ -414,5 +414,14 @@
         "unitPrice": "Precio unitario",
         "total": "Total",
         "buyNow": "Comprar ahora"
+    },
+    "BuySection": {
+        "eyebrow": "La Experiencia Dips",
+        "title": "Lleva Dips a casa.",
+        "subtitle": "Elige tu cantidad y comienza la experiencia con nuestro chocolate sensual premium, creado para compartirse.",
+        "benefit1": "Ingredientes naturales",
+        "benefit2": "Pago seguro",
+        "benefit3": "Hecho para compartir",
+        "startingAt": "Desde"
     }
 }

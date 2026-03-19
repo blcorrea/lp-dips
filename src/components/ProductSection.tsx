@@ -1,7 +1,6 @@
 "use client";
 
 import { useTranslations } from 'next-intl';
-import { Link } from '@/i18n/routing';
 import ScrollReveal from './animations/ScrollReveal';
 
 export default function ProductSection() {
@@ -37,12 +36,12 @@ export default function ProductSection() {
 
                 <ScrollReveal direction="up" delay={0.5} duration={0.6}>
                     <div className="flex justify-center mt-10 lg:mt-12">
-                        <Link
-                            href="/product/dips-chocolate"
-                            className="inline-flex items-center justify-center rounded-full bg-brand-orange px-10 py-4 text-base sm:text-lg font-bold text-brand-purple tracking-wide shadow-[0_10px_30px_rgba(242,117,33,0.28)] transition-all duration-300 hover:scale-[1.02] hover:bg-brand-orange/90 hover:shadow-[0_14px_34px_rgba(242,117,33,0.34)]"
-                        >
-                            {t('cta')}
-                        </Link>
+                    <a
+                        href="#buy"
+                        className="inline-flex items-center justify-center rounded-[20px] bg-brand-orange px-8 sm:px-8 py-3.5 sm:py-3.5 min-h-[56px] min-w-[210px] max-w-[280px] text-center font-body text-[15px] sm:text-[15px] font-bold text-brand-purple leading-[1.1] whitespace-nowrap shadow-[0_10px_24px_rgba(242,117,33,0.22)] transition-all duration-300 hover:scale-[1.02] hover:bg-brand-orange/90"
+                    >
+                        {t('cta')}
+                    </a>
                     </div>
                 </ScrollReveal>
             </div>
