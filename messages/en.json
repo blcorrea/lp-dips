@@ -421,6 +421,7 @@
         "benefit1": "Natural ingredients",
         "benefit2": "Secure checkout",
         "benefit3": "Made to share",
-        "startingAt": "Starting at"
+        "startingAt": "Starting at",
+        "perBox": "per box"
     }
 }
