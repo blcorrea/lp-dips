@@ -44,6 +44,7 @@ nul
 # local tools / temp / references
 .claude/
 src/components/*.backup.tsx
+src/generated/
 pdf-reference.png
 design_system.html
 SHOPIFY_SETUP.md

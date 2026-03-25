@@ -1,0 +1,152 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Enums
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAYMENT_CONFIRMED
+  PROCESSING
+  SHIPPED
+  IN_TRANSIT
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+enum FulfillmentStatus {
+  UNFULFILLED
+  PARTIALLY_FULFILLED
+  FULFILLED
+  RETURNED
+  CANCELLED
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Order
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Order {
+  id String @id @default(cuid())
+
+  /// Human-readable identifier shown to customers, e.g. DIPS-20260324-X4K2P1
+  orderNumber String @unique
+
+  // ── Stripe ──────────────────────────────────────────────────────────────────
+  stripeSessionId       String  @unique
+  stripePaymentIntentId String?
+
+  // ── Customer ────────────────────────────────────────────────────────────────
+  customerEmail String
+  customerName  String?
+
+  // ── Financials ─────────────────────────────────────────────────────────────
+  // All monetary values are stored in the smallest currency unit (cents).
+  subtotal     Int
+  shippingCost Int    @default(0)
+  tax          Int    @default(0)
+  discount     Int    @default(0)
+  total        Int
+  currency     String @default("usd")
+
+  // ── Status ──────────────────────────────────────────────────────────────────
+  status            OrderStatus       @default(PENDING_PAYMENT)
+  paymentStatus     PaymentStatus     @default(PENDING)
+  fulfillmentStatus FulfillmentStatus @default(UNFULFILLED)
+
+  // ── Shipping address — explicit columns, no JSON blobs ──────────────────────
+  shippingName         String?
+  shippingAddressLine1 String?
+  shippingAddressLine2 String?
+  shippingCity         String?
+  shippingState        String?
+  shippingPostalCode   String?
+  shippingCountry      String?
+
+  // ── Logistics ───────────────────────────────────────────────────────────────
+  carrier           String?
+  trackingNumber    String?
+  trackingUrl       String?
+  shippedAt         DateTime?
+  estimatedDelivery DateTime?
+
+  // ── Notes ───────────────────────────────────────────────────────────────────
+  notes         String?
+  internalNotes String?
+
+  // ── Shopify metadata snapshot (captured at checkout time) ───────────────────
+  shopifyProductId String?
+  shopifyVariantId String?
+  shopifyHandle    String?
+
+  // ── Relations ───────────────────────────────────────────────────────────────
+  items OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([customerEmail])
+  @@index([status])
+  @@index([paymentStatus])
+  @@index([fulfillmentStatus])
+  @@index([stripePaymentIntentId])
+  @@index([createdAt])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// OrderItem
+// ─────────────────────────────────────────────────────────────────────────────
+
+model OrderItem {
+  id      String @id @default(cuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  productName String
+  variantName String?
+  sku         String?
+  imageUrl    String?
+
+  /// Number of units purchased
+  quantity Int
+  /// Unit price in cents
+  unitPrice Int
+  /// quantity × unitPrice in cents
+  subtotal Int
+
+  // Shopify snapshot at time of purchase
+  shopifyProductId String?
+  shopifyVariantId String?
+
+  @@index([orderId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// StripeEvent — idempotency log
+// ─────────────────────────────────────────────────────────────────────────────
+
+model StripeEvent {
+  /// Stripe event id (evt_…) — used as primary key for natural uniqueness
+  id          String   @id
+  type        String
+  processedAt DateTime @default(now())
+
+  @@index([type])
+}
