@@ -36,6 +36,18 @@ export async function POST(request: NextRequest) {
       mode: 'payment',
       success_url: `${siteUrl}/en/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl}/en/product/dips-chocolate`,
+      // Collect shipping address — required for order fulfillment.
+      // Adjust allowed_countries to match where you actually ship.
+      shipping_address_collection: {
+        allowed_countries: [
+          'US', 'CA',
+          'BR', 'MX', 'AR', 'CO', 'CL', 'PE', 'UY', 'EC', 'PY', 'BO',
+          'GB', 'DE', 'FR', 'ES', 'PT', 'IT', 'NL', 'BE', 'CH', 'AT',
+          'SE', 'NO', 'DK', 'FI', 'PL', 'CZ', 'HU', 'RO',
+          'AU', 'NZ',
+        ],
+      },
+      phone_number_collection: { enabled: true },
       line_items: [
         {
           quantity,
