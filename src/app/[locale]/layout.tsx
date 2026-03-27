@@ -10,9 +10,50 @@ import { CustomerProvider } from '@/contexts/CustomerContext';
 import '../globals.css';
 
 export const metadata: Metadata = {
-  title: 'Dips - Share it. Feel it. Love it.',
+  metadataBase: new URL('https://www.dipschocolate.com'),
+
+  title: {
+    default:  'Dips Chocolate — Share it. Feel it. Love it.',
+    template: '%s | Dips Chocolate',
+  },
+
   description:
-    'A chocolate made to tease. Crafted with pure Arriba Cocoa Nibs and natural aphrodisiac ingredients.',
+    'A chocolate made to tease. Crafted with pure Arriba Cocoa Nibs and natural aphrodisiac ingredients for indulgent moments.',
+
+  alternates: {
+    canonical: 'https://www.dipschocolate.com',
+  },
+
+  icons: {
+    icon:  '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
+
+  openGraph: {
+    type:        'website',
+    siteName:    'Dips Chocolate',
+    title:       'Dips Chocolate — Share it. Feel it. Love it.',
+    description:
+      'A chocolate made to tease. Crafted with pure Arriba Cocoa Nibs and natural aphrodisiac ingredients for indulgent moments.',
+    url:         'https://www.dipschocolate.com',
+    locale:      'en_US',
+    images: [
+      {
+        url: '/images/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Dips Chocolate — Share it. Feel it. Love it.',
+      },
+    ],
+  },
+
+  twitter: {
+    card:        'summary_large_image',
+    title:       'Dips Chocolate — Share it. Feel it. Love it.',
+    description:
+      'A chocolate made to tease. Crafted with pure Arriba Cocoa Nibs and natural aphrodisiac ingredients for indulgent moments.',
+    images:      ['/images/og-image.png'],
+  },
 };
 
 export default async function LocaleLayout({
