@@ -11,45 +11,36 @@ export type EmailPayload = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Transport — lazy singleton (reused within a single serverless invocation)
-// ─────────────────────────────────────────────────────────────────────────────
-
-let _transport: nodemailer.Transporter | null = null;
-
-function getTransport(): nodemailer.Transporter {
-  if (_transport) return _transport;
-
-  const host = process.env.SMTP_HOST;
-  const port = Number(process.env.SMTP_PORT) || 465;
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
-
-  if (!host || !user || !pass) {
-    throw new Error(
-      'Missing SMTP configuration. Set SMTP_HOST, SMTP_USER and SMTP_PASS in your environment.'
-    );
-  }
-
-  _transport = nodemailer.createTransport({
-    host,
-    port,
-    // port 465 = implicit TLS; port 587 = STARTTLS
-    secure: port === 465,
-    auth:   { user, pass },
-  });
-
-  return _transport;
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
 // sendEmail
 // ─────────────────────────────────────────────────────────────────────────────
 
-export async function sendEmail({ to, subject, html }: EmailPayload): Promise<void> {
-  const fromName  = process.env.SMTP_FROM_NAME  ?? 'Dips Chocolate';
-  const fromEmail = process.env.SMTP_FROM_EMAIL ?? process.env.SMTP_USER ?? '';
-  const from      = `"${fromName}" <${fromEmail}>`;
+export async function sendEmail(options: EmailPayload): Promise<void> {
+  try {
+    console.log('📧 Sending email to:', options.to);
 
-  const transport = getTransport();
-  await transport.sendMail({ from, to, subject, html });
+    const transporter = nodemailer.createTransport({
+      host:   process.env.SMTP_HOST,
+      port:   Number(process.env.SMTP_PORT) || 465,
+      // string comparison: process.env values are always strings
+      secure: process.env.SMTP_PORT === '465',
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
+
+    await transporter.verify();
+    console.log('✅ SMTP connection OK');
+
+    const info = await transporter.sendMail({
+      from: `${process.env.SMTP_FROM_NAME ?? 'Dips Chocolate'} <${process.env.SMTP_FROM_EMAIL ?? process.env.SMTP_USER}>`,
+      ...options,
+    });
+
+    console.log('📨 Email sent:', info.messageId);
+  } catch (error) {
+    console.error('❌ Email error:', error);
+    // Re-throw so callers' .catch() handlers are invoked correctly.
+    throw error;
+  }
 }

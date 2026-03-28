@@ -331,8 +331,18 @@ export async function POST(req: Request) {
 
     // ── Send transactional emails after the DB transaction commits ────────────
     // Fire-and-forget: email failures must never affect the webhook response.
-    if (confirmationEmailData) {
-      sendOrderConfirmationEmail(confirmationEmailData).catch((err) => {
+    //
+    // Capture into a const with an explicit type annotation so TypeScript's CFA
+    // can narrow correctly (let-variables assigned inside async callbacks are not
+    // tracked reliably by TS control-flow analysis).
+    const emailData = confirmationEmailData as ConfirmationEmailData | null;
+    if (emailData) {
+      console.log('🚀 Calling sendOrderConfirmationEmail', {
+        to: emailData.customerEmail,
+        orderNumber: emailData.orderNumber,
+      });
+
+      sendOrderConfirmationEmail(emailData).catch((err) => {
         console.error('❌ Failed to send order confirmation email:', err);
       });
     }
