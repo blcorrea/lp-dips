@@ -149,11 +149,6 @@ function emailWrapper(content: string): string {
 </html>`;
 }
 
-function sectionDivider(): string {
-  return `<tr><td style="padding:0 0 20px;">
-    <hr style="border:none;border-top:1px solid ${BEIGE};margin:0;">
-  </td></tr>`;
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Order Confirmation template
