@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
@@ -7,6 +8,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, ArrowRight } from 'lucide-react';
+import { trackPurchase, popPendingCheckout } from '@/lib/tracking';
 
 export default function CheckoutSuccessPage() {
   const t = useTranslations('CheckoutSuccess');
@@ -15,6 +17,26 @@ export default function CheckoutSuccessPage() {
   const locale = (params.locale as string) || 'en';
 
   const sessionId = searchParams.get('session_id');
+
+  // Fire purchase event once, using the checkout context saved by BuyNowButton.
+  useEffect(() => {
+    if (!sessionId) return;
+    const pending = popPendingCheckout();
+    if (!pending) return;
+
+    trackPurchase({
+      transactionId: sessionId,
+      value:         pending.price * pending.quantity,
+      currency:      pending.currency,
+      items: [{
+        id:       pending.productId,
+        name:     pending.productName,
+        price:    pending.price,
+        quantity: pending.quantity,
+        currency: pending.currency,
+      }],
+    });
+  }, [sessionId]);
 
   return (
     <div className="min-h-screen flex flex-col bg-brand-cream">

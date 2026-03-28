@@ -4,10 +4,13 @@ import { useMemo, useState } from 'react';
 import BuyNowButton from './BuyNowButton';
 
 type ProductPurchaseBoxProps = {
-  priceAmount: number;
-  currencyCode?: string;
-  buttonLabel?: string;
+  priceAmount:      number;
+  currencyCode?:    string;
+  buttonLabel?:     string;
   buttonClassName?: string;
+  // Optional — passed through to BuyNowButton for tracking
+  productId?:       string;
+  productName?:     string;
 };
 
 export default function ProductPurchaseBox({
@@ -15,6 +18,8 @@ export default function ProductPurchaseBox({
   currencyCode = 'USD',
   buttonLabel = 'Buy now',
   buttonClassName = '',
+  productId,
+  productName,
 }: ProductPurchaseBoxProps) {
   const [quantity, setQuantity] = useState(1);
 
@@ -86,6 +91,10 @@ export default function ProductPurchaseBox({
         quantity={quantity}
         label={buttonLabel}
         className={`inline-flex items-center justify-center rounded-full bg-brand-orange px-10 py-4 text-base sm:text-lg font-bold text-brand-purple tracking-wide shadow-[0_10px_30px_rgba(242,117,33,0.28)] transition-all duration-300 hover:scale-[1.02] hover:bg-brand-orange/90 hover:shadow-[0_14px_34px_rgba(242,117,33,0.34)] disabled:opacity-60 ${buttonClassName}`}
+        productId={productId}
+        productName={productName}
+        productPrice={priceAmount}
+        currency={currencyCode}
       />
     </div>
   );

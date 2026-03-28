@@ -1,17 +1,27 @@
 "use client";
 
 import { useState } from "react";
+import { trackBeginCheckout, savePendingCheckout } from "@/lib/tracking";
 
 type BuyNowButtonProps = {
-  label?: string;
-  className?: string;
-  quantity?: number;
+  label?:        string;
+  className?:    string;
+  quantity?:     number;
+  // Optional tracking props — button works normally without them
+  productId?:    string;
+  productName?:  string;
+  productPrice?: number; // major currency units (e.g. 29.90)
+  currency?:     string;
 };
 
 export default function BuyNowButton({
   label = "Buy now",
   className,
   quantity = 1,
+  productId,
+  productName,
+  productPrice,
+  currency = "USD",
 }: BuyNowButtonProps) {
   const [loading, setLoading]           = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -19,6 +29,12 @@ export default function BuyNowButton({
   const handleCheckout = async () => {
     setLoading(true);
     setErrorMessage(null);
+
+    // Fire begin_checkout and save context so the success page can fire purchase.
+    if (productId && productName && productPrice) {
+      trackBeginCheckout({ id: productId, name: productName, price: productPrice, quantity, currency });
+      savePendingCheckout({ productId, productName, price: productPrice, quantity, currency });
+    }
 
     try {
       const response = await fetch("/api/stripe/create-checkout-session", {

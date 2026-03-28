@@ -6,6 +6,7 @@ import { routing } from '@/i18n/routing';
 
 import { CartProvider } from '@/contexts/CartContext';
 import { CustomerProvider } from '@/contexts/CustomerContext';
+import TrackingProvider from '@/components/TrackingProvider';
 
 import '../globals.css';
 
@@ -79,6 +80,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages} locale={locale}>
           <CustomerProvider>
             <CartProvider>
+              <TrackingProvider />
               {children}
             </CartProvider>
           </CustomerProvider>

@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { getPurchasableDipsProduct } from '@/lib/shopify-product';
 import ProductPurchaseBox from '@/components/ProductPurchaseBox';
+import TrackViewItem from '@/components/TrackViewItem';
 
 export default async function DipsProductPage() {
   const product = await getPurchasableDipsProduct();
@@ -47,8 +48,19 @@ export default async function DipsProductPage() {
               <ProductPurchaseBox
                 priceAmount={product.priceAmount}
                 currencyCode={product.currencyCode}
+                productId={product.productId}
+                productName={product.title}
               />
             </div>
+
+            {/* Fires view_item once on client mount — renders nothing */}
+            <TrackViewItem
+              id={product.productId}
+              name={product.title}
+              price={product.priceAmount}
+              quantity={1}
+              currency={product.currencyCode}
+            />
           </div>
         </div>
       </section>
