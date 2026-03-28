@@ -39,10 +39,10 @@ export const metadata: Metadata = {
     locale:      'en_US',
     images: [
       {
-        url: '/images/og-image.png',
-        width: 1200,
+        url:    'https://www.dipschocolate.com/images/og-image.jpg',
+        width:  1200,
         height: 630,
-        alt: 'Dips Chocolate — Share it. Feel it. Love it.',
+        alt:    'Dips Chocolate — Share it. Feel it. Love it.',
       },
     ],
   },
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     title:       'Dips Chocolate — Share it. Feel it. Love it.',
     description:
       'A chocolate made to tease. Crafted with pure Arriba Cocoa Nibs and natural aphrodisiac ingredients for indulgent moments.',
-    images:      ['/images/og-image.png'],
+    images: ['https://www.dipschocolate.com/images/og-image.jpg'],
   },
 };
 
