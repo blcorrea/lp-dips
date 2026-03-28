@@ -96,19 +96,23 @@ export async function PATCH(
     const order = await updateOrder(id, data);
 
     // Send shipping notification when fulfillment is marked as FULFILLED.
-    // Fire-and-forget: email failure must not affect the API response.
+    // await so the serverless function doesn't terminate before SMTP finishes.
+    // Errors are caught here and logged; they must not affect the API response.
     if (data.fulfillmentStatus === 'FULFILLED' && order.customerEmail) {
-      sendOrderShippedEmail({
-        customerEmail:  order.customerEmail,
-        customerName:   order.customerName,
-        orderNumber:    order.orderNumber,
-        carrier:        order.carrier,
-        trackingNumber: order.trackingNumber,
-        trackingUrl:    order.trackingUrl,
-        shippedAt:      order.shippedAt,
-      }).catch((err) => {
+      try {
+        await sendOrderShippedEmail({
+          customerEmail:  order.customerEmail,
+          customerName:   order.customerName,
+          orderNumber:    order.orderNumber,
+          carrier:        order.carrier,
+          trackingNumber: order.trackingNumber,
+          trackingUrl:    order.trackingUrl,
+          shippedAt:      order.shippedAt,
+        });
+        console.log('✅ Shipping notification email sent to', order.customerEmail);
+      } catch (err) {
         console.error('❌ Failed to send shipping notification email:', err);
-      });
+      }
     }
 
     return NextResponse.json({ ok: true, order });

@@ -342,9 +342,14 @@ export async function POST(req: Request) {
         orderNumber: emailData.orderNumber,
       });
 
-      sendOrderConfirmationEmail(emailData).catch((err) => {
+      // await so the serverless function doesn't terminate before SMTP finishes.
+      // Errors are caught here and logged; they must not affect the webhook response.
+      try {
+        await sendOrderConfirmationEmail(emailData);
+        console.log('✅ Order confirmation email sent to', emailData.customerEmail);
+      } catch (err) {
         console.error('❌ Failed to send order confirmation email:', err);
-      });
+      }
     }
 
     return NextResponse.json({ ok: true });
