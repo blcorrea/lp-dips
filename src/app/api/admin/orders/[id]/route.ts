@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isAdminAuthenticated } from '@/lib/admin-auth';
 import { updateOrder, type FulfillmentStatus, type UpdateOrderInput } from '@/lib/orders';
+import { sendOrderShippedEmail } from '@/lib/email-templates';
 
 // ── Runtime-checkable list of valid FulfillmentStatus values ─────────────────
 // (Prisma 7 exports them as types only, so we define the array explicitly)
@@ -93,6 +94,23 @@ export async function PATCH(
   // ── Persist ──────────────────────────────────────────────────────────────────
   try {
     const order = await updateOrder(id, data);
+
+    // Send shipping notification when fulfillment is marked as FULFILLED.
+    // Fire-and-forget: email failure must not affect the API response.
+    if (data.fulfillmentStatus === 'FULFILLED' && order.customerEmail) {
+      sendOrderShippedEmail({
+        customerEmail:  order.customerEmail,
+        customerName:   order.customerName,
+        orderNumber:    order.orderNumber,
+        carrier:        order.carrier,
+        trackingNumber: order.trackingNumber,
+        trackingUrl:    order.trackingUrl,
+        shippedAt:      order.shippedAt,
+      }).catch((err) => {
+        console.error('❌ Failed to send shipping notification email:', err);
+      });
+    }
+
     return NextResponse.json({ ok: true, order });
   } catch (err) {
     // Prisma P2025 = record to update not found

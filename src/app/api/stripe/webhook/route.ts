@@ -4,6 +4,10 @@ import Stripe from 'stripe';
 import { Prisma } from '@/generated/prisma/client/client';
 import { prisma } from '@/lib/prisma';
 import { generateOrderNumber } from '@/lib/orders';
+import {
+  sendOrderConfirmationEmail,
+  type ConfirmationEmailData,
+} from '@/lib/email-templates';
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 const webhookSecret   = process.env.STRIPE_WEBHOOK_SECRET;
@@ -76,6 +80,11 @@ export async function POST(req: Request) {
     // StripeEvent.create is the FIRST operation inside the tx — it acts as an
     // atomic "claim". If event.id already exists → P2002 → tx rolls back →
     // no duplicate processing. Re-throw for anything that isn't a safe duplicate.
+    //
+    // Email data is captured inside the tx and sent AFTER it commits —
+    // network calls must not participate in a DB transaction.
+    let confirmationEmailData: ConfirmationEmailData | null = null;
+
     try {
       await prisma.$transaction(async (tx) => {
         // Claim: throws P2002 if this event was already processed.
@@ -100,9 +109,12 @@ export async function POST(req: Request) {
             // For async methods (bank transfers, etc.) it may still be 'unpaid'.
             const isPaid = fullSession!.payment_status === 'paid';
 
+            // Generate order number before create so we can capture it for email.
+            const orderNumber = generateOrderNumber();
+
             await tx.order.create({
               data: {
-                orderNumber:           generateOrderNumber(),
+                orderNumber,
                 stripeSessionId:       session.id,
                 stripePaymentIntentId: paymentIntentId,
                 customerEmail:         customerDetails?.email ?? '',
@@ -143,6 +155,36 @@ export async function POST(req: Request) {
                 },
               },
             });
+
+            // Capture data needed for confirmation email — sent after tx commits.
+            if (isPaid && customerDetails?.email) {
+              confirmationEmailData = {
+                customerEmail:        customerDetails.email,
+                customerName:         customerDetails.name ?? null,
+                orderNumber,
+                createdAt:            new Date(),
+                total:                fullSession!.amount_total    ?? 0,
+                subtotal:             fullSession!.amount_subtotal ?? fullSession!.amount_total ?? 0,
+                tax:                  fullSession!.total_details?.amount_tax      ?? 0,
+                shippingCost:         0,
+                discount:             fullSession!.total_details?.amount_discount ?? 0,
+                currency:             fullSession!.currency ?? 'usd',
+                items: lineItems.map((item) => ({
+                  productName: item.description ?? 'Unknown product',
+                  variantName: null,
+                  quantity:    item.quantity    ?? 1,
+                  unitPrice:   item.price?.unit_amount ?? 0,
+                  subtotal:    (item.price?.unit_amount ?? 0) * (item.quantity ?? 1),
+                })),
+                shippingName:         shipping?.name              ?? customerDetails.name ?? null,
+                shippingAddressLine1: shipping?.address?.line1    ?? null,
+                shippingAddressLine2: shipping?.address?.line2    ?? null,
+                shippingCity:         shipping?.address?.city     ?? null,
+                shippingState:        shipping?.address?.state    ?? null,
+                shippingPostalCode:   shipping?.address?.postal_code ?? null,
+                shippingCountry:      shipping?.address?.country  ?? null,
+              };
+            }
 
             console.log('✅ checkout.session.completed — order created', {
               eventId:       event.id,
@@ -285,6 +327,14 @@ export async function POST(req: Request) {
       // Not a uniqueness conflict — re-throw so the outer catch returns 400
       // and Stripe retries the delivery.
       throw err;
+    }
+
+    // ── Send transactional emails after the DB transaction commits ────────────
+    // Fire-and-forget: email failures must never affect the webhook response.
+    if (confirmationEmailData) {
+      sendOrderConfirmationEmail(confirmationEmailData).catch((err) => {
+        console.error('❌ Failed to send order confirmation email:', err);
+      });
     }
 
     return NextResponse.json({ ok: true });
