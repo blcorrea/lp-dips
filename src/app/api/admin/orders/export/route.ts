@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { isAdminAuthenticated } from '@/lib/admin-auth';
 import {
   getOrders,
+  getOrdersByIds,
   resolvePeriod,
   type Order,
   type OrderItem,
@@ -102,25 +103,39 @@ export async function GET(request: NextRequest) {
     return new NextResponse('Unauthorized', { status: 401 });
   }
 
-  // Mirror the same filter params used by /admin/orders so the export matches the view
-  const sp              = request.nextUrl.searchParams;
-  const search          = sp.get('search')            ?? '';
-  const paymentStatus   = sp.get('paymentStatus')     ?? '';
-  const fulfillmentStatus = sp.get('fulfillmentStatus') ?? '';
-  const period          = sp.get('period')            ?? '';
-  const from            = sp.get('from')              ?? '';
-  const to              = sp.get('to')                ?? '';
+  const sp = request.nextUrl.searchParams;
 
-  const { createdAfter, createdBefore } = resolvePeriod(period, from, to);
+  // When ?ids= is provided (export selected rows), fetch only those orders
+  const idsParam = sp.get('ids') ?? '';
+  let orders: Order[];
 
-  const { orders } = await getOrders({
-    limit:             10_000,
-    search:            search            || undefined,
-    paymentStatus:     (paymentStatus    || undefined) as PaymentStatus     | undefined,
-    fulfillmentStatus: (fulfillmentStatus || undefined) as FulfillmentStatus | undefined,
-    createdAfter,
-    createdBefore,
-  });
+  if (idsParam) {
+    const ids = idsParam
+      .split(',')
+      .map((id) => id.trim())
+      .filter(Boolean)
+      .slice(0, 500); // safety cap
+    orders = await getOrdersByIds(ids);
+  } else {
+    // Mirror the same filter params used by /admin/orders so the export matches the view
+    const search            = sp.get('search')            ?? '';
+    const paymentStatus     = sp.get('paymentStatus')     ?? '';
+    const fulfillmentStatus = sp.get('fulfillmentStatus') ?? '';
+    const period            = sp.get('period')            ?? '';
+    const from              = sp.get('from')              ?? '';
+    const to                = sp.get('to')                ?? '';
+
+    const { createdAfter, createdBefore } = resolvePeriod(period, from, to);
+
+    ({ orders } = await getOrders({
+      limit:             10_000,
+      search:            search            || undefined,
+      paymentStatus:     (paymentStatus    || undefined) as PaymentStatus     | undefined,
+      fulfillmentStatus: (fulfillmentStatus || undefined) as FulfillmentStatus | undefined,
+      createdAfter,
+      createdBefore,
+    }));
+  }
 
   const rows: string[] = [HEADERS.map(csvField).join(',')];
 

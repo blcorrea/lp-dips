@@ -293,6 +293,20 @@ export async function getOrderById(id: string): Promise<Order | null> {
   });
 }
 
+/**
+ * Fetches a set of orders by their internal IDs.
+ * Used for bulk operations and selected-rows CSV export.
+ * IDs that don't exist are silently omitted.
+ */
+export async function getOrdersByIds(ids: string[]): Promise<Order[]> {
+  if (ids.length === 0) return [];
+  return prisma.order.findMany({
+    where:   { id: { in: ids } },
+    include: { items: true },
+    orderBy: { createdAt: 'desc' },
+  });
+}
+
 export async function getOrderByOrderNumber(
   orderNumber: string
 ): Promise<Order | null> {
