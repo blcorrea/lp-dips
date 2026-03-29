@@ -2,20 +2,30 @@ import Link from 'next/link';
 import {
   getOrders,
   getOrderStats,
+  getDashboardData,
   resolvePeriod,
   type PaymentStatus,
   type FulfillmentStatus,
 } from '@/lib/orders';
 import OrderFilters from './OrderFilters';
 import OrdersTable, { type OrderRow } from './OrdersTable';
+import DashboardCharts from './DashboardCharts';
 
-// ── Formatting helpers (only what's still used in this Server Component) ──────
+// ── Formatting helpers ────────────────────────────────────────────────────────
 
 function formatRevenue(cents: number) {
   return new Intl.NumberFormat('en-US', {
     style:                 'currency',
     currency:              'USD',
     maximumFractionDigits: 0,
+  }).format(cents / 100);
+}
+
+function formatAov(cents: number) {
+  return new Intl.NumberFormat('en-US', {
+    style:                 'currency',
+    currency:              'USD',
+    maximumFractionDigits: 2,
   }).format(cents / 100);
 }
 
@@ -39,6 +49,34 @@ function StatCard({
     <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
       <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">{label}</p>
       <p className={`mt-1.5 text-2xl font-bold tabular-nums ${valCls}`}>{value}</p>
+    </div>
+  );
+}
+
+// ── Commercial KPI card (slightly smaller than StatCard) ──────────────────────
+
+function KpiCard({
+  label,
+  value,
+  sub,
+  accent,
+}: {
+  label:   string;
+  value:   string;
+  sub?:    string;
+  accent?: 'green' | 'blue' | 'amber';
+}) {
+  const valCls =
+    accent === 'green' ? 'text-green-700' :
+    accent === 'blue'  ? 'text-blue-700'  :
+    accent === 'amber' ? 'text-amber-600' :
+    'text-gray-900';
+
+  return (
+    <div className="rounded-xl border border-gray-200 bg-white px-4 py-3.5 shadow-sm">
+      <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">{label}</p>
+      <p className={`mt-1 text-xl font-bold tabular-nums ${valCls}`}>{value}</p>
+      {sub && <p className="mt-0.5 text-xs text-gray-400">{sub}</p>}
     </div>
   );
 }
@@ -75,15 +113,35 @@ export default async function AdminOrdersPage({
     createdBefore,
   };
 
-  const [{ orders, total }, globalStats, filteredStats] = await Promise.all([
+  // Dashboard charts use the same scope as the stats toggle:
+  // "All Time" → {} (no filters) | "Filtered Range" → activeFilters
+  const dashboardInput = showFilteredStats ? activeFilters : {};
+
+  const [{ orders, total }, globalStats, filteredStats, dashboardData] = await Promise.all([
     getOrders({ limit: 100, ...activeFilters }),
     // Global stats always fetched — used for the quick-filter badge
     getOrderStats(),
     // Filtered stats only fetched when the toggle is in "Filtered Range" mode
     showFilteredStats ? getOrderStats(activeFilters) : Promise.resolve(null),
+    // Dashboard data follows the same scope as the stats toggle
+    getDashboardData(dashboardInput),
   ]);
 
   const displayStats = filteredStats ?? globalStats;
+
+  // ── Commercial KPIs (computed from displayStats) ─────────────────────────────
+  const aov = displayStats.paidOrders > 0
+    ? Math.round(displayStats.totalRevenueCents / displayStats.paidOrders)
+    : 0;
+
+  const paidRatePct = displayStats.totalOrders > 0
+    ? Math.round((displayStats.paidOrders / displayStats.totalOrders) * 100)
+    : 0;
+
+  // "Fulfillment Rate" = orders that are no longer UNFULFILLED / total
+  const fulfillRatePct = displayStats.totalOrders > 0
+    ? Math.round(((displayStats.totalOrders - displayStats.unfulfilledOrders) / displayStats.totalOrders) * 100)
+    : 0;
 
   // ── Serialize orders for the client component (Dates → ISO strings) ─────────
   const tableRows: OrderRow[] = orders.map((o) => ({
@@ -154,6 +212,7 @@ export default async function AdminOrdersPage({
           )}
         </div>
 
+        {/* Row 1: operational counts */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <StatCard label="Total Orders"   value={displayStats.totalOrders} />
           <StatCard label="Paid"           value={displayStats.paidOrders}           accent="green" />
@@ -163,6 +222,28 @@ export default async function AdminOrdersPage({
             accent={displayStats.unfulfilledOrders > 0 ? 'amber' : undefined}
           />
           <StatCard label="Revenue (Paid)" value={formatRevenue(displayStats.totalRevenueCents)} />
+        </div>
+
+        {/* Row 2: commercial KPIs */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-3">
+          <KpiCard
+            label="AOV"
+            value={displayStats.paidOrders > 0 ? formatAov(aov) : '—'}
+            sub="avg order value (paid)"
+            accent="blue"
+          />
+          <KpiCard
+            label="Paid Rate"
+            value={`${paidRatePct}%`}
+            sub={`${displayStats.paidOrders} of ${displayStats.totalOrders} orders`}
+            accent={paidRatePct >= 80 ? 'green' : paidRatePct >= 50 ? 'amber' : undefined}
+          />
+          <KpiCard
+            label="Fulfillment Rate"
+            value={`${fulfillRatePct}%`}
+            sub="non-unfulfilled orders"
+            accent={fulfillRatePct >= 80 ? 'green' : fulfillRatePct >= 50 ? 'amber' : undefined}
+          />
         </div>
       </div>
 
@@ -204,6 +285,9 @@ export default async function AdminOrdersPage({
         unfulfilledOrders={globalStats.unfulfilledOrders}
         isQuickFilterActive={isPaidUnfulfilled}
       />
+
+      {/* ── Dashboard charts + status breakdown ─────────────────────────── */}
+      <DashboardCharts data={dashboardData} totalOrders={displayStats.totalOrders} />
 
       {/* ── Table (client component — manages selection + bulk actions) ──── */}
       <OrdersTable

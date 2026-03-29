@@ -421,3 +421,74 @@ export async function getOrders(
     totalPages: Math.ceil(total / limit),
   };
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Dashboard analytics data
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type DayBucket = {
+  /** YYYY-MM-DD (UTC) */
+  day:          string;
+  /** Number of orders created on this day */
+  count:        number;
+  /** Sum of `total` for PAID orders created on this day (cents) */
+  revenueCents: number;
+};
+
+export type StatusCount = { status: string; count: number };
+
+export type DashboardData = {
+  dailySeries:          DayBucket[];
+  paymentBreakdown:     StatusCount[];
+  fulfillmentBreakdown: StatusCount[];
+};
+
+/**
+ * Lightweight query for dashboard charts and status breakdowns.
+ * Uses the same filter scope as getOrders/getOrderStats.
+ * Capped at 2 000 rows for safety; sufficient for typical small-brand volumes.
+ */
+export async function getDashboardData(input: GetOrderStatsInput = {}): Promise<DashboardData> {
+  const where = buildOrderWhere(input);
+
+  const rows = await prisma.order.findMany({
+    where,
+    select: {
+      createdAt:         true,
+      total:             true,
+      paymentStatus:     true,
+      fulfillmentStatus: true,
+    },
+    orderBy: { createdAt: 'asc' },
+    take:    2_000,
+  });
+
+  const dayMap        = new Map<string, DayBucket>();
+  const payCounts     = new Map<string, number>();
+  const fulfillCounts = new Map<string, number>();
+
+  for (const row of rows) {
+    const day = row.createdAt.toISOString().slice(0, 10); // YYYY-MM-DD UTC
+    const b   = dayMap.get(day) ?? { day, count: 0, revenueCents: 0 };
+    b.count++;
+    if (row.paymentStatus === 'PAID') b.revenueCents += row.total;
+    dayMap.set(day, b);
+
+    payCounts.set(row.paymentStatus,
+      (payCounts.get(row.paymentStatus) ?? 0) + 1);
+    fulfillCounts.set(row.fulfillmentStatus,
+      (fulfillCounts.get(row.fulfillmentStatus) ?? 0) + 1);
+  }
+
+  const byCount = (a: StatusCount, b: StatusCount) => b.count - a.count;
+
+  return {
+    dailySeries:          Array.from(dayMap.values()),
+    paymentBreakdown:     Array.from(payCounts.entries())
+                            .map(([status, count]) => ({ status, count }))
+                            .sort(byCount),
+    fulfillmentBreakdown: Array.from(fulfillCounts.entries())
+                            .map(([status, count]) => ({ status, count }))
+                            .sort(byCount),
+  };
+}
