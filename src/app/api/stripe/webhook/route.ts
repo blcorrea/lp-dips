@@ -84,6 +84,8 @@ export async function POST(req: Request) {
     // Email data is captured inside the tx and sent AFTER it commits —
     // network calls must not participate in a DB transaction.
     let confirmationEmailData: ConfirmationEmailData | null = null;
+    // Order id captured inside the tx — needed to persist confirmationEmailSentAt.
+    let capturedOrderId: string | null = null;
 
     try {
       await prisma.$transaction(async (tx) => {
@@ -112,7 +114,7 @@ export async function POST(req: Request) {
             // Generate order number before create so we can capture it for email.
             const orderNumber = generateOrderNumber();
 
-            await tx.order.create({
+            const createdOrder = await tx.order.create({
               data: {
                 orderNumber,
                 stripeSessionId:       session.id,
@@ -155,6 +157,7 @@ export async function POST(req: Request) {
                 },
               },
             });
+            capturedOrderId = createdOrder.id;
 
             // Capture data needed for confirmation email — sent after tx commits.
             if (isPaid && customerDetails?.email) {
@@ -329,26 +332,43 @@ export async function POST(req: Request) {
       throw err;
     }
 
-    // ── Send transactional emails after the DB transaction commits ────────────
-    // Fire-and-forget: email failures must never affect the webhook response.
-    //
-    // Capture into a const with an explicit type annotation so TypeScript's CFA
-    // can narrow correctly (let-variables assigned inside async callbacks are not
-    // tracked reliably by TS control-flow analysis).
+    // ── Send confirmation email after the DB transaction commits ─────────────
+    // CFA workaround: capture let-vars into typed consts before narrowing
+    // (TypeScript doesn't track let-mutations inside async callbacks reliably).
     const emailData = confirmationEmailData as ConfirmationEmailData | null;
-    if (emailData) {
+    const orderId   = capturedOrderId as string | null;
+
+    if (emailData && orderId) {
       console.log('🚀 Calling sendOrderConfirmationEmail', {
-        to: emailData.customerEmail,
+        to:          emailData.customerEmail,
         orderNumber: emailData.orderNumber,
       });
 
-      // await so the serverless function doesn't terminate before SMTP finishes.
-      // Errors are caught here and logged; they must not affect the webhook response.
-      try {
-        await sendOrderConfirmationEmail(emailData);
-        console.log('✅ Order confirmation email sent to', emailData.customerEmail);
-      } catch (err) {
-        console.error('❌ Failed to send order confirmation email:', err);
+      // Guard: skip if already sent (defense-in-depth — StripeEvent idempotency
+      // is the primary guard, but this prevents duplicates from any edge case).
+      const freshOrder = await prisma.order.findUnique({
+        where:  { id: orderId },
+        select: { confirmationEmailSentAt: true },
+      });
+
+      if (freshOrder?.confirmationEmailSentAt) {
+        console.log('ℹ️ Skipping confirmation email; already sent', {
+          orderId,
+          orderNumber: emailData.orderNumber,
+        });
+      } else {
+        // await so the serverless function doesn't terminate before SMTP finishes.
+        try {
+          await sendOrderConfirmationEmail(emailData);
+          console.log('✅ Order confirmation email sent to', emailData.customerEmail);
+          // Persist the timestamp — only written on success, never on failure.
+          await prisma.order.update({
+            where: { id: orderId },
+            data:  { confirmationEmailSentAt: new Date() },
+          });
+        } catch (err) {
+          console.error('❌ Failed to send order confirmation email:', err);
+        }
       }
     }
 

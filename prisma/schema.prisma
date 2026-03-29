@@ -91,6 +91,10 @@ model Order {
   notes         String?
   internalNotes String?
 
+  // ── Transactional email guards — set after a successful send to prevent duplicates ──
+  confirmationEmailSentAt DateTime?
+  shippedEmailSentAt      DateTime?
+
   // ── Shopify metadata snapshot (captured at checkout time) ───────────────────
   shopifyProductId String?
   shopifyVariantId String?

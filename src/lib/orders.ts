@@ -75,6 +75,10 @@ export type UpdateOrderInput = {
   estimatedDelivery?: Date | null;
   notes?: string | null;
   internalNotes?: string | null;
+  /** Set to now() after a successful confirmation email send. Prevents duplicates. */
+  confirmationEmailSentAt?: Date | null;
+  /** Set to now() after a successful shipped email send. Prevents duplicates. */
+  shippedEmailSentAt?: Date | null;
 };
 
 export type GetOrdersInput = {

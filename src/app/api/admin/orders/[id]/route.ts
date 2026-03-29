@@ -95,23 +95,35 @@ export async function PATCH(
   try {
     const order = await updateOrder(id, data);
 
-    // Send shipping notification when fulfillment is marked as FULFILLED.
-    // await so the serverless function doesn't terminate before SMTP finishes.
-    // Errors are caught here and logged; they must not affect the API response.
+    // Send shipping notification when fulfillment is first set to FULFILLED.
+    // Guard: skip if already sent — prevents duplicates when the admin re-saves
+    // an order that is already FULFILLED (the form always includes fulfillmentStatus
+    // in the payload, so the check on the DB timestamp is the safety net).
     if (data.fulfillmentStatus === 'FULFILLED' && order.customerEmail) {
-      try {
-        await sendOrderShippedEmail({
-          customerEmail:  order.customerEmail,
-          customerName:   order.customerName,
-          orderNumber:    order.orderNumber,
-          carrier:        order.carrier,
-          trackingNumber: order.trackingNumber,
-          trackingUrl:    order.trackingUrl,
-          shippedAt:      order.shippedAt,
+      if (order.shippedEmailSentAt) {
+        console.log('ℹ️ Skipping shipped email; already sent', {
+          orderId:     order.id,
+          orderNumber: order.orderNumber,
+          sentAt:      order.shippedEmailSentAt,
         });
-        console.log('✅ Shipping notification email sent to', order.customerEmail);
-      } catch (err) {
-        console.error('❌ Failed to send shipping notification email:', err);
+      } else {
+        // await so the serverless function doesn't terminate before SMTP finishes.
+        try {
+          await sendOrderShippedEmail({
+            customerEmail:  order.customerEmail,
+            customerName:   order.customerName,
+            orderNumber:    order.orderNumber,
+            carrier:        order.carrier,
+            trackingNumber: order.trackingNumber,
+            trackingUrl:    order.trackingUrl,
+            shippedAt:      order.shippedAt,
+          });
+          console.log('✅ Shipping notification email sent to', order.customerEmail);
+          // Persist the timestamp — only written on success, never on failure.
+          await updateOrder(order.id, { shippedEmailSentAt: new Date() });
+        } catch (err) {
+          console.error('❌ Failed to send shipping notification email:', err);
+        }
       }
     }
 
