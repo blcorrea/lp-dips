@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import type { FulfillmentStatus } from '@/lib/orders';
 
-// ── Types ─────────────────────────────────────────────────────────────────────
+// ── Types ──────────────────────────────────────────────────────────────────
 
 export type EditFormValues = {
   fulfillmentStatus: FulfillmentStatus;
@@ -19,7 +19,7 @@ type Props = {
   initialValues: EditFormValues;
 };
 
-// ── Constants ─────────────────────────────────────────────────────────────────
+// ── Constants ──────────────────────────────────────────────────────────────
 
 const FULFILLMENT_OPTIONS: { value: FulfillmentStatus; label: string }[] = [
   { value: 'UNFULFILLED',         label: 'Unfulfilled' },
@@ -29,15 +29,15 @@ const FULFILLMENT_OPTIONS: { value: FulfillmentStatus; label: string }[] = [
   { value: 'CANCELLED',           label: 'Cancelled' },
 ];
 
-// ── Shared field styles ───────────────────────────────────────────────────────
+// ── Shared field styles ────────────────────────────────────────────────────
 
 const inputCls =
   'block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 ' +
   'placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500';
 
-const labelCls = 'block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1';
+const labelCls = 'block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1.5';
 
-// ── Component ─────────────────────────────────────────────────────────────────
+// ── Component ──────────────────────────────────────────────────────────────
 
 export default function EditForm({ orderId, initialValues }: Props) {
   const [values, setValues]   = useState<EditFormValues>(initialValues);
@@ -90,11 +90,13 @@ export default function EditForm({ orderId, initialValues }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
+    <form onSubmit={handleSubmit} className="space-y-5">
 
-      {/* ── Block 5: Logistics ─────────────────────────────────────────────── */}
+      {/* ── Logistics ─────────────────────────────────────────────────────── */}
       <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-        <h2 className="mb-5 text-base font-semibold text-gray-900">Logistics</h2>
+        <h2 className="mb-5 text-sm font-semibold uppercase tracking-wider text-gray-500">
+          Logistics
+        </h2>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
@@ -157,9 +159,11 @@ export default function EditForm({ orderId, initialValues }: Props) {
         </div>
       </section>
 
-      {/* ── Block 6: Internal Notes ────────────────────────────────────────── */}
+      {/* ── Internal Notes ────────────────────────────────────────────────── */}
       <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-        <h2 className="mb-5 text-base font-semibold text-gray-900">Internal Notes</h2>
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-gray-500">
+          Internal Notes
+        </h2>
         <textarea
           rows={4}
           value={values.internalNotes}
@@ -169,25 +173,50 @@ export default function EditForm({ orderId, initialValues }: Props) {
         />
       </section>
 
-      {/* ── Footer ────────────────────────────────────────────────────────── */}
-      <div className="flex items-center gap-4">
+      {/* ── Save bar ──────────────────────────────────────────────────────── */}
+      <div className="rounded-xl border border-gray-200 bg-white px-6 py-4 shadow-sm
+                      flex items-center gap-4">
         <button
           type="submit"
           disabled={saving}
-          className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white
-                     hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500
-                     focus:ring-offset-2 disabled:opacity-60 transition-colors"
+          className="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white
+                     hover:bg-blue-700 active:bg-blue-800
+                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+                     disabled:opacity-50 disabled:cursor-not-allowed transition-colors
+                     min-w-[130px]"
         >
-          {saving ? 'Saving…' : 'Save changes'}
+          {saving ? (
+            <span className="inline-flex items-center gap-2">
+              <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              Saving…
+            </span>
+          ) : 'Save changes'}
         </button>
 
         {success && (
-          <span className="text-sm font-medium text-green-600">
-            ✓ Saved successfully
+          <span className="inline-flex items-center gap-1.5 text-sm font-medium text-green-600">
+            <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clipRule="evenodd"
+              />
+            </svg>
+            Saved successfully
           </span>
         )}
+
         {error && (
-          <span className="text-sm font-medium text-red-600">
+          <span className="inline-flex items-center gap-1.5 text-sm font-medium text-red-600">
+            <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                clipRule="evenodd"
+              />
+            </svg>
             {error}
           </span>
         )}

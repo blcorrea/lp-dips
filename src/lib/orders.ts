@@ -227,6 +227,37 @@ export async function getOrderByStripeSessionId(
  * Returns a paginated list of orders with optional filters.
  * Results are ordered by `createdAt` descending (newest first).
  */
+// ─────────────────────────────────────────────────────────────────────────────
+// Aggregate stats for the admin dashboard
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type OrderStats = {
+  totalOrders:       number;
+  paidOrders:        number;
+  unfulfilledOrders: number;
+  /** Sum of `total` (cents) across all PAID orders */
+  totalRevenueCents: number;
+};
+
+export async function getOrderStats(): Promise<OrderStats> {
+  const [totalOrders, paidOrders, unfulfilledOrders, revenue] = await Promise.all([
+    prisma.order.count(),
+    prisma.order.count({ where: { paymentStatus: 'PAID' } }),
+    prisma.order.count({ where: { fulfillmentStatus: 'UNFULFILLED' } }),
+    prisma.order.aggregate({
+      _sum:  { total: true },
+      where: { paymentStatus: 'PAID' },
+    }),
+  ]);
+
+  return {
+    totalOrders,
+    paidOrders,
+    unfulfilledOrders,
+    totalRevenueCents: revenue._sum.total ?? 0,
+  };
+}
+
 export async function getOrders(
   input: GetOrdersInput = {}
 ): Promise<PaginatedOrders> {
