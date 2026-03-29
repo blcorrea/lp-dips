@@ -90,6 +90,10 @@ export type GetOrdersInput = {
   customerEmail?: string;
   /** Case-insensitive search across orderNumber, customerEmail and customerName */
   search?: string;
+  /** Filter orders created on or after this date (inclusive) */
+  createdAfter?: Date;
+  /** Filter orders created before this date (exclusive) */
+  createdBefore?: Date;
 };
 
 export type PaginatedOrders = {
@@ -273,6 +277,8 @@ export async function getOrders(
     paymentStatus,
     customerEmail,
     search,
+    createdAfter,
+    createdBefore,
   } = input;
 
   const skip = (page - 1) * limit;
@@ -288,6 +294,12 @@ export async function getOrders(
         { customerEmail: { contains: search, mode: 'insensitive' } },
         { customerName:  { contains: search, mode: 'insensitive' } },
       ],
+    }),
+    ...((createdAfter || createdBefore) && {
+      createdAt: {
+        ...(createdAfter  && { gte: createdAfter }),
+        ...(createdBefore && { lt:  createdBefore }),
+      },
     }),
   };
 

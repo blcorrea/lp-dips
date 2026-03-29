@@ -1,5 +1,92 @@
 import Link from 'next/link';
 import { getOrders, getOrderStats, type PaymentStatus, type FulfillmentStatus } from '@/lib/orders';
+import OrderFilters from './OrderFilters';
+
+// ── Date-range helper ─────────────────────────────────────────────────────────
+
+type DateRange = { createdAfter?: Date; createdBefore?: Date };
+
+/**
+ * Maps a period preset (or 'custom') to a UTC date range for the createdAt filter.
+ *
+ * All presets use UTC so results are consistent regardless of server timezone:
+ *   today       → [00:00 UTC today, 00:00 UTC tomorrow)
+ *   yesterday   → [00:00 UTC yesterday, 00:00 UTC today)
+ *   this_week   → [00:00 UTC Monday of the current ISO week, 00:00 UTC tomorrow)
+ *   last_week   → [00:00 UTC Monday of last week, 00:00 UTC this Monday)
+ *   this_month  → [00:00 UTC 1st of this month, 00:00 UTC tomorrow)
+ *   last_month  → [00:00 UTC 1st of last month, 00:00 UTC 1st of this month)
+ *   custom      → [from 00:00 UTC, (to + 1 day) 00:00 UTC) — both inclusive as full days
+ */
+function resolvePeriod(period: string, fromStr: string, toStr: string): DateRange {
+  if (!period) return {};
+
+  const now = new Date();
+  const y   = now.getUTCFullYear();
+  const m   = now.getUTCMonth();
+  const d   = now.getUTCDate();
+  const dow = now.getUTCDay(); // 0 = Sunday, 1 = Monday, …
+
+  switch (period) {
+    case 'today':
+      return {
+        createdAfter:  new Date(Date.UTC(y, m, d)),
+        createdBefore: new Date(Date.UTC(y, m, d + 1)),
+      };
+
+    case 'yesterday':
+      return {
+        createdAfter:  new Date(Date.UTC(y, m, d - 1)),
+        createdBefore: new Date(Date.UTC(y, m, d)),
+      };
+
+    case 'this_week': {
+      // ISO week starts on Monday; transform Sunday (0) → 6, Mon (1) → 0, …
+      const daysFromMon = (dow + 6) % 7;
+      return {
+        createdAfter:  new Date(Date.UTC(y, m, d - daysFromMon)),
+        createdBefore: new Date(Date.UTC(y, m, d + 1)),
+      };
+    }
+
+    case 'last_week': {
+      const daysFromMon  = (dow + 6) % 7;
+      const thisMonStart = Date.UTC(y, m, d - daysFromMon);
+      const lastMonStart = thisMonStart - 7 * 86_400_000;
+      return {
+        createdAfter:  new Date(lastMonStart),
+        createdBefore: new Date(thisMonStart),
+      };
+    }
+
+    case 'this_month':
+      return {
+        createdAfter:  new Date(Date.UTC(y, m, 1)),
+        createdBefore: new Date(Date.UTC(y, m, d + 1)),
+      };
+
+    case 'last_month':
+      return {
+        // Date.UTC handles m-1 = -1 correctly (rolls back to December of previous year)
+        createdAfter:  new Date(Date.UTC(y, m - 1, 1)),
+        createdBefore: new Date(Date.UTC(y, m, 1)),
+      };
+
+    case 'custom': {
+      const result: DateRange = {};
+      if (fromStr) result.createdAfter  = new Date(`${fromStr}T00:00:00.000Z`);
+      if (toStr) {
+        // Advance end by 1 day so the full to-date is included
+        const endDay = new Date(`${toStr}T00:00:00.000Z`);
+        result.createdBefore = new Date(endDay.getTime() + 86_400_000);
+      }
+      return result;
+    }
+
+    default:
+      return {};
+  }
+}
 
 // ── Formatting helpers ─────────────────────────────────────────────────────
 
@@ -82,13 +169,6 @@ function StatCard({
   );
 }
 
-// ── Shared field styles ────────────────────────────────────────────────────
-
-const inputCls =
-  'rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 ' +
-  'placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 ' +
-  'focus:ring-blue-500';
-
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default async function AdminOrdersPage({
@@ -101,6 +181,11 @@ export default async function AdminOrdersPage({
   const search            = typeof sp.search            === 'string' ? sp.search.trim()    : '';
   const paymentStatus     = typeof sp.paymentStatus     === 'string' ? sp.paymentStatus    : '';
   const fulfillmentStatus = typeof sp.fulfillmentStatus === 'string' ? sp.fulfillmentStatus : '';
+  const period            = typeof sp.period            === 'string' ? sp.period            : '';
+  const from              = typeof sp.from              === 'string' ? sp.from              : '';
+  const to                = typeof sp.to                === 'string' ? sp.to                : '';
+
+  const { createdAfter, createdBefore } = resolvePeriod(period, from, to);
 
   const [{ orders, total }, stats] = await Promise.all([
     getOrders({
@@ -108,11 +193,13 @@ export default async function AdminOrdersPage({
       search:            search            || undefined,
       paymentStatus:     (paymentStatus    || undefined) as PaymentStatus     | undefined,
       fulfillmentStatus: (fulfillmentStatus || undefined) as FulfillmentStatus | undefined,
+      createdAfter,
+      createdBefore,
     }),
     getOrderStats(),
   ]);
 
-  const isFiltered       = !!(search || paymentStatus || fulfillmentStatus);
+  const isFiltered        = !!(search || paymentStatus || fulfillmentStatus || period);
   const isPaidUnfulfilled = paymentStatus === 'PAID' && fulfillmentStatus === 'UNFULFILLED';
 
   return (
@@ -151,93 +238,21 @@ export default async function AdminOrdersPage({
       </div>
 
       {/* ── Filter bar ─────────────────────────────────────────────────────── */}
-      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-        <form method="get" action="/admin/orders" className="flex flex-wrap items-end gap-3">
-
-          {/* Search */}
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">
-              Search
-            </label>
-            <input
-              name="search"
-              type="search"
-              defaultValue={search}
-              placeholder="Order #, name or email…"
-              className={`${inputCls} w-64`}
-            />
-          </div>
-
-          {/* Payment status */}
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">
-              Payment
-            </label>
-            <select name="paymentStatus" defaultValue={paymentStatus} className={inputCls}>
-              <option value="">All Payments</option>
-              <option value="PAID">Paid</option>
-              <option value="PENDING">Pending</option>
-              <option value="FAILED">Failed</option>
-              <option value="REFUNDED">Refunded</option>
-              <option value="PARTIALLY_REFUNDED">Partially Refunded</option>
-            </select>
-          </div>
-
-          {/* Fulfillment status */}
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">
-              Fulfillment
-            </label>
-            <select name="fulfillmentStatus" defaultValue={fulfillmentStatus} className={inputCls}>
-              <option value="">All Fulfillment</option>
-              <option value="UNFULFILLED">Unfulfilled</option>
-              <option value="PARTIALLY_FULFILLED">Partially Fulfilled</option>
-              <option value="FULFILLED">Fulfilled</option>
-              <option value="RETURNED">Returned</option>
-              <option value="CANCELLED">Cancelled</option>
-            </select>
-          </div>
-
-          <button
-            type="submit"
-            className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white
-                       hover:bg-gray-700 transition-colors"
-          >
-            Apply
-          </button>
-
-          {isFiltered && (
-            <Link
-              href="/admin/orders"
-              className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium
-                         text-gray-600 hover:bg-gray-50 transition-colors"
-            >
-              Clear
-            </Link>
-          )}
-
-          {/* Quick filter */}
-          <div className="ml-auto">
-            <Link
-              href="/admin/orders?paymentStatus=PAID&fulfillmentStatus=UNFULFILLED"
-              className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm
-                          font-medium transition-colors border ${
-                isPaidUnfulfilled
-                  ? 'bg-amber-50 border-amber-300 text-amber-800'
-                  : 'border-gray-300 text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              ⚡ Paid &amp; Unfulfilled
-              {stats.unfulfilledOrders > 0 && (
-                <span className="inline-flex items-center justify-center rounded-full bg-amber-500
-                                  text-white text-xs font-bold w-5 h-5 ml-0.5">
-                  {stats.unfulfilledOrders}
-                </span>
-              )}
-            </Link>
-          </div>
-        </form>
-      </div>
+      {/*
+        key forces a re-mount when URL params change so useState re-initialises
+        from the new initial* props (avoids stale controlled-input state).
+      */}
+      <OrderFilters
+        key={`${search}|${paymentStatus}|${fulfillmentStatus}|${period}|${from}|${to}`}
+        initialSearch={search}
+        initialPaymentStatus={paymentStatus}
+        initialFulfillmentStatus={fulfillmentStatus}
+        initialPeriod={period}
+        initialFrom={from}
+        initialTo={to}
+        unfulfilledOrders={stats.unfulfilledOrders}
+        isQuickFilterActive={isPaidUnfulfilled}
+      />
 
       {/* ── Table ──────────────────────────────────────────────────────────── */}
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
