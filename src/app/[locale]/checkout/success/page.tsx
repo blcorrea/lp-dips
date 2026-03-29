@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from 'react';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import Header from '@/components/Header';
@@ -12,9 +12,7 @@ import { trackPurchase, popPendingCheckout } from '@/lib/tracking';
 
 export default function CheckoutSuccessPage() {
   const t = useTranslations('CheckoutSuccess');
-  const params = useParams();
   const searchParams = useSearchParams();
-  const locale = (params.locale as string) || 'en';
 
   const sessionId = searchParams.get('session_id');
 
@@ -57,17 +55,6 @@ export default function CheckoutSuccessPage() {
               {t('subtitle')}
             </p>
 
-            {sessionId && (
-              <div className="bg-brand-purple/5 border border-brand-purple/20 rounded-xl p-5 mb-8">
-                <p className="text-sm text-brand-charcoal/60 mb-2">
-                  Stripe Session ID
-                </p>
-                <p className="text-sm md:text-base font-semibold text-brand-purple break-all">
-                  {sessionId}
-                </p>
-              </div>
-            )}
-
             <div className="text-left mb-8">
               <h2 className="text-xl font-bold text-brand-purple mb-4">
                 {t('whatsNext')}
@@ -107,7 +94,7 @@ export default function CheckoutSuccessPage() {
             </div>
 
             <div className="space-y-3">
-              <Link href={`/${locale}/product/dips-chocolate`}>
+              <Link href="https://www.dipschocolate.com/en#buy">
                 <Button
                   variant="outline"
                   size="lg"
@@ -123,10 +110,10 @@ export default function CheckoutSuccessPage() {
               <p className="text-sm text-gray-500">
                 {t('needHelp')}{' '}
                 <a
-                  href="mailto:info@dipschocolate.com"
+                  href="mailto:orders@dipschocolate.com"
                   className="text-brand-purple hover:underline font-semibold"
                 >
-                  info@dipschocolate.com
+                  orders@dipschocolate.com
                 </a>
               </p>
             </div>

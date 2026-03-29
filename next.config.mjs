@@ -12,6 +12,16 @@ const nextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      // QR code on packaging points to /ingredients → send to the anchor on the landing page
+      {
+        source:      '/ingredients',
+        destination: '/en#ingredients',
+        permanent:   true,
+      },
+    ];
+  },
 };
 
 export default withNextIntl(nextConfig);

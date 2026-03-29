@@ -333,19 +333,19 @@
         "customerSupport": "Suporte 24/7"
     },
     "CheckoutSuccess": {
-        "title": "Pedido Realizado com Sucesso!",
-        "subtitle": "Obrigado pela sua compra",
+        "title": "Seu pedido foi confirmado",
+        "subtitle": "Obrigado por escolher a Dips. Estamos preparando seu pedido com cuidado.",
         "orderNumber": "Número do Pedido",
         "whatsNext": "Próximos Passos",
-        "step1Title": "Email de Confirmação",
-        "step1Desc": "Verifique sua caixa de entrada para confirmação e detalhes de rastreamento",
-        "step2Title": "Processamento do Pedido",
-        "step2Desc": "Prepararemos seu pedido para envio em 1-2 dias úteis",
-        "step3Title": "Entrega",
-        "step3Desc": "Seu pedido chegará em 2-5 dias úteis",
+        "step1Title": "Confirmação enviada",
+        "step1Desc": "Um e-mail de confirmação já está a caminho da sua caixa de entrada.",
+        "step2Title": "Pedido em preparação",
+        "step2Desc": "Sua caixa Dips está sendo cuidadosamente embalada e preparada para envio.",
+        "step3Title": "Rastreamento em breve",
+        "step3Desc": "Você receberá os detalhes de rastreamento assim que seu pedido for despachado.",
         "viewOrder": "Ver Detalhes do Pedido",
         "continueShopping": "Continuar Comprando",
-        "needHelp": "Precisa de ajuda?"
+        "needHelp": "Dúvidas?"
     },
     "Orders": {
         "title": "Meus Pedidos",
