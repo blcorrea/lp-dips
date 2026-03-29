@@ -96,6 +96,86 @@ export type GetOrdersInput = {
   createdBefore?: Date;
 };
 
+/** Subset of GetOrdersInput used to scope aggregate stats queries. */
+export type GetOrderStatsInput = Omit<GetOrdersInput, 'page' | 'limit'>;
+
+export type DateRange = { createdAfter?: Date; createdBefore?: Date };
+
+/**
+ * Maps a period preset (or 'custom') and optional custom date strings to a
+ * UTC date range suitable for filtering orders by createdAt.
+ *
+ *   today       → [00:00 UTC today,          00:00 UTC tomorrow)   (ISO week Mon–Sun)
+ *   yesterday   → [00:00 UTC yesterday,       00:00 UTC today)
+ *   this_week   → [00:00 UTC this Monday,     00:00 UTC tomorrow)
+ *   last_week   → [00:00 UTC last Monday,     00:00 UTC this Monday)
+ *   this_month  → [00:00 UTC 1st this month,  00:00 UTC tomorrow)
+ *   last_month  → [00:00 UTC 1st last month,  00:00 UTC 1st this month)
+ *   custom      → [from 00:00 UTC,            (to + 1 day) 00:00 UTC) — full days inclusive
+ */
+export function resolvePeriod(period: string, fromStr: string, toStr: string): DateRange {
+  if (!period) return {};
+
+  const now = new Date();
+  const y   = now.getUTCFullYear();
+  const m   = now.getUTCMonth();
+  const d   = now.getUTCDate();
+  const dow = now.getUTCDay(); // 0 = Sunday
+
+  switch (period) {
+    case 'today':
+      return {
+        createdAfter:  new Date(Date.UTC(y, m, d)),
+        createdBefore: new Date(Date.UTC(y, m, d + 1)),
+      };
+    case 'yesterday':
+      return {
+        createdAfter:  new Date(Date.UTC(y, m, d - 1)),
+        createdBefore: new Date(Date.UTC(y, m, d)),
+      };
+    case 'this_week': {
+      // ISO week starts on Monday; transform Sunday (0) → 6, Mon (1) → 0, …
+      const daysFromMon = (dow + 6) % 7;
+      return {
+        createdAfter:  new Date(Date.UTC(y, m, d - daysFromMon)),
+        createdBefore: new Date(Date.UTC(y, m, d + 1)),
+      };
+    }
+    case 'last_week': {
+      const daysFromMon  = (dow + 6) % 7;
+      const thisMonStart = Date.UTC(y, m, d - daysFromMon);
+      const lastMonStart = thisMonStart - 7 * 86_400_000;
+      return {
+        createdAfter:  new Date(lastMonStart),
+        createdBefore: new Date(thisMonStart),
+      };
+    }
+    case 'this_month':
+      return {
+        createdAfter:  new Date(Date.UTC(y, m, 1)),
+        createdBefore: new Date(Date.UTC(y, m, d + 1)),
+      };
+    case 'last_month':
+      return {
+        // Date.UTC handles m-1 = -1 correctly (rolls back to Dec of previous year)
+        createdAfter:  new Date(Date.UTC(y, m - 1, 1)),
+        createdBefore: new Date(Date.UTC(y, m, 1)),
+      };
+    case 'custom': {
+      const result: DateRange = {};
+      if (fromStr) result.createdAfter = new Date(`${fromStr}T00:00:00.000Z`);
+      if (toStr) {
+        // Advance end by 1 day so the full to-date is included
+        const endDay = new Date(`${toStr}T00:00:00.000Z`);
+        result.createdBefore = new Date(endDay.getTime() + 86_400_000);
+      }
+      return result;
+    }
+    default:
+      return {};
+  }
+}
+
 export type PaginatedOrders = {
   orders: Order[];
   total: number;
@@ -247,43 +327,12 @@ export type OrderStats = {
   totalRevenueCents: number;
 };
 
-export async function getOrderStats(): Promise<OrderStats> {
-  const [totalOrders, paidOrders, unfulfilledOrders, revenue] = await Promise.all([
-    prisma.order.count(),
-    prisma.order.count({ where: { paymentStatus: 'PAID' } }),
-    prisma.order.count({ where: { fulfillmentStatus: 'UNFULFILLED' } }),
-    prisma.order.aggregate({
-      _sum:  { total: true },
-      where: { paymentStatus: 'PAID' },
-    }),
-  ]);
+// ── Internal where-clause builder ─────────────────────────────────────────────
 
+/** Builds a Prisma WHERE clause from GetOrdersInput. Shared by getOrders and getOrderStats. */
+function buildOrderWhere(input: GetOrdersInput): Prisma.OrderWhereInput {
+  const { status, fulfillmentStatus, paymentStatus, customerEmail, search, createdAfter, createdBefore } = input;
   return {
-    totalOrders,
-    paidOrders,
-    unfulfilledOrders,
-    totalRevenueCents: revenue._sum.total ?? 0,
-  };
-}
-
-export async function getOrders(
-  input: GetOrdersInput = {}
-): Promise<PaginatedOrders> {
-  const {
-    page = 1,
-    limit = 20,
-    status,
-    fulfillmentStatus,
-    paymentStatus,
-    customerEmail,
-    search,
-    createdAfter,
-    createdBefore,
-  } = input;
-
-  const skip = (page - 1) * limit;
-
-  const where: Prisma.OrderWhereInput = {
     ...(status            && { status }),
     ...(fulfillmentStatus && { fulfillmentStatus }),
     ...(paymentStatus     && { paymentStatus }),
@@ -302,6 +351,43 @@ export async function getOrders(
       },
     }),
   };
+}
+
+export async function getOrderStats(input: GetOrderStatsInput = {}): Promise<OrderStats> {
+  const base = buildOrderWhere(input);
+
+  /**
+   * AND combinator so the extra condition is additive, not overriding.
+   * e.g. if base already contains paymentStatus=FAILED, paidOrders will be 0 (correct).
+   * When base is empty, skip the AND wrapper to keep queries lean.
+   */
+  const withBase = (extra: Prisma.OrderWhereInput): Prisma.OrderWhereInput =>
+    Object.keys(base).length === 0 ? extra : { AND: [base, extra] };
+
+  const [totalOrders, paidOrders, unfulfilledOrders, revenue] = await Promise.all([
+    prisma.order.count({ where: base }),
+    prisma.order.count({ where: withBase({ paymentStatus: 'PAID' }) }),
+    prisma.order.count({ where: withBase({ fulfillmentStatus: 'UNFULFILLED' }) }),
+    prisma.order.aggregate({
+      _sum:  { total: true },
+      where: withBase({ paymentStatus: 'PAID' }),
+    }),
+  ]);
+
+  return {
+    totalOrders,
+    paidOrders,
+    unfulfilledOrders,
+    totalRevenueCents: revenue._sum.total ?? 0,
+  };
+}
+
+export async function getOrders(
+  input: GetOrdersInput = {}
+): Promise<PaginatedOrders> {
+  const { page = 1, limit = 20 } = input;
+  const skip  = (page - 1) * limit;
+  const where = buildOrderWhere(input);
 
   const [orders, total] = await Promise.all([
     prisma.order.findMany({

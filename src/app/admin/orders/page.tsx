@@ -1,92 +1,12 @@
 import Link from 'next/link';
-import { getOrders, getOrderStats, type PaymentStatus, type FulfillmentStatus } from '@/lib/orders';
+import {
+  getOrders,
+  getOrderStats,
+  resolvePeriod,
+  type PaymentStatus,
+  type FulfillmentStatus,
+} from '@/lib/orders';
 import OrderFilters from './OrderFilters';
-
-// ── Date-range helper ─────────────────────────────────────────────────────────
-
-type DateRange = { createdAfter?: Date; createdBefore?: Date };
-
-/**
- * Maps a period preset (or 'custom') to a UTC date range for the createdAt filter.
- *
- * All presets use UTC so results are consistent regardless of server timezone:
- *   today       → [00:00 UTC today, 00:00 UTC tomorrow)
- *   yesterday   → [00:00 UTC yesterday, 00:00 UTC today)
- *   this_week   → [00:00 UTC Monday of the current ISO week, 00:00 UTC tomorrow)
- *   last_week   → [00:00 UTC Monday of last week, 00:00 UTC this Monday)
- *   this_month  → [00:00 UTC 1st of this month, 00:00 UTC tomorrow)
- *   last_month  → [00:00 UTC 1st of last month, 00:00 UTC 1st of this month)
- *   custom      → [from 00:00 UTC, (to + 1 day) 00:00 UTC) — both inclusive as full days
- */
-function resolvePeriod(period: string, fromStr: string, toStr: string): DateRange {
-  if (!period) return {};
-
-  const now = new Date();
-  const y   = now.getUTCFullYear();
-  const m   = now.getUTCMonth();
-  const d   = now.getUTCDate();
-  const dow = now.getUTCDay(); // 0 = Sunday, 1 = Monday, …
-
-  switch (period) {
-    case 'today':
-      return {
-        createdAfter:  new Date(Date.UTC(y, m, d)),
-        createdBefore: new Date(Date.UTC(y, m, d + 1)),
-      };
-
-    case 'yesterday':
-      return {
-        createdAfter:  new Date(Date.UTC(y, m, d - 1)),
-        createdBefore: new Date(Date.UTC(y, m, d)),
-      };
-
-    case 'this_week': {
-      // ISO week starts on Monday; transform Sunday (0) → 6, Mon (1) → 0, …
-      const daysFromMon = (dow + 6) % 7;
-      return {
-        createdAfter:  new Date(Date.UTC(y, m, d - daysFromMon)),
-        createdBefore: new Date(Date.UTC(y, m, d + 1)),
-      };
-    }
-
-    case 'last_week': {
-      const daysFromMon  = (dow + 6) % 7;
-      const thisMonStart = Date.UTC(y, m, d - daysFromMon);
-      const lastMonStart = thisMonStart - 7 * 86_400_000;
-      return {
-        createdAfter:  new Date(lastMonStart),
-        createdBefore: new Date(thisMonStart),
-      };
-    }
-
-    case 'this_month':
-      return {
-        createdAfter:  new Date(Date.UTC(y, m, 1)),
-        createdBefore: new Date(Date.UTC(y, m, d + 1)),
-      };
-
-    case 'last_month':
-      return {
-        // Date.UTC handles m-1 = -1 correctly (rolls back to December of previous year)
-        createdAfter:  new Date(Date.UTC(y, m - 1, 1)),
-        createdBefore: new Date(Date.UTC(y, m, 1)),
-      };
-
-    case 'custom': {
-      const result: DateRange = {};
-      if (fromStr) result.createdAfter  = new Date(`${fromStr}T00:00:00.000Z`);
-      if (toStr) {
-        // Advance end by 1 day so the full to-date is included
-        const endDay = new Date(`${toStr}T00:00:00.000Z`);
-        result.createdBefore = new Date(endDay.getTime() + 86_400_000);
-      }
-      return result;
-    }
-
-    default:
-      return {};
-  }
-}
 
 // ── Formatting helpers ─────────────────────────────────────────────────────
 
@@ -184,37 +104,98 @@ export default async function AdminOrdersPage({
   const period            = typeof sp.period            === 'string' ? sp.period            : '';
   const from              = typeof sp.from              === 'string' ? sp.from              : '';
   const to                = typeof sp.to                === 'string' ? sp.to                : '';
+  const statsScope        = typeof sp.statsScope        === 'string' ? sp.statsScope        : '';
 
   const { createdAfter, createdBefore } = resolvePeriod(period, from, to);
 
-  const [{ orders, total }, stats] = await Promise.all([
-    getOrders({
-      limit:             100,
-      search:            search            || undefined,
-      paymentStatus:     (paymentStatus    || undefined) as PaymentStatus     | undefined,
-      fulfillmentStatus: (fulfillmentStatus || undefined) as FulfillmentStatus | undefined,
-      createdAfter,
-      createdBefore,
-    }),
-    getOrderStats(),
-  ]);
-
   const isFiltered        = !!(search || paymentStatus || fulfillmentStatus || period);
   const isPaidUnfulfilled = paymentStatus === 'PAID' && fulfillmentStatus === 'UNFULFILLED';
+  const showFilteredStats = isFiltered && statsScope === 'filtered';
+
+  // Consolidate active filter params (shared by getOrders + conditional getOrderStats)
+  const activeFilters = {
+    search:            search            || undefined,
+    paymentStatus:     (paymentStatus    || undefined) as PaymentStatus     | undefined,
+    fulfillmentStatus: (fulfillmentStatus || undefined) as FulfillmentStatus | undefined,
+    createdAfter,
+    createdBefore,
+  };
+
+  const [{ orders, total }, globalStats, filteredStats] = await Promise.all([
+    getOrders({ limit: 100, ...activeFilters }),
+    // Global stats always fetched — used for the quick-filter badge
+    getOrderStats(),
+    // Filtered stats only fetched when the toggle is in "Filtered Range" mode
+    showFilteredStats ? getOrderStats(activeFilters) : Promise.resolve(null),
+  ]);
+
+  const displayStats = filteredStats ?? globalStats;
+
+  // ── URL helpers (server-side, no client needed) ─────────────────────────────
+  // Build the query string from current data-filters only (no UI-only params like statsScope)
+  const activeQs = new URLSearchParams();
+  if (search)            activeQs.set('search', search);
+  if (paymentStatus)     activeQs.set('paymentStatus', paymentStatus);
+  if (fulfillmentStatus) activeQs.set('fulfillmentStatus', fulfillmentStatus);
+  if (period)            activeQs.set('period', period);
+  if (period === 'custom' && from) activeQs.set('from', from);
+  if (period === 'custom' && to)   activeQs.set('to', to);
+
+  const activeQsStr   = activeQs.toString();
+  // Export URL: same filters as the current view
+  const exportUrl     = `/api/admin/orders/export${activeQsStr ? `?${activeQsStr}` : ''}`;
+  // Stats toggle URLs: preserve data-filters, change only statsScope
+  const allTimeHref   = `/admin/orders${activeQsStr ? `?${activeQsStr}` : ''}`;
+  const filteredQs    = new URLSearchParams(activeQsStr);
+  filteredQs.set('statsScope', 'filtered');
+  const filteredHref  = `/admin/orders?${filteredQs}`;
 
   return (
     <div className="space-y-6">
 
       {/* ── Summary cards ──────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <StatCard label="Total Orders"  value={stats.totalOrders} />
-        <StatCard label="Paid"          value={stats.paidOrders}         accent="green" />
-        <StatCard
-          label="Unfulfilled"
-          value={stats.unfulfilledOrders}
-          accent={stats.unfulfilledOrders > 0 ? 'amber' : undefined}
-        />
-        <StatCard label="Revenue (Paid)" value={formatRevenue(stats.totalRevenueCents)} />
+      <div>
+        {/* Toggle row — only visible when filters are active */}
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+            Summary: {showFilteredStats ? 'Filtered Range' : 'All Time'}
+          </span>
+          {isFiltered && (
+            <div className="flex overflow-hidden rounded-lg border border-gray-200 text-xs font-medium">
+              <Link
+                href={allTimeHref}
+                className={`px-3 py-1.5 transition-colors ${
+                  !showFilteredStats
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                All Time
+              </Link>
+              <Link
+                href={filteredHref}
+                className={`border-l border-gray-200 px-3 py-1.5 transition-colors ${
+                  showFilteredStats
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                Filtered Range
+              </Link>
+            </div>
+          )}
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <StatCard label="Total Orders"   value={displayStats.totalOrders} />
+          <StatCard label="Paid"           value={displayStats.paidOrders}           accent="green" />
+          <StatCard
+            label="Unfulfilled"
+            value={displayStats.unfulfilledOrders}
+            accent={displayStats.unfulfilledOrders > 0 ? 'amber' : undefined}
+          />
+          <StatCard label="Revenue (Paid)" value={formatRevenue(displayStats.totalRevenueCents)} />
+        </div>
       </div>
 
       {/* ── Page header ────────────────────────────────────────────────────── */}
@@ -223,12 +204,13 @@ export default async function AdminOrdersPage({
           <h1 className="text-2xl font-bold text-gray-900">Orders</h1>
           <p className="mt-0.5 text-sm text-gray-500">
             {isFiltered
-              ? `${total} of ${stats.totalOrders} orders`
-              : `${stats.totalOrders} orders total`}
+              ? `${total} of ${globalStats.totalOrders} orders`
+              : `${globalStats.totalOrders} orders total`}
           </p>
         </div>
+        {/* Export CSV — carries the active filters so the download matches the view */}
         <Link
-          href="/api/admin/orders/export"
+          href={exportUrl}
           className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white
                      px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50
                      transition-colors"
@@ -250,7 +232,8 @@ export default async function AdminOrdersPage({
         initialPeriod={period}
         initialFrom={from}
         initialTo={to}
-        unfulfilledOrders={stats.unfulfilledOrders}
+        initialStatsScope={statsScope}
+        unfulfilledOrders={globalStats.unfulfilledOrders}
         isQuickFilterActive={isPaidUnfulfilled}
       />
 

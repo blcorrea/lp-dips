@@ -1,6 +1,13 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { isAdminAuthenticated } from '@/lib/admin-auth';
-import { getOrders, type Order, type OrderItem } from '@/lib/orders';
+import {
+  getOrders,
+  resolvePeriod,
+  type Order,
+  type OrderItem,
+  type PaymentStatus,
+  type FulfillmentStatus,
+} from '@/lib/orders';
 
 // ── CSV helpers ───────────────────────────────────────────────────────────────
 
@@ -90,12 +97,30 @@ function buildRow(order: Order, item?: OrderItem): string {
 
 // ── Route handler ─────────────────────────────────────────────────────────────
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   if (!(await isAdminAuthenticated())) {
     return new NextResponse('Unauthorized', { status: 401 });
   }
 
-  const { orders } = await getOrders({ limit: 10_000 });
+  // Mirror the same filter params used by /admin/orders so the export matches the view
+  const sp              = request.nextUrl.searchParams;
+  const search          = sp.get('search')            ?? '';
+  const paymentStatus   = sp.get('paymentStatus')     ?? '';
+  const fulfillmentStatus = sp.get('fulfillmentStatus') ?? '';
+  const period          = sp.get('period')            ?? '';
+  const from            = sp.get('from')              ?? '';
+  const to              = sp.get('to')                ?? '';
+
+  const { createdAfter, createdBefore } = resolvePeriod(period, from, to);
+
+  const { orders } = await getOrders({
+    limit:             10_000,
+    search:            search            || undefined,
+    paymentStatus:     (paymentStatus    || undefined) as PaymentStatus     | undefined,
+    fulfillmentStatus: (fulfillmentStatus || undefined) as FulfillmentStatus | undefined,
+    createdAfter,
+    createdBefore,
+  });
 
   const rows: string[] = [HEADERS.map(csvField).join(',')];
 

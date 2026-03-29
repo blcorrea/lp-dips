@@ -34,6 +34,7 @@ type Props = {
   initialPeriod:            string;
   initialFrom:              string;
   initialTo:                string;
+  initialStatsScope:        string;
   unfulfilledOrders:        number;
   isQuickFilterActive:      boolean;
 };
@@ -47,6 +48,7 @@ export default function OrderFilters({
   initialPeriod,
   initialFrom,
   initialTo,
+  initialStatsScope,
   unfulfilledOrders,
   isQuickFilterActive,
 }: Props) {
@@ -69,6 +71,8 @@ export default function OrderFilters({
     const p  = overrides.period            ?? period;
     const f  = overrides.from              ?? from;
     const t  = overrides.to               ?? to;
+    // Preserve statsScope so the summary toggle isn't reset when applying filters
+    const sc = overrides.statsScope        ?? initialStatsScope;
 
     if (s)  params.set('search', s);
     if (ps) params.set('paymentStatus', ps);
@@ -76,6 +80,7 @@ export default function OrderFilters({
     if (p)  params.set('period', p);
     if (p === 'custom' && f) params.set('from', f);
     if (p === 'custom' && t) params.set('to', t);
+    if (sc) params.set('statsScope', sc);
 
     const qs = params.toString();
     return '/admin/orders' + (qs ? `?${qs}` : '');
