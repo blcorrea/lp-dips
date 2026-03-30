@@ -8,6 +8,7 @@ import {
   sendOrderConfirmationEmail,
   type ConfirmationEmailData,
 } from '@/lib/email-templates';
+import { appendOrderToSheet, type SheetRowData } from '@/lib/google-sheets';
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 const webhookSecret   = process.env.STRIPE_WEBHOOK_SECRET;
@@ -369,6 +370,40 @@ export async function POST(req: Request) {
         } catch (err) {
           console.error('❌ Failed to send order confirmation email:', err);
         }
+      }
+    }
+
+    // ── Sync to Google Sheets (operational warehouse mirror) ─────────────────
+    // Runs after the DB transaction and email so it never blocks the critical path.
+    // A Sheets failure MUST NOT affect the Stripe webhook response.
+    if (emailData) {
+      const sheetData: SheetRowData = {
+        orderNumber:          emailData.orderNumber,
+        createdAt:            emailData.createdAt,
+        customerEmail:        emailData.customerEmail,
+        customerName:         emailData.customerName,
+        total:                emailData.total,
+        tax:                  emailData.tax,
+        shippingCost:         emailData.shippingCost,
+        currency:             emailData.currency,
+        items:                emailData.items,
+        shippingName:         emailData.shippingName,
+        shippingAddressLine1: emailData.shippingAddressLine1,
+        shippingAddressLine2: emailData.shippingAddressLine2,
+        shippingCity:         emailData.shippingCity,
+        shippingState:        emailData.shippingState,
+        shippingPostalCode:   emailData.shippingPostalCode,
+        shippingCountry:      emailData.shippingCountry,
+      };
+
+      try {
+        await appendOrderToSheet(sheetData);
+        console.log('✅ Order synced to Google Sheets', {
+          orderNumber: sheetData.orderNumber,
+        });
+      } catch (err) {
+        // Non-critical — log and continue. The order is safely in the DB.
+        console.error('❌ Google Sheets sync failed (non-critical):', err);
       }
     }
 
