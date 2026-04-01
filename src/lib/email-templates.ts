@@ -104,11 +104,16 @@ function emailWrapper(content: string): string {
           <tr>
             <td style="background-color:${PURPLE};padding:36px 40px;text-align:center;
                        border-radius:12px 12px 0 0;">
-              <h1 style="margin:0;color:#ffffff;font-size:32px;letter-spacing:6px;
-                         font-family:Arial,Helvetica,sans-serif;font-weight:700;">
-                DIPS
-              </h1>
-              <p style="margin:8px 0 0;color:${ORANGE};font-size:13px;letter-spacing:2px;
+              <img
+                src="https://www.dipschocolate.com/email-logo.png"
+                alt="Dips Chocolate"
+                width="180"
+                height="auto"
+                border="0"
+                style="display:block;margin:0 auto;width:180px;max-width:100%;
+                       height:auto;border:0;outline:none;text-decoration:none;"
+              >
+              <p style="margin:14px 0 0;color:${ORANGE};font-size:13px;letter-spacing:2px;
                         font-family:Arial,Helvetica,sans-serif;text-transform:uppercase;">
                 Share it. Feel it. Love it.
               </p>
