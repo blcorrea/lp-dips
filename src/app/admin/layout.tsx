@@ -14,27 +14,14 @@ export default async function AdminLayout({
 }) {
   const ok = await isAdminAuthenticated();
 
+  // When not authenticated, render children directly (no navbar).
+  // Middleware already redirects unauthenticated users to /admin/login for all
+  // protected routes, so the only page that reaches here unauthenticated is
+  // /admin/login itself — which renders its own full-page UI.
   if (!ok) {
     return (
       <html lang="en">
-        <body className="bg-gray-100 antialiased">
-          <div className="min-h-screen flex items-center justify-center p-6">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 max-w-md w-full text-center space-y-4">
-              <div className="text-3xl font-bold text-gray-300">🔒</div>
-              <h1 className="text-xl font-bold text-gray-900">Access Denied</h1>
-              <p className="text-sm text-gray-500">
-                Authenticate with your secret token to enter the admin area:
-              </p>
-              <code className="block bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-800 break-all text-left">
-                /api/admin/login?token=<span className="text-blue-600">YOUR_ADMIN_SECRET</span>
-              </code>
-              <p className="text-xs text-gray-400">
-                Set <code className="bg-gray-100 px-1 rounded">ADMIN_SECRET</code> in your{' '}
-                <code className="bg-gray-100 px-1 rounded">.env</code> file first.
-              </p>
-            </div>
-          </div>
-        </body>
+        <body className="bg-gray-50 antialiased">{children}</body>
       </html>
     );
   }

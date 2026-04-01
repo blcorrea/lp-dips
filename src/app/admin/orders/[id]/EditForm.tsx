@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useSearchParams } from 'next/navigation';
 import type { FulfillmentStatus } from '@/lib/orders';
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -41,8 +40,6 @@ const labelCls = 'block text-xs font-semibold uppercase tracking-wider text-gray
 // ── Component ──────────────────────────────────────────────────────────────
 
 export default function EditForm({ orderId, initialValues }: Props) {
-  const searchParams          = useSearchParams();
-  const token                 = searchParams.get('token') ?? '';
   const [values, setValues]   = useState<EditFormValues>(initialValues);
   const [saving, setSaving]   = useState(false);
   const [success, setSuccess] = useState(false);
@@ -72,8 +69,7 @@ export default function EditForm({ orderId, initialValues }: Props) {
           : null,
       };
 
-      const tokenQs = token ? `?token=${encodeURIComponent(token)}` : '';
-      const res  = await fetch(`/api/admin/orders/${orderId}${tokenQs}`, {
+      const res  = await fetch(`/api/admin/orders/${orderId}`, {
         method:  'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify(payload),

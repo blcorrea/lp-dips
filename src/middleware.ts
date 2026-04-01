@@ -4,15 +4,47 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const intlMiddleware = createMiddleware(routing);
 
+// Inline the cookie name here to avoid importing from admin-auth.ts,
+// which uses next/headers (not available in Edge middleware runtime).
+const ADMIN_COOKIE = 'admin_token';
+
+function isAdminAuthed(request: NextRequest): boolean {
+  const secret = process.env.ADMIN_SECRET;
+  if (!secret) return false;
+  return request.cookies.get(ADMIN_COOKIE)?.value === secret;
+}
+
 export default function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Se já houver locale na URL, deixa o next-intl seguir normalmente
+  // ── Admin auth protection ──────────────────────────────────────────────────
+  // /admin/login and /api/admin/login are always public (they ARE the auth layer)
+  const isAdminRoute    = pathname.startsWith('/admin') || pathname.startsWith('/api/admin');
+  const isAdminLoginUrl = pathname === '/admin/login' || pathname.startsWith('/api/admin/login');
+
+  if (isAdminRoute && !isAdminLoginUrl) {
+    if (!isAdminAuthed(request)) {
+      // API routes → JSON 401 so fetch() callers get a proper error
+      if (pathname.startsWith('/api/')) {
+        return new NextResponse(
+          JSON.stringify({ error: 'Unauthorized' }),
+          { status: 401, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+      // Page routes → redirect to login
+      const loginUrl = request.nextUrl.clone();
+      loginUrl.pathname = '/admin/login';
+      loginUrl.search   = '';
+      return NextResponse.redirect(loginUrl);
+    }
+    return NextResponse.next();
+  }
+
+  // ── i18n (unchanged) ──────────────────────────────────────────────────────
   const pathnameHasLocale = routing.locales.some(
     (locale) => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`)
   );
 
-  // Sempre força / -> /en
   if (!pathnameHasLocale && pathname === '/') {
     const url = request.nextUrl.clone();
     url.pathname = '/en';
@@ -23,5 +55,5 @@ export default function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/(en|es|pt)/:path*']
+  matcher: ['/', '/(en|es|pt)/:path*', '/admin/:path*', '/api/admin/:path*'],
 };
