@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { isAdminAuthenticated } from '@/lib/admin-auth';
 import { updateOrder, type FulfillmentStatus, type UpdateOrderInput } from '@/lib/orders';
 import { sendOrderShippedEmail } from '@/lib/email-templates';
+import { updateOrderInSheet } from '@/lib/google-sheets';
 
 // ── Runtime-checkable list of valid FulfillmentStatus values ─────────────────
 // (Prisma 7 exports them as types only, so we define the array explicitly)
@@ -125,6 +126,23 @@ export async function PATCH(
           console.error('❌ Failed to send shipping notification email:', err);
         }
       }
+    }
+
+    // ── Sync operational fields to Google Sheets ─────────────────────────────
+    // Non-critical — a Sheets failure must not affect the admin response.
+    try {
+      await updateOrderInSheet({
+        orderNumber:       order.orderNumber,
+        fulfillmentStatus: order.fulfillmentStatus,
+        carrier:           order.carrier,
+        trackingNumber:    order.trackingNumber,
+        shippedAt:         order.shippedAt,
+      });
+      console.log('✅ Order operational data synced to Google Sheets', {
+        orderNumber: order.orderNumber,
+      });
+    } catch (err) {
+      console.error('❌ Google Sheets update sync failed (non-critical):', err);
     }
 
     return NextResponse.json({ ok: true, order });
