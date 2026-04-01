@@ -20,8 +20,13 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  // ── Auth ────────────────────────────────────────────────────────────────────
-  if (!(await isAdminAuthenticated())) {
+  // ── Auth: accept cookie (login flow) OR ?token= query param (link flow) ─────
+  const secret     = process.env.ADMIN_SECRET;
+  const tokenParam = request.nextUrl.searchParams.get('token');
+  const cookieOk   = await isAdminAuthenticated();
+  const tokenOk    = !!(secret && tokenParam && tokenParam === secret);
+
+  if (!cookieOk && !tokenOk) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
