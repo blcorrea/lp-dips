@@ -18,12 +18,14 @@ export default function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // ── Admin auth protection ──────────────────────────────────────────────────
-  // /admin/login and /api/admin/login are always public (they ARE the auth layer)
+  // All /admin/* and /api/admin/* routes are handled here so they never fall
+  // through to intlMiddleware (which would 404 them as non-locale routes).
   const isAdminRoute    = pathname.startsWith('/admin') || pathname.startsWith('/api/admin');
   const isAdminLoginUrl = pathname === '/admin/login' || pathname.startsWith('/api/admin/login');
 
-  if (isAdminRoute && !isAdminLoginUrl) {
-    if (!isAdminAuthed(request)) {
+  if (isAdminRoute) {
+    // /admin/login and /api/admin/login are always public
+    if (!isAdminLoginUrl && !isAdminAuthed(request)) {
       // API routes → JSON 401 so fetch() callers get a proper error
       if (pathname.startsWith('/api/')) {
         return new NextResponse(
@@ -37,6 +39,7 @@ export default function middleware(request: NextRequest) {
       loginUrl.search   = '';
       return NextResponse.redirect(loginUrl);
     }
+    // Authenticated (or public admin URL) — skip intl middleware entirely
     return NextResponse.next();
   }
 
