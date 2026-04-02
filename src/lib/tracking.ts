@@ -31,7 +31,21 @@ function meta(event: string, params?: Record<string, unknown>): void {
 }
 
 function ga(event: string, params?: Record<string, unknown>): void {
-  if (typeof window === 'undefined' || !window.gtag || !GA4_ID) return;
+  if (typeof window === 'undefined' || !GA4_ID) return;
+
+  // Bootstrap dataLayer + a gtag stub if the CDN script hasn't loaded yet.
+  // Events pushed here are queued; gtag.js processes the full dataLayer when
+  // it eventually loads — this mirrors the standard Google snippet and prevents
+  // silent event drops that happen when useEffect runs before afterInteractive
+  // scripts have executed.
+  if (!window.dataLayer) window.dataLayer = [];
+  if (!window.gtag) {
+    // Regular function (not arrow) so `arguments` is available.
+    // Matches the official Google snippet: function gtag(){dataLayer.push(arguments)}
+    // eslint-disable-next-line prefer-rest-params
+    window.gtag = function () { (window.dataLayer as unknown[]).push(arguments); };
+  }
+
   window.gtag('event', event, params);
 }
 
