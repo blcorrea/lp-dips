@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { getPurchasableDipsProduct } from "@/lib/shopify-product";
 import ProductPurchaseBox from "@/components/ProductPurchaseBox";
 import BuyImageGallery from "@/components/BuyImageGallery";
+import TrackViewItem from "@/components/TrackViewItem";
 
 type BuySectionProps = {
   locale: string;
@@ -89,6 +90,15 @@ export default async function BuySection({ locale }: BuySectionProps) {
                   priceAmount={product.priceAmount}
                   currencyCode={product.currencyCode}
                   buttonClassName="w-full min-w-0 sm:min-w-[240px]"
+                  productId={product.productId}
+                  productName={product.title}
+                />
+                <TrackViewItem
+                  id={product.productId}
+                  name={product.title}
+                  price={product.priceAmount}
+                  quantity={1}
+                  currency={product.currencyCode}
                 />
               </div>
             </div>
