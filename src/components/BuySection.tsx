@@ -3,6 +3,12 @@ import { getPurchasableDipsProduct } from "@/lib/shopify-product";
 import ProductPurchaseBox from "@/components/ProductPurchaseBox";
 import BuyImageGallery from "@/components/BuyImageGallery";
 import TrackViewItem from "@/components/TrackViewItem";
+import SocialMediaButtons from "@/components/SocialMediaButtons";
+import {
+  formatLocalizedPrice,
+  getLocalizedPricing,
+  getWeightLabel,
+} from "@/lib/pricing";
 
 type BuySectionProps = {
   locale: string;
@@ -14,13 +20,13 @@ export default async function BuySection({ locale }: BuySectionProps) {
 
   if (!product) return null;
 
-  const formattedPrice = new Intl.NumberFormat(
-    locale === "pt" ? "pt-BR" : locale === "es" ? "es-ES" : "en-US",
-    {
-      style: "currency",
-      currency: product.currencyCode,
-    }
-  ).format(product.priceAmount);
+  const localizedPricing = getLocalizedPricing(locale);
+  const weightLabel = getWeightLabel(locale, 120);
+  const formattedPrice = formatLocalizedPrice(
+    locale,
+    localizedPricing.price,
+    localizedPricing.currency
+  );
 
   const galleryImages = [
     {
@@ -83,23 +89,30 @@ export default async function BuySection({ locale }: BuySectionProps) {
                     / {t("perBox")}
                   </span>
                 </div>
+
+                <p className="mt-2 text-brand-charcoal/60 text-[13px] sm:text-[14px] font-medium">
+                  {weightLabel}
+                </p>
               </div>
 
               <div className="mt-9">
                 <ProductPurchaseBox
-                  priceAmount={product.priceAmount}
-                  currencyCode={product.currencyCode}
+                  priceAmount={localizedPricing.price}
+                  currencyCode={localizedPricing.currency}
                   buttonClassName="w-full min-w-0 sm:min-w-[240px]"
                   productId={product.productId}
                   productName={product.title}
+                  locale={locale}
                 />
                 <TrackViewItem
                   id={product.productId}
                   name={product.title}
-                  price={product.priceAmount}
+                  price={localizedPricing.price}
                   quantity={1}
-                  currency={product.currencyCode}
+                  currency={localizedPricing.currency}
                 />
+
+                <SocialMediaButtons className="mt-6" />
               </div>
             </div>
           </div>

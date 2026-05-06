@@ -12,6 +12,8 @@ type BuyNowButtonProps = {
   productName?:  string;
   productPrice?: number; // major currency units (e.g. 29.90)
   currency?:     string;
+  // Locale passed to the checkout API so Stripe currency/amount match the UI
+  locale?:       string;
 };
 
 export default function BuyNowButton({
@@ -22,6 +24,7 @@ export default function BuyNowButton({
   productName,
   productPrice,
   currency = "USD",
+  locale = "en",
 }: BuyNowButtonProps) {
   const [loading, setLoading]           = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -40,7 +43,7 @@ export default function BuyNowButton({
       const response = await fetch("/api/stripe/create-checkout-session", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ quantity }),
+        body:    JSON.stringify({ quantity, locale }),
       });
 
       const data: { ok: boolean; url?: string; error?: string } =

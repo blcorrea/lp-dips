@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import BuyNowButton from './BuyNowButton';
+import { formatLocalizedPrice } from '@/lib/pricing';
 
 type ProductPurchaseBoxProps = {
   priceAmount:      number;
@@ -11,6 +12,8 @@ type ProductPurchaseBoxProps = {
   // Optional — passed through to BuyNowButton for tracking
   productId?:       string;
   productName?:     string;
+  // Locale drives currency formatting and is forwarded to the checkout API
+  locale?:          string;
 };
 
 export default function ProductPurchaseBox({
@@ -20,6 +23,7 @@ export default function ProductPurchaseBox({
   buttonClassName = '',
   productId,
   productName,
+  locale = 'en',
 }: ProductPurchaseBoxProps) {
   const [quantity, setQuantity] = useState(1);
 
@@ -31,19 +35,15 @@ export default function ProductPurchaseBox({
     setQuantity((prev) => Math.min(10, prev + 1));
   }
 
-  const formattedUnitPrice = useMemo(() => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currencyCode,
-    }).format(priceAmount);
-  }, [priceAmount, currencyCode]);
+  const formattedUnitPrice = useMemo(
+    () => formatLocalizedPrice(locale, priceAmount, currencyCode),
+    [priceAmount, currencyCode, locale]
+  );
 
-  const formattedTotal = useMemo(() => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currencyCode,
-    }).format(priceAmount * quantity);
-  }, [priceAmount, quantity, currencyCode]);
+  const formattedTotal = useMemo(
+    () => formatLocalizedPrice(locale, priceAmount * quantity, currencyCode),
+    [priceAmount, quantity, currencyCode, locale]
+  );
 
   return (
     <div className="space-y-5">
@@ -95,6 +95,7 @@ export default function ProductPurchaseBox({
         productName={productName}
         productPrice={priceAmount}
         currency={currencyCode}
+        locale={locale}
       />
     </div>
   );

@@ -3,13 +3,32 @@ import { notFound } from 'next/navigation';
 import { getPurchasableDipsProduct } from '@/lib/shopify-product';
 import ProductPurchaseBox from '@/components/ProductPurchaseBox';
 import TrackViewItem from '@/components/TrackViewItem';
+import SocialMediaButtons from '@/components/SocialMediaButtons';
+import {
+  formatLocalizedPrice,
+  getLocalizedPricing,
+  getWeightLabel,
+} from '@/lib/pricing';
 
-export default async function DipsProductPage() {
+type DipsProductPageProps = {
+  params: Promise<{ locale: string }>;
+};
+
+export default async function DipsProductPage({ params }: DipsProductPageProps) {
+  const { locale } = await params;
   const product = await getPurchasableDipsProduct();
 
   if (!product) {
     notFound();
   }
+
+  const localizedPricing = getLocalizedPricing(locale);
+  const weightLabel = getWeightLabel(locale, 120);
+  const formattedPrice = formatLocalizedPrice(
+    locale,
+    localizedPricing.price,
+    localizedPricing.currency
+  );
 
   return (
     <main className="min-h-screen bg-brand-cream">
@@ -34,10 +53,10 @@ export default async function DipsProductPage() {
             </h1>
 
             <p className="mt-5 text-brand-charcoal text-lg lg:text-xl font-medium">
-              {new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: product.currencyCode,
-              }).format(product.priceAmount)}
+              {formattedPrice}
+            </p>
+            <p className="mt-1 text-brand-charcoal/60 text-sm lg:text-base">
+              {weightLabel}
             </p>
 
             <p className="mt-6 text-brand-charcoal/85 text-base lg:text-lg leading-[1.8]">
@@ -46,20 +65,23 @@ export default async function DipsProductPage() {
 
             <div className="mt-8">
               <ProductPurchaseBox
-                priceAmount={product.priceAmount}
-                currencyCode={product.currencyCode}
+                priceAmount={localizedPricing.price}
+                currencyCode={localizedPricing.currency}
                 productId={product.productId}
                 productName={product.title}
+                locale={locale}
               />
             </div>
+
+            <SocialMediaButtons className="mt-6" />
 
             {/* Fires view_item once on client mount — renders nothing */}
             <TrackViewItem
               id={product.productId}
               name={product.title}
-              price={product.priceAmount}
+              price={localizedPricing.price}
               quantity={1}
-              currency={product.currencyCode}
+              currency={localizedPricing.currency}
             />
           </div>
         </div>

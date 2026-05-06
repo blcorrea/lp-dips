@@ -7,6 +7,7 @@ import { useParams } from "next/navigation";
 import Image from "next/image";
 import { ShoppingCart, Menu, X } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
+import SocialMediaButtons from "@/components/SocialMediaButtons";
 
 export default function Header() {
   const t = useTranslations("Header");
@@ -76,6 +77,11 @@ export default function Header() {
             <Link href="/pt" className="hover:text-brand-orange transition-colors">
               PT
             </Link>
+          </div>
+
+          {/* Social media (desktop only, to avoid crowding at md breakpoint) */}
+          <div className="hidden lg:flex items-center">
+            <SocialMediaButtons compact />
           </div>
 
           {/* Cart */}

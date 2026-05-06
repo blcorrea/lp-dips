@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { getPurchasableDipsProduct } from '@/lib/shopify-product';
+import { getLocalizedPricing, isSupportedLocale } from '@/lib/pricing';
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
@@ -15,6 +16,12 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json().catch(() => ({}));
     const quantity = Math.max(1, Math.min(Number(body.quantity) || 1, 10));
+
+    const normalizedLocale =
+      typeof body.locale === 'string' && isSupportedLocale(body.locale)
+        ? body.locale
+        : 'en';
+    const localizedPricing = getLocalizedPricing(normalizedLocale);
 
     const product = await getPurchasableDipsProduct();
 
@@ -34,8 +41,8 @@ export async function POST(request: NextRequest) {
 
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
-      success_url: `${siteUrl}/en/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${siteUrl}/en/product/dips-chocolate`,
+      success_url: `${siteUrl}/${normalizedLocale}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${siteUrl}/${normalizedLocale}/product/dips-chocolate`,
       // Collect shipping address — required for order fulfillment.
       // Adjust allowed_countries to match where you actually ship.
       shipping_address_collection: {
@@ -52,8 +59,8 @@ export async function POST(request: NextRequest) {
         {
           quantity,
           price_data: {
-            currency: product.currencyCode.toLowerCase(),
-            unit_amount: Math.round(product.priceAmount * 100),
+            currency: localizedPricing.currency.toLowerCase(),
+            unit_amount: Math.round(localizedPricing.price * 100),
             product_data: {
               name: product.title,
               description: product.description,
@@ -71,6 +78,9 @@ export async function POST(request: NextRequest) {
         shopify_product_id: product.productId,
         shopify_variant_id: product.variantId,
         shopify_handle: product.handle,
+        locale: normalizedLocale,
+        localized_currency: localizedPricing.currency,
+        localized_unit_price: String(localizedPricing.price),
       },
     });
 
