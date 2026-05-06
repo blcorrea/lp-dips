@@ -100,6 +100,13 @@ model Order {
   shopifyVariantId String?
   shopifyHandle    String?
 
+  // ── Influencer / UTM attribution snapshot (captured at checkout time) ───────
+  influencerRef String?
+  utmSource     String?
+  utmMedium     String?
+  utmCampaign   String?
+  landingPage   String?
+
   // ── Relations ───────────────────────────────────────────────────────────────
   items OrderItem[]
 
@@ -112,6 +119,7 @@ model Order {
   @@index([fulfillmentStatus])
   @@index([stripePaymentIntentId])
   @@index([createdAt])
+  @@index([influencerRef])
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

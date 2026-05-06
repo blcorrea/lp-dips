@@ -1,7 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { trackBeginCheckout, savePendingCheckout } from "@/lib/tracking";
+import {
+  trackBeginCheckout,
+  savePendingCheckout,
+  getAttribution,
+} from "@/lib/tracking";
 
 type BuyNowButtonProps = {
   label?:        string;
@@ -40,10 +44,11 @@ export default function BuyNowButton({
     }
 
     try {
+      const attribution = getAttribution();
       const response = await fetch("/api/stripe/create-checkout-session", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ quantity, locale }),
+        body:    JSON.stringify({ quantity, locale, attribution }),
       });
 
       const data: { ok: boolean; url?: string; error?: string } =

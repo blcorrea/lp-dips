@@ -194,3 +194,104 @@ export function popPendingCheckout(): PendingCheckout | null {
     return null;
   }
 }
+
+// ── Influencer / UTM attribution ──────────────────────────────────────────
+//
+// Captured from the URL on first arrival (first-touch wins) and persisted in
+// localStorage so it survives navigation and refreshes up to ATTRIBUTION_TTL_MS.
+// BuyNowButton reads it back via getAttribution() and forwards it to the
+// checkout API. Stored in localStorage rather than sessionStorage so the
+// influencer credit isn't lost if the user opens the buy page in a new tab.
+
+const ATTRIBUTION_STORAGE_KEY = 'dips_attribution';
+const ATTRIBUTION_TTL_MS      = 30 * 24 * 60 * 60 * 1000; // 30 days
+
+export interface Attribution {
+  ref?:         string;
+  utmSource?:   string;
+  utmMedium?:   string;
+  utmCampaign?: string;
+  landingPage?: string;
+  capturedAt:   number; // epoch ms
+}
+
+function sanitizeParam(value: string | null): string | undefined {
+  if (!value) return undefined;
+  // Trim and cap length to keep payload small and Stripe-metadata friendly (≤500).
+  const trimmed = value.trim().slice(0, 200);
+  return trimmed.length > 0 ? trimmed : undefined;
+}
+
+/**
+ * Reads ref/utm_* from the given URL search string and persists them to
+ * localStorage on FIRST touch only. Subsequent calls are no-ops if attribution
+ * was already captured and is still within TTL — the influencer who originally
+ * brought the user keeps the credit.
+ */
+export function captureAttribution(
+  search: string,
+  landingPage?: string
+): void {
+  if (typeof window === 'undefined') return;
+
+  let params: URLSearchParams;
+  try {
+    params = new URLSearchParams(search);
+  } catch {
+    return;
+  }
+
+  const incoming: Attribution = {
+    ref:         sanitizeParam(params.get('ref')),
+    utmSource:   sanitizeParam(params.get('utm_source')),
+    utmMedium:   sanitizeParam(params.get('utm_medium')),
+    utmCampaign: sanitizeParam(params.get('utm_campaign')),
+    landingPage: landingPage ? sanitizeParam(landingPage) : undefined,
+    capturedAt:  Date.now(),
+  };
+
+  const hasAny =
+    incoming.ref ||
+    incoming.utmSource ||
+    incoming.utmMedium ||
+    incoming.utmCampaign;
+  if (!hasAny) return;
+
+  try {
+    const existingRaw = localStorage.getItem(ATTRIBUTION_STORAGE_KEY);
+    if (existingRaw) {
+      const existing = JSON.parse(existingRaw) as Attribution;
+      const fresh =
+        typeof existing.capturedAt === 'number' &&
+        Date.now() - existing.capturedAt < ATTRIBUTION_TTL_MS;
+      // First-touch wins: keep the existing record while it's still fresh.
+      if (fresh) return;
+    }
+    localStorage.setItem(ATTRIBUTION_STORAGE_KEY, JSON.stringify(incoming));
+  } catch {
+    // localStorage may be unavailable (private browsing, quota, iframe).
+  }
+}
+
+/**
+ * Returns the stored attribution if present and still within TTL, else null.
+ * Never throws.
+ */
+export function getAttribution(): Attribution | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(ATTRIBUTION_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Attribution;
+    if (
+      typeof parsed.capturedAt !== 'number' ||
+      Date.now() - parsed.capturedAt > ATTRIBUTION_TTL_MS
+    ) {
+      localStorage.removeItem(ATTRIBUTION_STORAGE_KEY);
+      return null;
+    }
+    return parsed;
+  } catch {
+    return null;
+  }
+}

@@ -143,6 +143,11 @@ export async function POST(req: Request) {
                 shopifyProductId: session.metadata?.shopify_product_id ?? null,
                 shopifyVariantId: session.metadata?.shopify_variant_id ?? null,
                 shopifyHandle:    session.metadata?.shopify_handle     ?? null,
+                influencerRef: session.metadata?.influencer_ref ?? null,
+                utmSource:     session.metadata?.utm_source     ?? null,
+                utmMedium:     session.metadata?.utm_medium     ?? null,
+                utmCampaign:   session.metadata?.utm_campaign   ?? null,
+                landingPage:   session.metadata?.landing_page   ?? null,
                 items: {
                   create: lineItems.map((item) => ({
                     productName: item.description ?? 'Unknown product',

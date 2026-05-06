@@ -12,6 +12,17 @@ if (!stripeSecretKey) {
 
 const stripe = new Stripe(stripeSecretKey);
 
+// ── Attribution helpers ────────────────────────────────────────────────────
+// `client_reference_id` allows alphanumerics, underscores, dashes; ≤200 chars.
+const CLIENT_REF_PATTERN = /^[A-Za-z0-9_-]{1,200}$/;
+
+/** Returns a trimmed string capped to 500 chars (Stripe metadata value limit), or undefined. */
+function attrString(value: unknown): string | undefined {
+  if (typeof value !== 'string') return undefined;
+  const trimmed = value.trim().slice(0, 500);
+  return trimmed.length > 0 ? trimmed : undefined;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json().catch(() => ({}));
@@ -22,6 +33,29 @@ export async function POST(request: NextRequest) {
         ? body.locale
         : 'en';
     const localizedPricing = getLocalizedPricing(normalizedLocale);
+
+    // Optional influencer/UTM attribution forwarded from the client. When
+    // absent, checkout behaves exactly as before — no metadata keys added.
+    const attribution =
+      body.attribution && typeof body.attribution === 'object'
+        ? (body.attribution as Record<string, unknown>)
+        : null;
+    const influencerRef = attrString(attribution?.ref);
+    const utmSource     = attrString(attribution?.utmSource);
+    const utmMedium     = attrString(attribution?.utmMedium);
+    const utmCampaign   = attrString(attribution?.utmCampaign);
+    const landingPage   = attrString(attribution?.landingPage);
+    const clientReferenceId =
+      influencerRef && CLIENT_REF_PATTERN.test(influencerRef)
+        ? influencerRef
+        : undefined;
+
+    const attributionMetadata: Record<string, string> = {};
+    if (influencerRef) attributionMetadata.influencer_ref = influencerRef;
+    if (utmSource)     attributionMetadata.utm_source     = utmSource;
+    if (utmMedium)     attributionMetadata.utm_medium     = utmMedium;
+    if (utmCampaign)   attributionMetadata.utm_campaign   = utmCampaign;
+    if (landingPage)   attributionMetadata.landing_page   = landingPage;
 
     const product = await getPurchasableDipsProduct();
 
@@ -41,6 +75,7 @@ export async function POST(request: NextRequest) {
 
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
+      ...(clientReferenceId ? { client_reference_id: clientReferenceId } : {}),
       success_url: `${siteUrl}/${normalizedLocale}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl}/${normalizedLocale}/product/dips-chocolate`,
       // Collect shipping address — required for order fulfillment.
@@ -81,6 +116,7 @@ export async function POST(request: NextRequest) {
         locale: normalizedLocale,
         localized_currency: localizedPricing.currency,
         localized_unit_price: String(localizedPricing.price),
+        ...attributionMetadata,
       },
     });
 
