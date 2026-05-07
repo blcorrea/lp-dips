@@ -106,7 +106,7 @@ export async function POST(req: Request) {
             // Read metadata from the expanded session first; fall back to the
             // event payload. Both should agree, but reading from the same object
             // we use for line_items/customer_details guarantees consistency.
-            const metadata = fullSession?.metadata ?? session.metadata ?? {};
+            const metadata = session.metadata ?? {};
 
             const paymentIntentId =
               typeof session.payment_intent === 'string'
