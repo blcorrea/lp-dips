@@ -103,6 +103,11 @@ export async function POST(req: Request) {
             const shipping        = fullSession!.collected_information?.shipping_details ?? null;
             const customerDetails = fullSession!.customer_details;
 
+            // Read metadata from the expanded session first; fall back to the
+            // event payload. Both should agree, but reading from the same object
+            // we use for line_items/customer_details guarantees consistency.
+            const metadata = fullSession?.metadata ?? session.metadata ?? {};
+
             const paymentIntentId =
               typeof session.payment_intent === 'string'
                 ? session.payment_intent
@@ -140,14 +145,14 @@ export async function POST(req: Request) {
                 shippingState:        shipping?.address?.state    ?? null,
                 shippingPostalCode:   shipping?.address?.postal_code ?? null,
                 shippingCountry:      shipping?.address?.country  ?? null,
-                shopifyProductId: session.metadata?.shopify_product_id ?? null,
-                shopifyVariantId: session.metadata?.shopify_variant_id ?? null,
-                shopifyHandle:    session.metadata?.shopify_handle     ?? null,
-                influencerRef: session.metadata?.influencer_ref ?? null,
-                utmSource:     session.metadata?.utm_source     ?? null,
-                utmMedium:     session.metadata?.utm_medium     ?? null,
-                utmCampaign:   session.metadata?.utm_campaign   ?? null,
-                landingPage:   session.metadata?.landing_page   ?? null,
+                shopifyProductId: metadata.shopify_product_id ?? null,
+                shopifyVariantId: metadata.shopify_variant_id ?? null,
+                shopifyHandle:    metadata.shopify_handle     ?? null,
+                influencerRef:    metadata.influencer_ref     ?? null,
+                utmSource:        metadata.utm_source         ?? null,
+                utmMedium:        metadata.utm_medium         ?? null,
+                utmCampaign:      metadata.utm_campaign       ?? null,
+                landingPage:      metadata.landing_page       ?? null,
                 items: {
                   create: lineItems.map((item) => ({
                     productName: item.description ?? 'Unknown product',
@@ -155,10 +160,8 @@ export async function POST(req: Request) {
                     unitPrice:   item.price?.unit_amount ?? 0,
                     subtotal:
                       (item.price?.unit_amount ?? 0) * (item.quantity ?? 1),
-                    shopifyProductId:
-                      session.metadata?.shopify_product_id ?? null,
-                    shopifyVariantId:
-                      session.metadata?.shopify_variant_id ?? null,
+                    shopifyProductId: metadata.shopify_product_id ?? null,
+                    shopifyVariantId: metadata.shopify_variant_id ?? null,
                   })),
                 },
               },
