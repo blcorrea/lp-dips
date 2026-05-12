@@ -168,6 +168,72 @@ export async function POST(req: Request) {
             });
             capturedOrderId = createdOrder.id;
 
+            // ── Affiliate commission (MVP) ─────────────────────────────────────
+            // If this order carries a referral code matching an active Affiliate,
+            // snapshot a Commission inside the same transaction so the rate at
+            // order time is preserved. Missing/inactive affiliates are silently
+            // skipped — they must never break checkout webhook processing.
+            if (createdOrder.influencerRef) {
+              const affiliate = await tx.affiliate.findFirst({
+                where:  { ref: createdOrder.influencerRef, active: true },
+                select: { id: true, commissionRate: true },
+              });
+
+              if (affiliate) {
+                const baseAmount = Math.max(
+                  0,
+                  createdOrder.subtotal - createdOrder.discount
+                );
+                const rate   = affiliate.commissionRate;
+                const amount = Math.round(baseAmount * Number(rate));
+
+                try {
+                  await tx.commission.create({
+                    data: {
+                      orderId:     createdOrder.id,
+                      affiliateId: affiliate.id,
+                      grossAmount: createdOrder.total,
+                      baseAmount,
+                      rate,
+                      amount,
+                      status:      'PENDING',
+                    },
+                  });
+
+                  console.log('💰 Commission created', {
+                    orderId:     createdOrder.id,
+                    affiliateId: affiliate.id,
+                    ref:         createdOrder.influencerRef,
+                    baseAmount,
+                    amount,
+                  });
+                } catch (err) {
+                  // Defensive: if a Commission for this Order already exists,
+                  // treat as duplicate and continue. Caught locally so it never
+                  // poisons the outer P2002 / idempotency logic.
+                  if (
+                    isUniqueConstraintError(err) &&
+                    p2002Target(err).includes('orderId')
+                  ) {
+                    console.warn(
+                      '⚠️ Commission already exists for order — skipping',
+                      { orderId: createdOrder.id }
+                    );
+                  } else {
+                    throw err;
+                  }
+                }
+              } else {
+                console.log(
+                  'ℹ️ Affiliate ref present but no active affiliate found',
+                  {
+                    orderId: createdOrder.id,
+                    ref:     createdOrder.influencerRef,
+                  }
+                );
+              }
+            }
+
             // Capture data needed for confirmation email — sent after tx commits.
             if (isPaid && customerDetails?.email) {
               confirmationEmailData = {
@@ -294,6 +360,30 @@ export async function POST(req: Request) {
                   amountRefunded: charge.amount_refunded,
                   orderId:        order.id,
                 });
+
+                // Cancel any unpaid commission tied to this order. PAID
+                // commissions are intentionally left untouched — clawback
+                // policy is out of scope for this MVP.
+                const commission = await tx.commission.findUnique({
+                  where:  { orderId: order.id },
+                  select: { id: true, status: true },
+                });
+
+                if (
+                  commission &&
+                  (commission.status === 'PENDING' ||
+                    commission.status === 'APPROVED')
+                ) {
+                  await tx.commission.update({
+                    where: { id: commission.id },
+                    data:  { status: 'CANCELLED' },
+                  });
+                  console.log('↩️ Commission cancelled due to refund', {
+                    orderId:      order.id,
+                    commissionId: commission.id,
+                    prevStatus:   commission.status,
+                  });
+                }
               } else {
                 console.log('ℹ️ charge.refunded — no matching order', {
                   eventId:         event.id,

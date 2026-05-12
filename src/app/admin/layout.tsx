@@ -45,6 +45,18 @@ export default async function AdminLayout({
               >
                 Orders
               </Link>
+              <Link
+                href="/admin/affiliates"
+                className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                Affiliates
+              </Link>
+              <Link
+                href="/admin/commissions"
+                className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                Commissions
+              </Link>
             </nav>
             <Link
               href="/api/admin/login?logout=1"

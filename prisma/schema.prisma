@@ -39,6 +39,21 @@ enum FulfillmentStatus {
   CANCELLED
 }
 
+enum AffiliateType {
+  INFLUENCER
+  MEDIA_BUYER
+  PARTNER
+  ORGANIC
+  OTHER
+}
+
+enum CommissionStatus {
+  PENDING
+  APPROVED
+  PAID
+  CANCELLED
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Order
 // ─────────────────────────────────────────────────────────────────────────────
@@ -108,7 +123,8 @@ model Order {
   landingPage   String?
 
   // ── Relations ───────────────────────────────────────────────────────────────
-  items OrderItem[]
+  items      OrderItem[]
+  commission Commission?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -148,6 +164,61 @@ model OrderItem {
   shopifyVariantId String?
 
   @@index([orderId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Affiliate — referral partners (influencers, media buyers, etc.)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Affiliate {
+  id        String        @id @default(cuid())
+  name      String
+  /// Referral code stamped onto Order.influencerRef (e.g. "ana"). Lowercased
+  /// by convention; uniqueness is enforced.
+  ref       String        @unique
+  email     String?
+  instagram String?
+  type      AffiliateType @default(INFLUENCER)
+  /// Default commission share (e.g. 0.15 = 15%). Snapshot is copied to each
+  /// Commission row so historical payouts are unaffected by future changes.
+  commissionRate Decimal  @default(0.15)
+  active    Boolean       @default(true)
+
+  commissions Commission[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Commission — payable record per Order, snapshotted at order time
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Commission {
+  id          String           @id @default(cuid())
+  orderId     String           @unique
+  order       Order            @relation(fields: [orderId], references: [id])
+  affiliateId String
+  affiliate   Affiliate        @relation(fields: [affiliateId], references: [id])
+
+  /// Order total at time of creation, in cents.
+  grossAmount Int
+  /// Commissionable base (subtotal − discount, never negative), in cents.
+  baseAmount  Int
+  /// Snapshot of affiliate.commissionRate at creation time.
+  rate        Decimal
+  /// round(baseAmount × rate), in cents.
+  amount      Int
+
+  status      CommissionStatus @default(PENDING)
+
+  createdAt   DateTime  @default(now())
+  approvedAt  DateTime?
+  paidAt      DateTime?
+
+  @@index([affiliateId])
+  @@index([status])
+  @@index([createdAt])
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
