@@ -43,6 +43,22 @@ export type ShippedEmailData = {
   shippedAt:      Date | null;
 };
 
+export type WarehouseNotificationData = {
+  orderId:              string;
+  orderNumber:          string;
+  customerName:         string | null;
+  customerEmail:        string;
+  total:                number; // cents
+  currency:             string;
+  shippingName:         string | null;
+  shippingAddressLine1: string | null;
+  shippingAddressLine2: string | null;
+  shippingCity:         string | null;
+  shippingState:        string | null;
+  shippingPostalCode:   string | null;
+  shippingCountry:      string | null;
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Formatting helpers (inline — no external deps)
 // ─────────────────────────────────────────────────────────────────────────────
@@ -414,5 +430,128 @@ export async function sendOrderShippedEmail(
     to:      data.customerEmail,
     subject: `Your Dips Chocolate order #${data.orderNumber} has shipped! 🚀`,
     html:    buildShippedHtml(data),
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Warehouse / Logistics internal notification
+// ─────────────────────────────────────────────────────────────────────────────
+
+function buildWarehouseHtml(
+  data: WarehouseNotificationData & { sheetUrl: string; adminUrl: string }
+): string {
+  const addressLines = [
+    data.shippingName,
+    data.shippingAddressLine1,
+    data.shippingAddressLine2,
+    [data.shippingCity, data.shippingState, data.shippingPostalCode]
+      .filter(Boolean)
+      .join(', '),
+    data.shippingCountry,
+  ].filter((line): line is string => Boolean(line && line.trim().length > 0));
+
+  const addressHtml = addressLines.length
+    ? addressLines.map((l) => escapeHtml(l)).join('<br>')
+    : '<em style="color:#888;">(no shipping address)</em>';
+
+  const linkRows: string[] = [];
+  if (data.adminUrl) {
+    linkRows.push(
+      `<li style="margin:4px 0;">Admin order: <a href="${escapeAttr(data.adminUrl)}">${escapeHtml(data.adminUrl)}</a></li>`
+    );
+  }
+  if (data.sheetUrl) {
+    linkRows.push(
+      `<li style="margin:4px 0;">Google Sheet: <a href="${escapeAttr(data.sheetUrl)}">${escapeHtml(data.sheetUrl)}</a></li>`
+    );
+  }
+  const linksBlock = linkRows.length
+    ? `<h3 style="margin:24px 0 8px;color:${PURPLE};font-size:16px;">Links</h3>
+       <ul style="margin:0;padding-left:20px;color:${CHARCOAL};font-size:14px;
+                  font-family:Arial,Helvetica,sans-serif;">
+         ${linkRows.join('')}
+       </ul>`
+    : '';
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>New Dips order</title></head>
+<body style="margin:0;padding:24px;background:#f5f5f5;
+             font-family:Arial,Helvetica,sans-serif;color:${CHARCOAL};">
+  <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:8px;
+              padding:28px 32px;border:1px solid #e5e5e5;">
+    <h2 style="margin:0 0 4px;color:${PURPLE};font-size:20px;">
+      New Dips order received
+    </h2>
+    <p style="margin:0 0 20px;color:#666;font-size:14px;">
+      Order <strong>#${escapeHtml(data.orderNumber)}</strong>
+    </p>
+
+    <table cellpadding="0" cellspacing="0" border="0"
+           style="width:100%;font-size:14px;color:${CHARCOAL};">
+      <tr>
+        <td style="padding:6px 0;color:#666;width:160px;">Order number</td>
+        <td style="padding:6px 0;"><strong>${escapeHtml(data.orderNumber)}</strong></td>
+      </tr>
+      <tr>
+        <td style="padding:6px 0;color:#666;">Customer name</td>
+        <td style="padding:6px 0;">${escapeHtml(data.customerName ?? '—')}</td>
+      </tr>
+      <tr>
+        <td style="padding:6px 0;color:#666;">Customer email</td>
+        <td style="padding:6px 0;">${escapeHtml(data.customerEmail)}</td>
+      </tr>
+      <tr>
+        <td style="padding:6px 0;color:#666;">Total</td>
+        <td style="padding:6px 0;"><strong>${money(data.total, data.currency)}</strong></td>
+      </tr>
+    </table>
+
+    <h3 style="margin:24px 0 8px;color:${PURPLE};font-size:16px;">Shipping address</h3>
+    <p style="margin:0;font-size:14px;line-height:1.5;color:${CHARCOAL};">
+      ${addressHtml}
+    </p>
+
+    ${linksBlock}
+  </div>
+</body>
+</html>`;
+}
+
+function escapeHtml(input: string): string {
+  return input
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function escapeAttr(input: string): string {
+  return escapeHtml(input);
+}
+
+/**
+ * Sends an internal notification to the warehouse/logistics inbox.
+ *
+ * No-op (returns silently) when WAREHOUSE_NOTIFICATION_EMAIL is unset, so this
+ * is safe to call unconditionally from the Stripe webhook. Callers should
+ * still wrap the call in try/catch — SMTP failures must never break the
+ * webhook critical path.
+ */
+export async function sendWarehouseNotificationEmail(
+  data: WarehouseNotificationData
+): Promise<void> {
+  const to = process.env.WAREHOUSE_NOTIFICATION_EMAIL?.trim();
+  if (!to) return;
+
+  const siteUrl  = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? '';
+  const sheetUrl = process.env.WAREHOUSE_SHEET_URL?.trim() ?? '';
+  const adminUrl = siteUrl ? `${siteUrl}/admin/orders/${data.orderId}` : '';
+
+  await sendEmail({
+    to,
+    subject: `New Dips order received: ${data.orderNumber}`,
+    html:    buildWarehouseHtml({ ...data, sheetUrl, adminUrl }),
   });
 }

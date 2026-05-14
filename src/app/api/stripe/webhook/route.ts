@@ -6,6 +6,7 @@ import { prisma } from '@/lib/prisma';
 import { generateOrderNumber } from '@/lib/orders';
 import {
   sendOrderConfirmationEmail,
+  sendWarehouseNotificationEmail,
   type ConfirmationEmailData,
 } from '@/lib/email-templates';
 import { appendOrderToSheet, type SheetRowData } from '@/lib/google-sheets';
@@ -502,6 +503,38 @@ export async function POST(req: Request) {
       } catch (err) {
         // Non-critical — log and continue. The order is safely in the DB.
         console.error('❌ Google Sheets sync failed (non-critical):', err);
+      }
+    }
+
+    // ── Warehouse/logistics internal notification ────────────────────────────
+    // Runs after the customer email + Sheets sync so it never blocks the
+    // critical path. Failures here must NOT affect the webhook response —
+    // the order is already safely persisted.
+    if (emailData && orderId) {
+      try {
+        await sendWarehouseNotificationEmail({
+          orderId,
+          orderNumber:          emailData.orderNumber,
+          customerName:         emailData.customerName,
+          customerEmail:        emailData.customerEmail,
+          total:                emailData.total,
+          currency:             emailData.currency,
+          shippingName:         emailData.shippingName,
+          shippingAddressLine1: emailData.shippingAddressLine1,
+          shippingAddressLine2: emailData.shippingAddressLine2,
+          shippingCity:         emailData.shippingCity,
+          shippingState:        emailData.shippingState,
+          shippingPostalCode:   emailData.shippingPostalCode,
+          shippingCountry:      emailData.shippingCountry,
+        });
+        console.log('✅ Warehouse notification dispatched', {
+          orderNumber: emailData.orderNumber,
+        });
+      } catch (err) {
+        console.error(
+          '❌ Warehouse notification failed (non-critical):',
+          err
+        );
       }
     }
 
