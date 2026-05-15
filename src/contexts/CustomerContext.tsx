@@ -47,7 +47,7 @@ export function CustomerProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (isInitialized && !customer) {
       // Auto-login for demo purposes
-      const autoLogin = true; // Set to false to disable auto-login
+      const autoLogin = false; // disabled for production launch — see CONCERNS.md
       if (autoLogin) {
         login(mockCustomer);
       }
