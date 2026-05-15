@@ -32,6 +32,7 @@ export async function POST(request: NextRequest) {
     sameSite: 'lax',
     path:     '/',
     maxAge:   ADMIN_COOKIE_MAX_AGE,
+    secure:   process.env.NODE_ENV === 'production',
   });
   return res;
 }
