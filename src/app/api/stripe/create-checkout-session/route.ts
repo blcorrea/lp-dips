@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
           'AU', 'NZ',
         ],
       },
-      phone_number_collection: { enabled: true },
+      phone_number_collection: { enabled: false }, // TODO post-launch: enable after adding phone column to Order schema and persisting in webhook
       line_items: [
         {
           quantity,
