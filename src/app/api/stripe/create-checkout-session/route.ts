@@ -5,6 +5,7 @@ import { getLocalizedPricing, isSupportedLocale } from '@/lib/pricing';
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+const shippingRateId = process.env.STRIPE_SHIPPING_RATE_ID;
 
 if (!stripeSecretKey) {
   throw new Error('Missing STRIPE_SECRET_KEY');
@@ -24,6 +25,10 @@ function attrString(value: unknown): string | undefined {
 }
 
 export async function POST(request: NextRequest) {
+  if (!shippingRateId) {
+    console.warn('⚠️ STRIPE_SHIPPING_RATE_ID not set — checkout will have no shipping option');
+  }
+
   try {
     const body = await request.json().catch(() => ({}));
     const quantity = Math.max(1, Math.min(Number(body.quantity) || 1, 10));
@@ -78,6 +83,9 @@ export async function POST(request: NextRequest) {
       ...(clientReferenceId ? { client_reference_id: clientReferenceId } : {}),
       success_url: `${siteUrl}/${normalizedLocale}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl}/${normalizedLocale}/product/dips-chocolate`,
+      shipping_options: shippingRateId
+        ? [{ shipping_rate: shippingRateId }]
+        : [],
       // Collect shipping address — required for order fulfillment.
       // Adjust allowed_countries to match where you actually ship.
       shipping_address_collection: {
