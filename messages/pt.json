@@ -423,5 +423,32 @@
         "benefit3": "Feito para compartilhar",
         "startingAt": "A partir de",
         "perBox": "caixa"
+    },
+    "AffiliateJoin": {
+        "eyebrow": "Programa de Parceiros",
+        "title": "Ganhe com a Dips",
+        "subtitle": "Junte-se ao nosso programa de afiliados e ganhe 7% de comissão em cada venda que gerar. Compartilhe seu link único e cresça com a gente.",
+        "benefit1": "7% de comissão em cada venda",
+        "benefit2": "Seu próprio link de indicação exclusivo",
+        "benefit3": "Acesso ao painel em tempo real",
+        "formTitle": "Candidate-se agora",
+        "labelName": "Nome completo",
+        "labelEmail": "Endereço de e-mail",
+        "labelInstagram": "Usuário do Instagram",
+        "placeholderName": "Maria Silva",
+        "placeholderEmail": "maria@exemplo.com",
+        "placeholderInstagram": "@seuusuario",
+        "labelRef": "Seu código de indicação",
+        "placeholderRef": "maria-silva",
+        "refHint": "Apenas letras minúsculas, números, hífens e underscores. Este será o ID do seu link exclusivo.",
+        "submit": "Candidatar-se ao programa",
+        "submitting": "Enviando...",
+        "successTitle": "Candidatura recebida!",
+        "successMessage": "Obrigado por se candidatar ao programa de afiliados da Dips. Analisaremos sua candidatura e entraremos em contato em até 48 horas para ativar seu link.",
+        "errorConflict": "Este código já está em uso. Por favor escolha outro.",
+        "errorGeneric": "Algo deu errado. Por favor tente novamente.",
+        "requiredField": "Este campo é obrigatório",
+        "invalidEmail": "Por favor insira um endereço de e-mail válido",
+        "invalidRef": "Apenas letras minúsculas, números, hífens e underscores são permitidos"
     }
 }

@@ -424,5 +424,32 @@
         "benefit3": "Hecho para compartir",
         "startingAt": "Desde",
         "perBox": "caja"
+    },
+    "AffiliateJoin": {
+        "eyebrow": "Programa de Socios",
+        "title": "Gana con Dips",
+        "subtitle": "Únete a nuestro programa de afiliados y gana un 7% de comisión por cada venta que generes. Comparte tu enlace único y crece con nosotros.",
+        "benefit1": "7% de comisión por cada venta",
+        "benefit2": "Tu propio enlace de referido único",
+        "benefit3": "Acceso a panel en tiempo real",
+        "formTitle": "Solicita tu acceso",
+        "labelName": "Nombre completo",
+        "labelEmail": "Correo electrónico",
+        "labelInstagram": "Usuario de Instagram",
+        "placeholderName": "María García",
+        "placeholderEmail": "maria@ejemplo.com",
+        "placeholderInstagram": "@tuusuario",
+        "labelRef": "Tu código de referido",
+        "placeholderRef": "maria-garcia",
+        "refHint": "Solo letras minúsculas, números, guiones y guiones bajos. Este será el ID de tu enlace único.",
+        "submit": "Solicitar ingreso al programa",
+        "submitting": "Enviando...",
+        "successTitle": "¡Solicitud recibida!",
+        "successMessage": "Gracias por aplicar al programa de afiliados de Dips. Revisaremos tu solicitud y te contactaremos en un plazo de 48 horas para activar tu enlace.",
+        "errorConflict": "Este código ya está en uso. Por favor elige otro.",
+        "errorGeneric": "Algo salió mal. Por favor inténtalo de nuevo.",
+        "requiredField": "Este campo es obligatorio",
+        "invalidEmail": "Por favor ingresa un correo electrónico válido",
+        "invalidRef": "Solo se permiten letras minúsculas, números, guiones y guiones bajos"
     }
 }

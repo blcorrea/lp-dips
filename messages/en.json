@@ -423,5 +423,32 @@
         "benefit3": "Made to share",
         "startingAt": "Starting at",
         "perBox": "box"
+    },
+    "AffiliateJoin": {
+        "eyebrow": "Partner Program",
+        "title": "Earn with Dips",
+        "subtitle": "Join our affiliate program and earn 7% commission on every sale you generate. Share your unique link, grow with us.",
+        "benefit1": "7% commission on every sale",
+        "benefit2": "Your own unique referral link",
+        "benefit3": "Real-time dashboard access",
+        "formTitle": "Apply Now",
+        "labelName": "Full name",
+        "labelEmail": "Email address",
+        "labelInstagram": "Instagram handle",
+        "placeholderName": "Jane Smith",
+        "placeholderEmail": "jane@example.com",
+        "placeholderInstagram": "@yourhandle",
+        "labelRef": "Your referral code",
+        "placeholderRef": "jane-smith",
+        "refHint": "Letters, numbers, hyphens and underscores only. This will be your unique link ID.",
+        "submit": "Apply to the Program",
+        "submitting": "Submitting...",
+        "successTitle": "Application received!",
+        "successMessage": "Thank you for applying to the Dips affiliate program. We'll review your application and reach out within 48 hours to activate your link.",
+        "errorConflict": "This referral code is already taken. Please choose a different one.",
+        "errorGeneric": "Something went wrong. Please try again.",
+        "requiredField": "This field is required",
+        "invalidEmail": "Please enter a valid email address",
+        "invalidRef": "Only lowercase letters, numbers, hyphens and underscores allowed"
     }
 }
