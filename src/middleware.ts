@@ -8,10 +8,11 @@ const intlMiddleware = createMiddleware(routing);
 // which uses next/headers (not available in Edge middleware runtime).
 const ADMIN_COOKIE = 'admin_token';
 
+// Middleware runs in Edge Runtime — no Prisma available. We only check that
+// the cookie is present here; isAdminAuthenticated() in admin-auth.ts performs
+// the full DB verification inside Server Components and API routes.
 function isAdminAuthed(request: NextRequest): boolean {
-  const secret = process.env.ADMIN_SECRET;
-  if (!secret) return false;
-  return request.cookies.get(ADMIN_COOKIE)?.value === secret;
+  return !!request.cookies.get(ADMIN_COOKIE)?.value;
 }
 
 export default function middleware(request: NextRequest) {
