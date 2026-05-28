@@ -3,28 +3,30 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 
+const AFFILIATE_TYPES = ['INFLUENCER', 'MEDIA_BUYER', 'PARTNER', 'ORGANIC', 'OTHER'] as const;
+type AffiliateType = (typeof AFFILIATE_TYPES)[number];
+
 export default function AffiliateJoinForm() {
   const t = useTranslations('AffiliateJoin');
 
   const [form, setForm] = useState({
-    name: '',
-    email: '',
+    name:      '',
+    email:     '',
     instagram: '',
-    ref: '',
+    ref:       '',
+    type:      '' as AffiliateType | '',
   });
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors]         = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [success, setSuccess]       = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
 
-  // Auto-generate ref from instagram handle when instagram field changes
   function handleInstagramChange(value: string) {
     const cleaned = value.trim().toLowerCase().replace(/^@/, '').replace(/[\s.]+/g, '-');
     setForm((prev) => ({
       ...prev,
       instagram: value,
-      // Only auto-fill ref if user hasn't manually edited it yet
       ref: prev.ref === '' || prev.ref === autoRef(prev.instagram) ? cleaned : prev.ref,
     }));
   }
@@ -41,6 +43,7 @@ export default function AffiliateJoinForm() {
     } else if (!form.email.includes('@')) {
       newErrors.email = t('invalidEmail');
     }
+    if (!form.type) newErrors.type = t('requiredField');
     if (!form.ref.trim()) {
       newErrors.ref = t('requiredField');
     } else if (!/^[a-z0-9_-]+$/.test(form.ref)) {
@@ -57,13 +60,14 @@ export default function AffiliateJoinForm() {
 
     try {
       const res = await fetch('/api/affiliates/join', {
-        method: 'POST',
+        method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: form.name.trim(),
-          email: form.email.trim().toLowerCase(),
+          name:      form.name.trim(),
+          email:     form.email.trim().toLowerCase(),
           instagram: form.instagram.trim() || null,
-          ref: form.ref.trim().toLowerCase(),
+          ref:       form.ref.trim().toLowerCase(),
+          type:      form.type,
         }),
       });
 
@@ -143,6 +147,29 @@ export default function AffiliateJoinForm() {
           {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
         </div>
 
+        {/* Type */}
+        <div>
+          <label className="block text-sm font-semibold text-brand-charcoal mb-1">
+            {t('labelType')} <span className="text-brand-orange">*</span>
+          </label>
+          <select
+            value={form.type}
+            onChange={(e) => setForm((p) => ({ ...p, type: e.target.value as AffiliateType }))}
+            className={`w-full rounded-xl border px-4 py-3 text-[15px] outline-none transition-colors bg-white
+              focus:border-brand-purple focus:ring-2 focus:ring-brand-purple/10
+              ${errors.type ? 'border-red-400' : 'border-brand-purple/20'}
+              ${!form.type ? 'text-brand-charcoal/40' : 'text-brand-charcoal'}`}
+          >
+            <option value="" disabled>{t('placeholderType')}</option>
+            {AFFILIATE_TYPES.map((type) => (
+              <option key={type} value={type}>
+                {t(`typeLabel_${type}` as Parameters<typeof t>[0])}
+              </option>
+            ))}
+          </select>
+          {errors.type && <p className="mt-1 text-xs text-red-500">{errors.type}</p>}
+        </div>
+
         {/* Instagram */}
         <div>
           <label className="block text-sm font-semibold text-brand-charcoal mb-1">
@@ -182,14 +209,12 @@ export default function AffiliateJoinForm() {
           {errors.ref && <p className="mt-1 text-xs text-red-500">{errors.ref}</p>}
         </div>
 
-        {/* Server error */}
         {serverError && (
           <p className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600">
             {serverError}
           </p>
         )}
 
-        {/* Submit */}
         <button
           type="button"
           onClick={handleSubmit}

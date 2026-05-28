@@ -49,15 +49,22 @@ export async function POST(request: NextRequest) {
     ? raw.instagram.trim()
     : null;
 
+  // ── type ──────────────────────────────────────────────────────────────────
+  const { isValidAffiliateType } = await import('@/lib/affiliates');
+  const rawType = typeof raw.type === 'string' ? raw.type.trim() : '';
+  if (!rawType || !isValidAffiliateType(rawType)) {
+    return NextResponse.json({ error: 'valid type is required' }, { status: 400 });
+  }
+
   try {
     const affiliate = await createAffiliate({
       name,
       ref: rawRef,
       email,
       instagram,
-      type: 'INFLUENCER',
-      commissionRate: 0.07,  // fixed 7% for self-signup
-      active: false,          // requires manual admin approval
+      type:           rawType,
+      commissionRate: 0.07, // fixed 7% for self-signup
+      active:         false, // requires manual admin approval
     });
 
     return NextResponse.json({ ok: true, affiliateId: affiliate.id }, { status: 201 });
