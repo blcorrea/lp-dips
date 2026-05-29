@@ -11,6 +11,7 @@ type BuyNowButtonProps = {
   label?:        string;
   className?:    string;
   quantity?:     number;
+  priceId?:      string;  // Stripe Price ID for bundle checkout
   // Optional tracking props — button works normally without them
   productId?:    string;
   productName?:  string;
@@ -24,6 +25,7 @@ export default function BuyNowButton({
   label = "Buy now",
   className,
   quantity = 1,
+  priceId,
   productId,
   productName,
   productPrice,
@@ -48,7 +50,7 @@ export default function BuyNowButton({
       const response = await fetch("/api/stripe/create-checkout-session", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ quantity, locale, attribution }),
+        body:    JSON.stringify({ quantity, locale, attribution, ...(priceId ? { priceId } : {}) }),
       });
 
       const data: { ok: boolean; url?: string; error?: string } =
