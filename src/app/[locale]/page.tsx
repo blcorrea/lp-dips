@@ -5,6 +5,7 @@ import IngredientsSection from '@/components/IngredientsSection';
 import ProductSection from '@/components/ProductSection';
 import WhyDipsSection from "@/components/WhyDipsSection";
 import BuySection from '@/components/BuySection';
+import ReviewsSection from '@/components/ReviewsSection';
 import FAQSection from '@/components/FAQSection';
 import Footer from '@/components/Footer';
 
@@ -26,7 +27,7 @@ export default async function HomePage({
 
       {/* 🔥 NOVA SEÇÃO DE COMPRA */}
       <BuySection locale={locale} />
-
+      <ReviewsSection />
       <FAQSection />
       <Footer />
     </main>
