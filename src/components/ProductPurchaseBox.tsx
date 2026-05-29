@@ -142,7 +142,7 @@ export default function ProductPurchaseBox({
         <div className="flex items-center justify-between text-base pt-1 border-t border-brand-purple/10">
           <span className="font-semibold text-brand-purple">Total</span>
           <span className="text-xl font-bold text-brand-purple">
-            ${selectedBundle.totalPrice.toFixed(2)}
+            ${(selectedBundle.totalPrice + (selectedBundle.shipping === 'free' ? 0 : 6.97)).toFixed(2)}
           </span>
         </div>
       </div>
