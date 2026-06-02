@@ -4,9 +4,10 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const intlMiddleware = createMiddleware(routing);
 
-// Inline the cookie name here to avoid importing from admin-auth.ts,
-// which uses next/headers (not available in Edge middleware runtime).
-const ADMIN_COOKIE = 'admin_token';
+// Inline cookie names to avoid importing from auth libs that use next/headers
+// (not available in Edge middleware runtime).
+const ADMIN_COOKIE     = 'admin_token';
+const AFFILIATE_COOKIE = 'affiliate_session';
 
 function isAdminAuthed(request: NextRequest): boolean {
   const secret = process.env.ADMIN_SECRET;
@@ -14,36 +15,53 @@ function isAdminAuthed(request: NextRequest): boolean {
   return request.cookies.get(ADMIN_COOKIE)?.value === secret;
 }
 
+function isAffiliateAuthed(request: NextRequest): boolean {
+  return !!request.cookies.get(AFFILIATE_COOKIE)?.value;
+}
+
 export default function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // ── Admin auth protection ──────────────────────────────────────────────────
-  // All /admin/* and /api/admin/* routes are handled here so they never fall
-  // through to intlMiddleware (which would 404 them as non-locale routes).
   const isAdminRoute    = pathname.startsWith('/admin') || pathname.startsWith('/api/admin');
   const isAdminLoginUrl = pathname === '/admin/login' || pathname.startsWith('/api/admin/login');
 
   if (isAdminRoute) {
-    // /admin/login and /api/admin/login are always public
     if (!isAdminLoginUrl && !isAdminAuthed(request)) {
-      // API routes → JSON 401 so fetch() callers get a proper error
       if (pathname.startsWith('/api/')) {
         return new NextResponse(
           JSON.stringify({ error: 'Unauthorized' }),
           { status: 401, headers: { 'Content-Type': 'application/json' } }
         );
       }
-      // Page routes → redirect to login
       const loginUrl = request.nextUrl.clone();
       loginUrl.pathname = '/admin/login';
       loginUrl.search   = '';
       return NextResponse.redirect(loginUrl);
     }
-    // Authenticated (or public admin URL) — skip intl middleware entirely
     return NextResponse.next();
   }
 
-  // ── i18n (unchanged) ──────────────────────────────────────────────────────
+  // ── Affiliate dashboard protection ────────────────────────────────────────
+  // Matches /{locale}/affiliates/dashboard for all supported locales.
+  const isAffiliateDashboard = routing.locales.some(
+    (locale) =>
+      pathname === `/${locale}/affiliates/dashboard` ||
+      pathname.startsWith(`/${locale}/affiliates/dashboard/`)
+  );
+
+  if (isAffiliateDashboard && !isAffiliateAuthed(request)) {
+    // Determine locale from path so the redirect lands on the right login page
+    const locale = routing.locales.find(
+      (l) => pathname === `/${l}/affiliates/dashboard` || pathname.startsWith(`/${l}/affiliates/dashboard/`)
+    ) ?? 'en';
+    const loginUrl = request.nextUrl.clone();
+    loginUrl.pathname = `/${locale}/affiliates/login`;
+    loginUrl.search   = '';
+    return NextResponse.redirect(loginUrl);
+  }
+
+  // ── i18n ──────────────────────────────────────────────────────────────────
   const pathnameHasLocale = routing.locales.some(
     (locale) => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`)
   );
