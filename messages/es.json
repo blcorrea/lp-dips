@@ -4,7 +4,8 @@
         "product": "Producto",
         "ingredients": "Ingredientes",
         "faq": "FAQ",
-        "cart": "Carrito"
+        "cart": "Carrito",
+        "affiliates": "Afiliados"
     },
     "Hero": {
         "headlinePart1": "Compártelo.",
