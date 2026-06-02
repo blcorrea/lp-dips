@@ -184,10 +184,30 @@ model Affiliate {
   commissionRate Decimal  @default(0.15)
   active    Boolean       @default(true)
 
-  commissions Commission[]
+  commissions  Commission[]
+  loginTokens  AffiliateLoginToken[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AffiliateLoginToken — one-time magic link tokens (15-min TTL)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model AffiliateLoginToken {
+  id          String    @id @default(cuid())
+  affiliateId String
+  affiliate   Affiliate @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+  /// 64-char hex string (32 random bytes). Globally unique.
+  token       String    @unique
+  expiresAt   DateTime
+  usedAt      DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@index([affiliateId])
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

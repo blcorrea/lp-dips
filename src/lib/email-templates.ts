@@ -555,3 +555,74 @@ export async function sendWarehouseNotificationEmail(
     html:    buildWarehouseHtml({ ...data, sheetUrl, adminUrl }),
   });
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Affiliate magic-link login email
+// ─────────────────────────────────────────────────────────────────────────────
+
+function buildAffiliateMagicLinkHtml(firstName: string, magicUrl: string): string {
+  const body = `
+    <p style="margin:0 0 8px;font-size:14px;color:#888;text-transform:uppercase;
+               letter-spacing:1px;font-family:Arial,Helvetica,sans-serif;">
+      Affiliate Portal
+    </p>
+    <h1 style="margin:0 0 20px;font-size:28px;color:${PURPLE};line-height:1.15;">
+      Your login link, ${escapeHtml(firstName)}
+    </h1>
+    <p style="margin:0 0 28px;font-size:16px;color:${CHARCOAL};line-height:1.6;">
+      Click the button below to access your affiliate dashboard.
+      This link expires in <strong>15 minutes</strong> and can only be used once.
+    </p>
+
+    <!-- CTA button -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
+      <tr>
+        <td align="center">
+          <a href="${escapeAttr(magicUrl)}"
+             style="display:inline-block;background-color:${ORANGE};color:${PURPLE};
+                    font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:700;
+                    text-decoration:none;padding:16px 40px;border-radius:100px;
+                    letter-spacing:0.3px;">
+            Open my dashboard →
+          </a>
+        </td>
+      </tr>
+    </table>
+
+    <p style="margin:0 0 8px;font-size:13px;color:#888;font-family:Arial,Helvetica,sans-serif;">
+      If the button doesn't work, copy and paste this link into your browser:
+    </p>
+    <p style="margin:0 0 28px;font-size:12px;color:${PURPLE};font-family:monospace;
+               word-break:break-all;">
+      ${escapeHtml(magicUrl)}
+    </p>
+
+    <div style="border-top:1px solid ${BEIGE};padding-top:20px;">
+      <p style="margin:0;font-size:13px;color:#aaa;font-family:Arial,Helvetica,sans-serif;">
+        If you didn't request this link, you can safely ignore this email.
+        Someone may have entered your email address by mistake.
+      </p>
+    </div>
+  `;
+  return emailWrapper(body);
+}
+
+/**
+ * Sends the magic-link login email to an affiliate.
+ * The magic link hits /api/affiliates/verify?token=... which sets the session
+ * cookie and redirects to the dashboard.
+ */
+export async function sendAffiliateMagicLinkEmail(
+  to:        string,
+  firstName: string,
+  token:     string
+): Promise<void> {
+  const siteUrl  = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? 'https://www.dipschocolate.com';
+  const magicUrl = `${siteUrl}/api/affiliates/verify?token=${encodeURIComponent(token)}`;
+
+  await sendEmail({
+    to,
+    subject: 'Your Dips affiliate dashboard login link',
+    html:    buildAffiliateMagicLinkHtml(firstName, magicUrl),
+  });
+}
