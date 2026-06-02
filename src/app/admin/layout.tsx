@@ -57,6 +57,12 @@ export default async function AdminLayout({
               >
                 Commissions
               </Link>
+              <Link
+                href="/admin/users"
+                className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                Users
+              </Link>
             </nav>
             <Link
               href="/api/admin/login?logout=1"
