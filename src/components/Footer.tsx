@@ -71,6 +71,12 @@ export default function Footer() {
                   {t("terms")}
                 </Link>
               </li>
+
+              <li>
+                <Link href={`/${locale}/affiliates/join`}>
+                  {t("affiliates")}
+                </Link>
+              </li>
             </ul>
           </div>
 
