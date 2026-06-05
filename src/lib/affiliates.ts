@@ -434,6 +434,19 @@ export type CreateAffiliateInput = {
   active?:        boolean;
 };
 
+/**
+ * Returns true when an affiliate already exists with this email
+ * (case-insensitive). Used by self-signup to reject duplicates with a clear
+ * message before hitting the DB unique constraint.
+ */
+export async function affiliateEmailExists(email: string): Promise<boolean> {
+  const existing = await prisma.affiliate.findFirst({
+    where:  { email: { equals: email, mode: 'insensitive' } },
+    select: { id: true },
+  });
+  return existing !== null;
+}
+
 export async function createAffiliate(input: CreateAffiliateInput) {
   return prisma.affiliate.create({
     data: {
