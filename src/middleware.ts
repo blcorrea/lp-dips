@@ -51,6 +51,27 @@ export default function middleware(request: NextRequest) {
       pathname.startsWith(`/${locale}/affiliates/dashboard/`)
   );
 
+  // Matches /{locale}/affiliates/login for all supported locales.
+  const isAffiliateLogin = routing.locales.some(
+    (locale) => pathname === `/${locale}/affiliates/login`
+  );
+
+  // A logged-in admin who lands on the affiliate login or dashboard (without an
+  // affiliate session of their own) shouldn't be asked for a separate affiliate
+  // login — admins manage affiliates, they don't have a personal dashboard.
+  // Send them to the admin affiliate management page instead. The /admin route
+  // performs the full DB-backed admin check on its own.
+  if (
+    (isAffiliateDashboard || isAffiliateLogin) &&
+    !isAffiliateAuthed(request) &&
+    isAdminAuthed(request)
+  ) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/admin/affiliates';
+    url.search   = '';
+    return NextResponse.redirect(url);
+  }
+
   if (isAffiliateDashboard && !isAffiliateAuthed(request)) {
     // Determine locale from path so the redirect lands on the right login page
     const locale = routing.locales.find(
