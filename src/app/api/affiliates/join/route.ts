@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Prisma } from '@/generated/prisma/client/client';
-import { createAffiliate, REF_REGEX } from '@/lib/affiliates';
+import {
+  createAffiliate,
+  affiliateEmailExists,
+  buildAffiliateLink,
+  REF_REGEX,
+} from '@/lib/affiliates';
+import { sendAffiliateWelcomeEmail } from '@/lib/email-templates';
 
 export async function POST(request: NextRequest) {
   let body: unknown;
@@ -56,6 +62,16 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'valid type is required' }, { status: 400 });
   }
 
+  // ── duplicate email guard ─────────────────────────────────────────────────
+  // App-level pre-check for a clear message; the DB unique index closes the
+  // race window between this check and the insert.
+  if (await affiliateEmailExists(email)) {
+    return NextResponse.json(
+      { error: 'An account with this email already exists.', field: 'email' },
+      { status: 409 }
+    );
+  }
+
   try {
     const affiliate = await createAffiliate({
       name,
@@ -64,7 +80,15 @@ export async function POST(request: NextRequest) {
       instagram,
       type:           rawType,
       commissionRate: 0.07, // fixed 7% for self-signup
-      active:         false, // requires manual admin approval
+      // Auto-activate so the affiliate can log in and share their link
+      // immediately. Admins can review and deactivate from /admin/affiliates.
+      active:         true,
+    });
+
+    // Fire-and-forget welcome email — a send failure must not fail signup.
+    const link = buildAffiliateLink({ ref: rawRef, type: rawType, instagram });
+    sendAffiliateWelcomeEmail(email, name.split(' ')[0], { ref: rawRef, link }).catch((err) => {
+      console.error('❌ Affiliate welcome email failed', { affiliateId: affiliate.id, err });
     });
 
     return NextResponse.json({ ok: true, affiliateId: affiliate.id }, { status: 201 });
@@ -73,10 +97,15 @@ export async function POST(request: NextRequest) {
       err instanceof Prisma.PrismaClientKnownRequestError &&
       err.code === 'P2002'
     ) {
-      return NextResponse.json(
-        { error: 'An affiliate with this ref already exists. Please choose a different one.' },
-        { status: 409 }
-      );
+      // target lists the conflicting column(s); distinguish email vs ref.
+      const target = Array.isArray(err.meta?.target)
+        ? (err.meta.target as string[]).join(',')
+        : String(err.meta?.target ?? '');
+      const field = target.includes('email') ? 'email' : 'ref';
+      const error = field === 'email'
+        ? 'An account with this email already exists.'
+        : 'An affiliate with this ref already exists. Please choose a different one.';
+      return NextResponse.json({ error, field }, { status: 409 });
     }
     const message = err instanceof Error ? err.message : 'Registration failed';
     return NextResponse.json({ error: message }, { status: 500 });

@@ -2,12 +2,15 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { useParams } from 'next/navigation';
 
 const AFFILIATE_TYPES = ['INFLUENCER', 'MEDIA_BUYER', 'PARTNER', 'ORGANIC', 'OTHER'] as const;
 type AffiliateType = (typeof AFFILIATE_TYPES)[number];
 
 export default function AffiliateJoinForm() {
   const t = useTranslations('AffiliateJoin');
+  const params = useParams();
+  const locale = (params.locale as string) || 'en';
 
   const [form, setForm] = useState({
     name:      '',
@@ -74,7 +77,9 @@ export default function AffiliateJoinForm() {
       const data = await res.json();
 
       if (!res.ok) {
-        if (res.status === 409) {
+        if (res.status === 409 && data.field === 'email') {
+          setErrors((prev) => ({ ...prev, email: t('errorEmailConflict') }));
+        } else if (res.status === 409) {
           setErrors((prev) => ({ ...prev, ref: t('errorConflict') }));
         } else {
           setServerError(data.error ?? t('errorGeneric'));
@@ -100,6 +105,30 @@ export default function AffiliateJoinForm() {
         </h2>
         <p className="text-brand-charcoal/70 text-[16px] leading-relaxed max-w-md mx-auto">
           {t('successMessage')}
+        </p>
+
+        {/* Referral code recap */}
+        <div className="mt-6 rounded-2xl bg-brand-cream/60 px-5 py-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-brand-charcoal/50">
+            {t('successYourCode')}
+          </p>
+          <p className="mt-1 font-mono text-lg font-bold text-brand-purple break-all">
+            {form.ref}
+          </p>
+        </div>
+
+        {/* Login CTA */}
+        <a
+          href={`/${locale}/affiliates/login`}
+          className="mt-6 inline-block w-full rounded-full bg-brand-orange px-8 py-4 text-base font-bold text-brand-purple
+            shadow-[0_10px_30px_rgba(242,117,33,0.28)] transition-all duration-300
+            hover:scale-[1.02] hover:bg-brand-orange/90"
+        >
+          {t('successLoginCta')}
+        </a>
+
+        <p className="mt-4 text-sm text-brand-charcoal/50 leading-relaxed">
+          {t('successLoginHint')}
         </p>
       </div>
     );

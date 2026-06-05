@@ -176,7 +176,10 @@ model Affiliate {
   /// Referral code stamped onto Order.influencerRef (e.g. "ana"). Lowercased
   /// by convention; uniqueness is enforced.
   ref       String        @unique
-  email     String?
+  /// Unique when present (self-signup always stores a lowercased email).
+  /// NULL is allowed for admin-created affiliates without an email — Postgres
+  /// permits multiple NULLs under a UNIQUE index.
+  email     String?       @unique
   instagram String?
   type      AffiliateType @default(INFLUENCER)
   /// Default commission share (e.g. 0.15 = 15%). Snapshot is copied to each
