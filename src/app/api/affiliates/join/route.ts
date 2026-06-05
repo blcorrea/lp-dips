@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse, after } from 'next/server';
 import { Prisma } from '@/generated/prisma/client/client';
 import {
   createAffiliate,
@@ -85,10 +85,17 @@ export async function POST(request: NextRequest) {
       active:         true,
     });
 
-    // Fire-and-forget welcome email — a send failure must not fail signup.
+    // Send the welcome email after the response is flushed. `after()` keeps the
+    // serverless function alive until it completes — a plain fire-and-forget
+    // promise gets killed when the function freezes, so the email never sends.
+    // A send failure must not fail signup, so it's wrapped in try/catch.
     const link = buildAffiliateLink({ ref: rawRef, type: rawType, instagram });
-    sendAffiliateWelcomeEmail(email, name.split(' ')[0], { ref: rawRef, link }).catch((err) => {
-      console.error('❌ Affiliate welcome email failed', { affiliateId: affiliate.id, err });
+    after(async () => {
+      try {
+        await sendAffiliateWelcomeEmail(email, name.split(' ')[0], { ref: rawRef, link });
+      } catch (err) {
+        console.error('❌ Affiliate welcome email failed', { affiliateId: affiliate.id, err });
+      }
     });
 
     return NextResponse.json({ ok: true, affiliateId: affiliate.id }, { status: 201 });
