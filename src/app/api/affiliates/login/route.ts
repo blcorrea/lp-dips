@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse, after } from 'next/server';
 import { findActiveAffiliateByEmail, createLoginToken } from '@/lib/affiliate-tokens';
 import { sendAffiliateMagicLinkEmail } from '@/lib/email-templates';
 
@@ -17,10 +17,19 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     if (affiliate && affiliate.email) {
       const token     = await createLoginToken(affiliate.id);
       const firstName = affiliate.name.split(' ')[0];
+      const to        = affiliate.email;
+      const id        = affiliate.id;
 
-      // Fire-and-forget — a send failure should not reveal whether the email exists
-      sendAffiliateMagicLinkEmail(affiliate.email, firstName, token).catch((err) => {
-        console.error('❌ Magic link email failed', { affiliateId: affiliate.id, err });
+      // Send after the response is flushed. `after()` keeps the serverless
+      // function alive until the send completes; a plain fire-and-forget promise
+      // is killed when the function freezes, so the email never goes out. Sending
+      // after the response also keeps response timing constant (anti-enumeration).
+      after(async () => {
+        try {
+          await sendAffiliateMagicLinkEmail(to, firstName, token);
+        } catch (err) {
+          console.error('❌ Magic link email failed', { affiliateId: id, err });
+        }
       });
     }
 
