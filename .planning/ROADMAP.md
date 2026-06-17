@@ -14,7 +14,7 @@ This milestone adds a shared creative asset library to the existing DIPS affilia
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Prisma model, Vercel Blob config, and data-access module (completed 2026-06-17)
-- [ ] **Phase 2: Admin Creatives** - Admin upload, edit, reorder, activate/deactivate, delete, and nav link
+- [x] **Phase 2: Admin Creatives** - Admin upload, edit, reorder, activate/deactivate, delete, and nav link (completed 2026-06-17)
 - [ ] **Phase 3: Affiliate Gallery & i18n** - Affiliate creative gallery with download, copy caption, empty state, and full localization
 
 ## Phase Details
@@ -47,14 +47,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. Admin can toggle a creative active/inactive; deleting a creative also removes its blob(s) from Vercel storage
   5. A navigation link to `/admin/creatives` is visible in the admin affiliates area
 
-**Plans**: 1/2 plans executed
+**Plans**: 2/2 plans complete
 **Wave 1**
 
 - [x] 02-01-PLAN.md — API layer: Vercel Blob client-upload token route + collection (GET list / POST create-row) + item route (PATCH edit/toggle/reorder, DELETE)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 02-02-PLAN.md — UI layer: /admin/creatives page, CreativesGrid client component (upload/edit/reorder/activate/delete), and admin nav link
+- [x] 02-02-PLAN.md — UI layer: /admin/creatives page, CreativesGrid client component (upload/edit/reorder/activate/delete), and admin nav link
 
 **UI hint**: yes
 
@@ -82,5 +82,5 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 1/1 | Complete    | 2026-06-17 |
-| 2. Admin Creatives | 1/2 | In Progress|  |
+| 2. Admin Creatives | 2/2 | Complete   | 2026-06-17 |
 | 3. Affiliate Gallery & i18n | 0/TBD | Not started | - |

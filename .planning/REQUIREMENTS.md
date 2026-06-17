@@ -23,7 +23,7 @@ Requirements for the Affiliate Creatives milestone. Each maps to roadmap phases.
 - [x] **ADMIN-04**: Admin can reorder creatives with up/down controls (persists `sortOrder`)
 - [x] **ADMIN-05**: Admin can activate/deactivate a creative
 - [x] **ADMIN-06**: Admin can delete a creative, which also removes its blob(s) from storage
-- [ ] **ADMIN-07**: Navigation link to `/admin/creatives` from the admin affiliates area
+- [x] **ADMIN-07**: Navigation link to `/admin/creatives` from the admin affiliates area
 
 ### Affiliate
 
@@ -78,7 +78,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ADMIN-04 | Phase 2 | Complete |
 | ADMIN-05 | Phase 2 | Complete |
 | ADMIN-06 | Phase 2 | Complete |
-| ADMIN-07 | Phase 2 | Pending |
+| ADMIN-07 | Phase 2 | Complete |
 | AFFL-01 | Phase 3 | Pending |
 | AFFL-02 | Phase 3 | Pending |
 | AFFL-03 | Phase 3 | Pending |
