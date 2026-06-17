@@ -7,7 +7,7 @@ import {
   ACCEPTED_IMAGE_MIME,
   ACCEPTED_VIDEO_MIME,
   MAX_CREATIVE_BYTES,
-} from '@/lib/creatives';
+} from '@/lib/creatives-constants';
 import { upload } from '@vercel/blob/client';
 import Image from 'next/image';
 import { Video } from 'lucide-react';

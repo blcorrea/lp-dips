@@ -5,26 +5,16 @@ import { del }          from '@vercel/blob';
 export type { CreativeType };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Constants — single source of truth for Phase 2 upload validation (D-07)
+// Constants — re-exported from the client-safe module so this server-only file
+// (prisma + @vercel/blob) is never pulled into a client bundle. The single
+// source of truth lives in ./creatives-constants (D-06/D-07).
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** Accepted image MIME types. Phase 2 enforces these; Phase 1 only defines them. */
-export const ACCEPTED_IMAGE_MIME = [
-  'image/jpeg',
-  'image/png',
-  'image/webp',
-  'image/gif',
-] as const;
-
-/** Accepted video MIME types. mov files use the video/quicktime MIME type. */
-export const ACCEPTED_VIDEO_MIME = [
-  'video/mp4',
-  'video/webm',
-  'video/quicktime',
-] as const;
-
-/** Maximum creative file size in bytes (200 MB). */
-export const MAX_CREATIVE_BYTES = 200 * 1024 * 1024;
+export {
+  ACCEPTED_IMAGE_MIME,
+  ACCEPTED_VIDEO_MIME,
+  MAX_CREATIVE_BYTES,
+} from './creatives-constants';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types — plain client-safe row; no Prisma runtime types cross the boundary
