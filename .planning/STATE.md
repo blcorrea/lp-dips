@@ -8,13 +8,13 @@ status: executing
 stopped_at: Phase 2 UI-SPEC approved
 last_updated: "2026-06-17T21:31:14.594Z"
 last_activity: 2026-06-17
-last_activity_desc: Phase 01 complete, transitioned to Phase 2
+last_activity_desc: Phase 02 Plan 01 complete — three admin creatives API routes
 progress:
   total_phases: 3
   completed_phases: 1
-  total_plans: 1
-  completed_plans: 1
-  percent: 33
+  total_plans: 2
+  completed_plans: 2
+  percent: 40
 ---
 
 # Project State
@@ -24,16 +24,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-17)
 
 **Core value:** Affiliates can grab ready-to-post, on-brand creative assets (with a copy-paste caption) in one place, and admins can manage that library without touching code.
-**Current focus:** Phase 01 — foundation
+**Current focus:** Phase 02 — Admin Creatives
 
 ## Current Position
 
 Phase: 2 — Admin Creatives
-Plan: Not started
-Status: Ready to execute
-Last activity: 2026-06-17 — Phase 01 complete, transitioned to Phase 2
+Plan: 1 of 2 complete (02-01 done; 02-02 pending)
+Status: Executing
+Last activity: 2026-06-17 — Phase 02 Plan 01 complete
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [████░░░░░░] 40%
 
 ## Performance Metrics
 
@@ -56,6 +56,7 @@ Progress: [░░░░░░░░░░] 0%
 
 *Updated after each plan completion*
 | Phase 01-foundation P01 | 20m | 3 tasks | 7 files |
+| Phase 02-admin-creatives P01 | 3m | 3 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -69,6 +70,8 @@ Recent decisions affecting current work:
 - Milestone init: Up/down reordering (sortOrder int) over drag-drop — lower complexity
 - Milestone init: Affiliate view reads via server component — matches existing server-first pattern
 - [Phase ?]: Shadow-DB workaround: applied add_affiliate_creatives migration via prisma db execute + migrate resolve (Neon managed Postgres has schema drift blocking prisma migrate dev)
+- [Phase 02-01]: onUploadCompleted intentional no-op — DB row created via follow-up POST (avoids localhost webhook limitation)
+- [Phase 02-01]: mimeType re-validated server-side in POST handler; CreativeType derived server-side (T-02-05)
 
 ### Pending Todos
 
@@ -76,7 +79,7 @@ None yet.
 
 ### Blockers/Concerns
 
-- BLOB_READ_WRITE_TOKEN must be provisioned in Vercel before Phase 2 upload can be tested end-to-end
+- BLOB_READ_WRITE_TOKEN must be provisioned in Vercel before Phase 2 upload can be tested end-to-end (route code written and compiles; live upload blocked until token available — run `vercel env pull` or copy from Vercel Dashboard)
 
 ## Deferred Items
 
@@ -87,6 +90,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-17T21:19:49.257Z
-Stopped at: Phase 2 UI-SPEC approved
-Resume file: .planning/phases/02-admin-creatives/02-UI-SPEC.md
+Last session: 2026-06-17T21:34:36Z
+Stopped at: Phase 02 Plan 01 complete — admin creatives API routes
+Resume file: .planning/phases/02-admin-creatives/02-02-PLAN.md

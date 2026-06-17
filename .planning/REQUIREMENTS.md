@@ -17,12 +17,12 @@ Requirements for the Affiliate Creatives milestone. Each maps to roadmap phases.
 
 <!-- All admin routes/pages guarded by isAdminAuthenticated() -->
 
-- [ ] **ADMIN-01**: Admin can upload a creative (image or video) with title, description, caption, and optional poster/thumbnail
-- [ ] **ADMIN-02**: Large/video files upload directly to Vercel Blob via signed client-upload (bypasses ~4.5MB serverless body limit)
-- [ ] **ADMIN-03**: Admin can edit a creative's metadata (title, description, caption, active state)
-- [ ] **ADMIN-04**: Admin can reorder creatives with up/down controls (persists `sortOrder`)
-- [ ] **ADMIN-05**: Admin can activate/deactivate a creative
-- [ ] **ADMIN-06**: Admin can delete a creative, which also removes its blob(s) from storage
+- [x] **ADMIN-01**: Admin can upload a creative (image or video) with title, description, caption, and optional poster/thumbnail
+- [x] **ADMIN-02**: Large/video files upload directly to Vercel Blob via signed client-upload (bypasses ~4.5MB serverless body limit)
+- [x] **ADMIN-03**: Admin can edit a creative's metadata (title, description, caption, active state)
+- [x] **ADMIN-04**: Admin can reorder creatives with up/down controls (persists `sortOrder`)
+- [x] **ADMIN-05**: Admin can activate/deactivate a creative
+- [x] **ADMIN-06**: Admin can delete a creative, which also removes its blob(s) from storage
 - [ ] **ADMIN-07**: Navigation link to `/admin/creatives` from the admin affiliates area
 
 ### Affiliate
@@ -72,12 +72,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DATA-01 | Phase 1 | Complete |
 | DATA-02 | Phase 1 | Complete |
 | DATA-03 | Phase 1 | Complete |
-| ADMIN-01 | Phase 2 | Pending |
-| ADMIN-02 | Phase 2 | Pending |
-| ADMIN-03 | Phase 2 | Pending |
-| ADMIN-04 | Phase 2 | Pending |
-| ADMIN-05 | Phase 2 | Pending |
-| ADMIN-06 | Phase 2 | Pending |
+| ADMIN-01 | Phase 2 | Complete |
+| ADMIN-02 | Phase 2 | Complete |
+| ADMIN-03 | Phase 2 | Complete |
+| ADMIN-04 | Phase 2 | Complete |
+| ADMIN-05 | Phase 2 | Complete |
+| ADMIN-06 | Phase 2 | Complete |
 | ADMIN-07 | Phase 2 | Pending |
 | AFFL-01 | Phase 3 | Pending |
 | AFFL-02 | Phase 3 | Pending |
