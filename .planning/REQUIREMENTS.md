@@ -9,9 +9,9 @@ Requirements for the Affiliate Creatives milestone. Each maps to roadmap phases.
 
 ### Data & Storage
 
-- [ ] **DATA-01**: `AffiliateCreative` model + `CreativeType` enum (IMAGE/VIDEO) added to `prisma/schema.prisma` and migrated (`add_affiliate_creatives`)
-- [ ] **DATA-02**: Vercel Blob configured — `@vercel/blob` dependency, `BLOB_READ_WRITE_TOKEN` env, and `*.public.blob.vercel-storage.com` added to `images.remotePatterns` in `next.config.mjs`
-- [ ] **DATA-03**: Data-access module `src/lib/creatives.ts` (`listCreatives`, `createCreative`, `updateCreative`, `deleteCreative`) with dates serialized as strings (mirrors `src/lib/affiliates.ts`)
+- [x] **DATA-01**: `AffiliateCreative` model + `CreativeType` enum (IMAGE/VIDEO) added to `prisma/schema.prisma` and migrated (`add_affiliate_creatives`)
+- [x] **DATA-02**: Vercel Blob configured — `@vercel/blob` dependency, `BLOB_READ_WRITE_TOKEN` env, and `*.public.blob.vercel-storage.com` added to `images.remotePatterns` in `next.config.mjs`
+- [x] **DATA-03**: Data-access module `src/lib/creatives.ts` (`listCreatives`, `createCreative`, `updateCreative`, `deleteCreative`) with dates serialized as strings (mirrors `src/lib/affiliates.ts`)
 
 ### Admin
 
@@ -69,9 +69,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DATA-01 | Phase 1 | Pending |
-| DATA-02 | Phase 1 | Pending |
-| DATA-03 | Phase 1 | Pending |
+| DATA-01 | Phase 1 | Complete |
+| DATA-02 | Phase 1 | Complete |
+| DATA-03 | Phase 1 | Complete |
 | ADMIN-01 | Phase 2 | Pending |
 | ADMIN-02 | Phase 2 | Pending |
 | ADMIN-03 | Phase 2 | Pending |
@@ -87,6 +87,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | I18N-01 | Phase 3 | Pending |
 
 **Coverage:**
+
 - v1 requirements: 16 total
 - Mapped to phases: 16
 - Unmapped: 0 ✓
