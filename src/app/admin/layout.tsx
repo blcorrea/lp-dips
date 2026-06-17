@@ -63,6 +63,12 @@ export default async function AdminLayout({
               >
                 Users
               </Link>
+              <Link
+                href="/admin/creatives"
+                className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                Creatives
+              </Link>
             </nav>
             <Link
               href="/api/admin/login?logout=1"
