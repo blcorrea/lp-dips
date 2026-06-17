@@ -79,6 +79,9 @@ Affiliates can grab ready-to-post, on-brand creative assets (with a copy-paste c
 | Up/down reordering (sortOrder int) over drag-drop | Lower complexity, no new dependency | — Pending |
 | No download analytics in v1 | Not required to validate the library | — Pending |
 | Affiliate view reads via server component (no affiliate API) | Matches existing server-first pattern | — Pending |
+| Vercel Blob + client upload | Handle video > serverless 4.5MB body limit | ✓ Good (foundation shipped in Phase 1) |
+
+**Phase 1 (Foundation) complete (2026-06-17):** `AffiliateCreative` model + `CreativeType` enum migrated; `@vercel/blob` wired; `src/lib/creatives.ts` data-access shipped. DATA-01/02/03 validated.
 
 ## Evolution
 
@@ -98,4 +101,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-17 after initialization*
+*Last updated: 2026-06-17 after Phase 1 (Foundation) completion*
