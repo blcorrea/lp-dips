@@ -13,10 +13,12 @@ import { ACCEPTED_IMAGE_MIME, ACCEPTED_VIDEO_MIME, MAX_CREATIVE_BYTES } from '@/
 //   1. At handler entry — returns 401 before handleUpload is called.
 //   2. Inside onBeforeGenerateToken — defense-in-depth per ASVS V4.
 //
-// onUploadCompleted is intentionally a no-op: it is an inbound webhook from
-// Vercel's servers and cannot reach localhost (127.0.0.1). The DB row is
-// created via a follow-up POST to /api/admin/creatives after upload() resolves
-// on the client. See RESEARCH.md Pitfall 1.
+// onUploadCompleted is intentionally OMITTED. It is an inbound webhook from
+// Vercel's servers; on localhost no public callbackUrl can be derived, and when
+// a callback IS configured the client's upload() blocks waiting for its
+// confirmation — which never arrives locally, hanging the upload near 100%.
+// The DB row is instead created via a follow-up POST to /api/admin/creatives
+// after upload() resolves on the client. See RESEARCH.md Pitfall 1.
 
 export async function POST(request: Request): Promise<NextResponse> {
   if (!(await isAdminAuthenticated())) {
@@ -41,11 +43,6 @@ export async function POST(request: Request): Promise<NextResponse> {
           maximumSizeInBytes: MAX_CREATIVE_BYTES,
           addRandomSuffix: true,
         };
-      },
-      onUploadCompleted: async () => {
-        // Intentionally no-op: DB row is created via follow-up POST from client.
-        // onUploadCompleted is an inbound webhook from Vercel's servers and
-        // cannot reach localhost (127.0.0.1). See RESEARCH.md Pitfall 1.
       },
     });
     return NextResponse.json(jsonResponse);
