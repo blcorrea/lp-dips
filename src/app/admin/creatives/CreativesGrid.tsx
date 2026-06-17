@@ -27,6 +27,11 @@ export default function CreativesGrid({ rows }: { rows: CreativeRow[] }) {
   const router = useRouter();
 
   const [busyId, setBusyId]           = useState<string | null>(null);
+  // WR-03: a reorder mutates TWO rows (the clicked card and its neighbor), so
+  // disabling only busyId === row.id leaves the neighbor's ▲/▼ clickable and
+  // allows an overlapping swap (lost update). Track reorder-in-flight separately
+  // and disable ALL reorder controls while a swap is pending.
+  const [reordering, setReordering]   = useState(false);
   const [notice, setNotice]           = useState<{ ok: boolean; msg: string } | null>(null);
   const [showCreate, setShowCreate]   = useState(false);
   const [editingId, setEditingId]     = useState<string | null>(null);
@@ -69,6 +74,31 @@ export default function CreativesGrid({ rows }: { rows: CreativeRow[] }) {
       flash(false, 'Network error — please try again.');
     } finally {
       setBusyId(null);
+    }
+  }
+
+  // WR-03: dedicated reorder handler. Sets `reordering` (not just busyId) so the
+  // ▲/▼ controls on EVERY card are disabled while the two-row swap is in flight,
+  // preventing a concurrent swap on the neighbor card it also mutates.
+  async function reorderCreative(id: string, direction: 'up' | 'down', successMsg: string) {
+    setReordering(true);
+    try {
+      const res  = await fetch(`/api/admin/creatives/${id}`, {
+        method:  'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ direction }),
+      });
+      const data = (await res.json()) as { ok?: boolean; error?: string };
+      if (res.ok && data.ok) {
+        flash(true, successMsg);
+        router.refresh();
+      } else {
+        flash(false, data.error ?? 'Update failed.');
+      }
+    } catch {
+      flash(false, 'Network error — please try again.');
+    } finally {
+      setReordering(false);
     }
   }
 
@@ -134,7 +164,13 @@ export default function CreativesGrid({ rows }: { rows: CreativeRow[] }) {
         setPosterFile(null);
         router.refresh();
       } else {
-        console.error('Row creation failed after upload — orphaned blob:', assetBlob.pathname);
+        // WR-02: log BOTH orphaned blob paths (asset + poster) so neither is
+        // silently lost. The project accepts orphaned-blob (RESEARCH Pitfall 2);
+        // no automatic remote cleanup, but logging must be complete for manual cleanup.
+        console.error('Row creation failed after upload — orphaned blobs:', {
+          asset:  assetBlob.pathname,
+          poster: posterBlob?.pathname ?? null,
+        });
         flash(false, data.error ?? 'Create failed after upload.');
       }
     } catch (err) {
@@ -364,8 +400,8 @@ export default function CreativesGrid({ rows }: { rows: CreativeRow[] }) {
                   <button
                     type="button"
                     aria-label="Move up"
-                    disabled={idx === 0 || busyId === row.id}
-                    onClick={() => patchCreative(row.id, { direction: 'up' }, '')}
+                    disabled={idx === 0 || busyId === row.id || reordering}
+                    onClick={() => reorderCreative(row.id, 'up', '')}
                     className="rounded border border-gray-300 bg-white px-2 py-2 text-xs font-normal text-gray-700 hover:bg-gray-50 disabled:opacity-50 transition-colors"
                   >
                     ▲
@@ -375,8 +411,8 @@ export default function CreativesGrid({ rows }: { rows: CreativeRow[] }) {
                   <button
                     type="button"
                     aria-label="Move down"
-                    disabled={idx === rows.length - 1 || busyId === row.id}
-                    onClick={() => patchCreative(row.id, { direction: 'down' }, '')}
+                    disabled={idx === rows.length - 1 || busyId === row.id || reordering}
+                    onClick={() => reorderCreative(row.id, 'down', '')}
                     className="rounded border border-gray-300 bg-white px-2 py-2 text-xs font-normal text-gray-700 hover:bg-gray-50 disabled:opacity-50 transition-colors"
                   >
                     ▼
