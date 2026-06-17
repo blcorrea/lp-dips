@@ -36,9 +36,9 @@ All spacing values are multiples of 4. These mirror the existing admin conventio
 
 | Token | Value | Admin Usage |
 |-------|-------|-------------|
-| xs | 4px | Icon-to-label gap, badge horizontal padding (`px-2 py-0.5`) |
-| sm | 8px | Button internal padding (`py-2`), stat card label-to-value gap (`mt-1.5`) |
-| md | 16px | Card internal padding (`p-4`), form field horizontal gap (`gap-3`) |
+| xs | 4px | Icon-to-label gap, badge horizontal padding (`px-2 py-1`) |
+| sm | 8px | Button internal padding (`py-2`), stat card label-to-value gap (`mt-1`) |
+| md | 16px | Card internal padding (`p-4`), form field horizontal gap (`gap-4`) |
 | lg | 24px | Page section gap (`space-y-6`), stat grid gap (`gap-4`) |
 | xl | 32px | Page vertical padding (`py-8`) |
 | 2xl | 48px | Empty state vertical padding (`py-16` = 64px — see exception) |
@@ -47,7 +47,6 @@ All spacing values are multiples of 4. These mirror the existing admin conventio
 **Exceptions:**
 - Empty state cell: `py-16` (64px) — matches existing `AffiliatesTable` empty row treatment.
 - Card thumbnail container: `aspect-video` with `w-full` — dimensions are ratio-driven, not fixed pixel spacing.
-- Touch targets for ▲/▼ reorder buttons: minimum 32px tall (`py-1 px-2` on a `text-xs` button = ~28px; use `py-1.5` to meet 32px minimum in admin context). Full 44px touch target not required — admin is desktop-only.
 
 ---
 
@@ -58,9 +57,11 @@ The admin uses Tailwind's default system font stack. No size outside this table 
 | Role | Size | Weight | Line Height | Tailwind Class | Usage |
 |------|------|--------|-------------|----------------|-------|
 | Body | 14px | 400 | 1.5 | `text-sm` | Table cells, descriptions, card body text, form helper text |
-| Label | 10px | 600 | 1.4 | `text-xs font-semibold uppercase tracking-wider` | Field labels, stat card labels, table column headers |
+| Label | 12px | 700 | 1.4 | `text-xs font-bold uppercase tracking-wider` | Field labels, stat card labels, table column headers |
 | Heading | 24px | 700 | 1.2 | `text-2xl font-bold` | Page title (`<h1>`) |
 | Display | — | — | — | — | Not used in admin surface |
+
+**Declared weight set: {400, 700} only.** Two weights maximum — body (400) and bold (700) shared by both Label and Heading roles.
 
 **Sub-label (existing pattern, not a new size):**
 - Muted secondary text: `text-xs text-gray-500` — used for created-at dates, sub-copy under card titles. Same 12px / weight 400 as Tailwind default for `text-xs`.
@@ -131,7 +132,7 @@ Inserted after "Users", before the Log out link. Exact class string matches all 
 <div className="space-y-6">
   <div>
     <h1 className="text-2xl font-bold text-gray-900">Creatives</h1>
-    <p className="mt-0.5 text-sm text-gray-500">{N} creative{s} total</p>
+    <p className="mt-1 text-sm text-gray-500">{N} creative{s} total</p>
   </div>
   <CreativesGrid rows={rows} />
 </div>
@@ -144,16 +145,16 @@ Container: `max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8` — inherited from `lay
 ### Top Bar (inside CreativesGrid)
 
 ```
-<div className="flex items-center justify-between gap-3">
+<div className="flex items-center justify-between gap-4">
   {notice && (
-    <span className={`text-xs font-medium ${notice.ok ? 'text-green-700' : 'text-red-600'}`}>
+    <span className={`text-xs font-normal ${notice.ok ? 'text-green-700' : 'text-red-600'}`}>
       {notice.ok ? '✓' : '✗'} {notice.msg}
     </span>
   )}
   <button
     type="button"
     onClick={() => setShowCreate(v => !v)}
-    className="ml-auto rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-700 transition-colors"
+    className="ml-auto rounded-lg bg-gray-900 px-4 py-2 text-sm font-bold text-white hover:bg-gray-700 transition-colors"
   >
     {showCreate ? 'Close' : '+ Add creative'}
   </button>
@@ -175,7 +176,7 @@ Displayed when `showCreate === true`, above the card grid.
 >
 ```
 
-**Field layout:** Stack vertically (`space-y-3`) on mobile. At `sm:` breakpoint, wrap into a two-column grid (`sm:grid sm:grid-cols-2 sm:gap-4`) with the file inputs spanning full width.
+**Field layout:** Stack vertically (`space-y-4`) on mobile. At `sm:` breakpoint, wrap into a two-column grid (`sm:grid sm:grid-cols-2 sm:gap-4`) with the file inputs spanning full width.
 
 **Field specification:**
 
@@ -197,7 +198,7 @@ const inputCls =
   'placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 ' +
   'focus:ring-blue-500';
 
-const labelCls = 'block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1';
+const labelCls = 'block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1';
 ```
 
 File inputs use the same `inputCls` applied to a `<input type="file">` wrapper or a styled `<label>` button — maintain consistent border and focus appearance.
@@ -205,16 +206,16 @@ File inputs use the same `inputCls` applied to a `<input type="file">` wrapper o
 **Upload progress bar** (shown during upload, hidden otherwise):
 
 ```
-<div className="h-1.5 w-full rounded-full bg-gray-200">
+<div className="h-2 w-full rounded-full bg-gray-200">
   <div
-    className="h-1.5 rounded-full bg-blue-500 transition-all duration-200"
+    className="h-2 rounded-full bg-blue-500 transition-all duration-200"
     style={{ width: `${progress}%` }}
   />
 </div>
 <p className="text-xs text-gray-500">{progress < 100 ? `Uploading… ${progress}%` : 'Saving…'}</p>
 ```
 
-Progress bar: 6px tall (`h-1.5`), full width, rounded, gray track, blue fill. Appears below the file inputs and above the submit button only when `uploading === true`.
+Progress bar: 8px tall (`h-2`), full width, rounded, gray track, blue fill. Appears below the file inputs and above the submit button only when `uploading === true`.
 
 **Submit button:**
 
@@ -222,7 +223,7 @@ Progress bar: 6px tall (`h-1.5`), full width, rounded, gray track, blue fill. Ap
 <button
   type="submit"
   disabled={uploading}
-  className="rounded-lg bg-green-700 px-4 py-2 text-sm font-semibold text-white hover:bg-green-800 disabled:opacity-50 transition-colors"
+  className="rounded-lg bg-green-700 px-4 py-2 text-sm font-bold text-white hover:bg-green-800 disabled:opacity-50 transition-colors"
 >
   {uploading ? 'Uploading…' : 'Upload creative'}
 </button>
@@ -248,7 +249,7 @@ Progress bar: 6px tall (`h-1.5`), full width, rounded, gray track, blue fill. Ap
 ```
 <div className="rounded-xl border border-gray-200 bg-white shadow-sm px-4 py-16 text-center">
   <p className="text-sm text-gray-400">
-    No creatives yet. Click <span className="font-semibold">+ Add creative</span> to upload one.
+    No creatives yet. Click <span className="font-bold">+ Add creative</span> to upload one.
   </p>
 </div>
 ```
@@ -256,6 +257,8 @@ Progress bar: 6px tall (`h-1.5`), full width, rounded, gray track, blue fill. Ap
 ---
 
 ### Creative Card
+
+**Visual hierarchy:** Primary visual anchor is the card thumbnail (`aspect-video`, `bg-gray-100`) — it occupies the largest area and is the first element the eye lands on. The `+ Add creative` button (`bg-gray-900`) in the top bar is the primary action focal point on the page; all other controls (Edit, Activate, Delete) are secondary and rendered at `text-xs` to keep weight on the content, not the chrome.
 
 ```
 <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden flex flex-col">
@@ -279,7 +282,7 @@ Progress bar: 6px tall (`h-1.5`), full width, rounded, gray track, blue fill. Ap
 **Active/inactive badge** (top-right overlay on thumbnail):
 
 ```
-<span className={`absolute top-2 right-2 inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
+<span className={`absolute top-2 right-2 inline-flex px-2 py-1 rounded-full text-xs font-normal ${
   row.active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
 }`}>
   {row.active ? 'Active' : 'Inactive'}
@@ -289,7 +292,7 @@ Progress bar: 6px tall (`h-1.5`), full width, rounded, gray track, blue fill. Ap
 **Type badge** (top-left overlay on thumbnail):
 
 ```
-<span className="absolute top-2 left-2 inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-gray-900 text-white">
+<span className="absolute top-2 left-2 inline-flex px-2 py-1 rounded-full text-xs font-normal bg-gray-900 text-white">
   {row.type === 'IMAGE' ? 'Image' : 'Video'}
 </span>
 ```
@@ -298,12 +301,12 @@ Progress bar: 6px tall (`h-1.5`), full width, rounded, gray track, blue fill. Ap
 
 ```
 <div className="p-4 flex flex-col gap-2 flex-1">
-  <p className="text-sm font-medium text-gray-900 truncate">{row.title}</p>
+  <p className="text-sm font-bold text-gray-900 truncate">{row.title}</p>
   {row.description && (
     <p className="text-xs text-gray-500 line-clamp-2">{row.description}</p>
   )}
   {/* Controls row */}
-  <div className="mt-auto pt-2 flex items-center gap-1.5 flex-wrap">
+  <div className="mt-auto pt-2 flex items-center gap-2 flex-wrap">
     ...controls...
   </div>
 </div>
@@ -313,11 +316,11 @@ Progress bar: 6px tall (`h-1.5`), full width, rounded, gray track, blue fill. Ap
 
 | Control | Element | Class | Behavior |
 |---------|---------|-------|----------|
-| ▲ Move up | `<button>` | `rounded border border-gray-300 bg-white px-2 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 transition-colors` | Disabled if first in list; PATCHes `{ direction: 'up' }` then `router.refresh()` |
+| ▲ Move up | `<button>` | `rounded border border-gray-300 bg-white px-2 py-2 text-xs font-normal text-gray-700 hover:bg-gray-50 disabled:opacity-50 transition-colors` | Disabled if first in list; PATCHes `{ direction: 'up' }` then `router.refresh()` |
 | ▼ Move down | `<button>` | Same as ▲ | Disabled if last in list |
 | Edit | `<button>` | Same as ▲ | Opens per-card edit panel (see below); label: "Edit" |
-| Activate / Deactivate | `<button>` | Active→ `border-red-200 bg-white text-red-700 hover:bg-red-50`; Inactive→ `border-green-300 bg-white text-green-700 hover:bg-green-50` — both: `rounded px-2 py-1.5 text-xs font-medium border transition-colors disabled:opacity-50` | PATCHes `{ active: !row.active }` then `router.refresh()` |
-| Delete | `<button>` | `rounded border border-gray-300 bg-white px-2 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50 disabled:opacity-50 transition-colors` | `confirm()` first; DELETEs then `router.refresh()` |
+| Activate / Deactivate | `<button>` | Active→ `border-red-200 bg-white text-red-700 hover:bg-red-50`; Inactive→ `border-green-300 bg-white text-green-700 hover:bg-green-50` — both: `rounded px-2 py-2 text-xs font-normal border transition-colors disabled:opacity-50` | PATCHes `{ active: !row.active }` then `router.refresh()` |
+| Delete | `<button>` | `rounded border border-gray-300 bg-white px-2 py-2 text-xs font-normal text-red-700 hover:bg-red-50 disabled:opacity-50 transition-colors` | `confirm()` first; DELETEs then `router.refresh()` |
 
 All buttons use `disabled={busyId === row.id}` — one card at a time is busy.
 
@@ -331,16 +334,16 @@ The edit panel replaces the card's controls row with an edit form when `editingI
 
 ```
 {editingId === row.id && (
-  <form onSubmit={handleEdit} className="mt-2 space-y-3 border-t border-gray-100 pt-3">
+  <form onSubmit={handleEdit} className="mt-2 space-y-4 border-t border-gray-100 pt-4">
     ...fields...
     <div className="flex gap-2">
       <button type="submit" disabled={busyId === row.id}
-        className="rounded-lg bg-green-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-green-800 disabled:opacity-50 transition-colors">
-        {busyId === row.id ? 'Saving…' : 'Save'}
+        className="rounded-lg bg-green-700 px-3 py-2 text-xs font-bold text-white hover:bg-green-800 disabled:opacity-50 transition-colors">
+        {busyId === row.id ? 'Saving…' : 'Save changes'}
       </button>
       <button type="button" onClick={() => setEditingId(null)}
-        className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-        Cancel
+        className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs font-normal text-gray-700 hover:bg-gray-50 transition-colors">
+        Discard changes
       </button>
     </div>
   </form>
@@ -369,9 +372,9 @@ Active toggle in edit panel: render as `<input type="checkbox">` styled with `h-
 | Primary CTA | `+ Add creative` |
 | Upload submit button | `Upload creative` |
 | Upload busy label | `Uploading…` |
-| Edit save button | `Save` |
+| Edit save button | `Save changes` |
 | Edit save busy label | `Saving…` |
-| Cancel button | `Cancel` |
+| Cancel button | `Discard changes` |
 | Close panel toggle | `Close` |
 | Empty state heading | _(none — single line paragraph)_ |
 | Empty state body | `No creatives yet. Click + Add creative to upload one.` |
@@ -451,7 +454,7 @@ During upload (`uploading === true`):
 | `sm` (640px+) | 2 | Two-column field grid (`grid-cols-2 gap-4`) |
 | `lg` (1024px+) | 3 | Two-column field grid (unchanged) |
 
-Card controls (`flex flex-wrap gap-1.5`) wrap naturally on narrow cards. ▲▼ Edit Activate Delete all appear on one line at `lg` card width (~380px); they wrap to two lines at `sm` card width (~280px). This is acceptable — no control is hidden.
+Card controls (`flex flex-wrap gap-2`) wrap naturally on narrow cards. ▲▼ Edit Activate Delete all appear on one line at `lg` card width (~380px); they wrap to two lines at `sm` card width (~280px). This is acceptable — no control is hidden.
 
 Admin is desktop-optimized. Mobile is functional but not the primary concern.
 
