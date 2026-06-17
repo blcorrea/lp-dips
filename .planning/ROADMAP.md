@@ -48,8 +48,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   5. A navigation link to `/admin/creatives` is visible in the admin affiliates area
 
 **Plans**: 2 plans
+**Wave 1**
 
 - [ ] 02-01-PLAN.md — API layer: Vercel Blob client-upload token route + collection (GET list / POST create-row) + item route (PATCH edit/toggle/reorder, DELETE)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
 - [ ] 02-02-PLAN.md — UI layer: /admin/creatives page, CreativesGrid client component (upload/edit/reorder/activate/delete), and admin nav link
 
 **UI hint**: yes
