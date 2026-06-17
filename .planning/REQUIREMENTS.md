@@ -69,28 +69,28 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DATA-01 | TBD | Pending |
-| DATA-02 | TBD | Pending |
-| DATA-03 | TBD | Pending |
-| ADMIN-01 | TBD | Pending |
-| ADMIN-02 | TBD | Pending |
-| ADMIN-03 | TBD | Pending |
-| ADMIN-04 | TBD | Pending |
-| ADMIN-05 | TBD | Pending |
-| ADMIN-06 | TBD | Pending |
-| ADMIN-07 | TBD | Pending |
-| AFFL-01 | TBD | Pending |
-| AFFL-02 | TBD | Pending |
-| AFFL-03 | TBD | Pending |
-| AFFL-04 | TBD | Pending |
-| AFFL-05 | TBD | Pending |
-| I18N-01 | TBD | Pending |
+| DATA-01 | Phase 1 | Pending |
+| DATA-02 | Phase 1 | Pending |
+| DATA-03 | Phase 1 | Pending |
+| ADMIN-01 | Phase 2 | Pending |
+| ADMIN-02 | Phase 2 | Pending |
+| ADMIN-03 | Phase 2 | Pending |
+| ADMIN-04 | Phase 2 | Pending |
+| ADMIN-05 | Phase 2 | Pending |
+| ADMIN-06 | Phase 2 | Pending |
+| ADMIN-07 | Phase 2 | Pending |
+| AFFL-01 | Phase 3 | Pending |
+| AFFL-02 | Phase 3 | Pending |
+| AFFL-03 | Phase 3 | Pending |
+| AFFL-04 | Phase 3 | Pending |
+| AFFL-05 | Phase 3 | Pending |
+| I18N-01 | Phase 3 | Pending |
 
 **Coverage:**
 - v1 requirements: 16 total
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 16 ⚠️
+- Mapped to phases: 16
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-06-17*
-*Last updated: 2026-06-17 after initial definition*
+*Last updated: 2026-06-17 after roadmap creation (traceability complete)*
