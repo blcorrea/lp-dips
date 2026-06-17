@@ -47,7 +47,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. Admin can toggle a creative active/inactive; deleting a creative also removes its blob(s) from Vercel storage
   5. A navigation link to `/admin/creatives` is visible in the admin affiliates area
 
-**Plans**: TBD
+**Plans**: 2 plans
+
+- [ ] 02-01-PLAN.md — API layer: Vercel Blob client-upload token route + collection (GET list / POST create-row) + item route (PATCH edit/toggle/reorder, DELETE)
+- [ ] 02-02-PLAN.md — UI layer: /admin/creatives page, CreativesGrid client component (upload/edit/reorder/activate/delete), and admin nav link
+
 **UI hint**: yes
 
 ### Phase 3: Affiliate Gallery & i18n
@@ -74,5 +78,5 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 1/1 | Complete    | 2026-06-17 |
-| 2. Admin Creatives | 0/TBD | Not started | - |
+| 2. Admin Creatives | 0/2 | Not started | - |
 | 3. Affiliate Gallery & i18n | 0/TBD | Not started | - |
