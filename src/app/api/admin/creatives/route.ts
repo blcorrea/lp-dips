@@ -7,6 +7,7 @@ import {
   ACCEPTED_VIDEO_MIME,
 } from '@/lib/creatives';
 import { CreativeType } from '@/generated/prisma/client/client';
+import { prisma } from '@/lib/prisma';
 
 // ── GET /api/admin/creatives ──────────────────────────────────────────────────
 
@@ -80,6 +81,14 @@ export async function POST(request: NextRequest) {
   const fileSize          = typeof raw.fileSize          === 'number' ? raw.fileSize          : 0;
 
   try {
+    // ── sortOrder (CR-01) ──────────────────────────────────────────────────
+    // Assign a distinct, increasing sortOrder so freshly uploaded creatives
+    // append at the end with unique values. Without this every row keeps the
+    // schema default (0) and the reorder swap in [id]/route.ts is a silent
+    // no-op (swapping two equal sortOrder values changes nothing).
+    const max = await prisma.affiliateCreative.aggregate({ _max: { sortOrder: true } });
+    const sortOrder = (max._max.sortOrder ?? -1) + 1;
+
     const creative = await createCreative({
       title,
       description,
@@ -92,6 +101,7 @@ export async function POST(request: NextRequest) {
       fileName,
       fileSize,
       mimeType,
+      sortOrder,
     });
     return NextResponse.json({ ok: true, creative }, { status: 201 });
   } catch (err) {
