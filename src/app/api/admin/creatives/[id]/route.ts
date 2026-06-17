@@ -121,8 +121,21 @@ export async function DELETE(
 
   const { id } = await params;
 
-  // blobs deleted first, then DB row (creatives.ts deleteCreative)
-  await deleteCreative(id);
-
-  return NextResponse.json({ ok: true });
+  // blobs deleted first, then DB row (creatives.ts deleteCreative).
+  // Wrap in try/catch (WR-01) so a blob-deletion failure (network error,
+  // expired token, Blob outage) returns the documented { error } JSON shape
+  // the client can parse, mirroring the PATCH handler — not an unparseable 500.
+  try {
+    await deleteCreative(id);
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    if (
+      err instanceof Prisma.PrismaClientKnownRequestError &&
+      err.code === 'P2025'
+    ) {
+      return NextResponse.json({ error: 'Creative not found' }, { status: 404 });
+    }
+    const message = err instanceof Error ? err.message : 'Delete failed';
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }
