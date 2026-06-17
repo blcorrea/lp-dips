@@ -26,7 +26,8 @@ Decimal phases appear between their surrounding integers in numeric order.
   1. `AffiliateCreative` model and `CreativeType` enum are present in `prisma/schema.prisma` and the migration has been applied to the database
   2. `@vercel/blob` is installed, `BLOB_READ_WRITE_TOKEN` is documented in env setup, and `*.public.blob.vercel-storage.com` is in `images.remotePatterns` in `next.config.mjs`
   3. `src/lib/creatives.ts` exports `listCreatives`, `createCreative`, `updateCreative`, and `deleteCreative` with dates serialized as strings, following the `src/lib/affiliates.ts` pattern
-**Plans**: TBD
+**Plans**: 1 plan
+- [ ] 01-01-PLAN.md — Schema (AffiliateCreative + CreativeType) + migration, @vercel/blob wiring (config + env doc), and src/lib/creatives.ts data-access module
 
 ### Phase 2: Admin Creatives
 **Goal**: Admins can manage the full creative library (upload, edit, reorder, activate/deactivate, delete) via the admin dashboard without touching code
@@ -61,6 +62,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/TBD | Not started | - |
+| 1. Foundation | 0/1 | Not started | - |
 | 2. Admin Creatives | 0/TBD | Not started | - |
 | 3. Affiliate Gallery & i18n | 0/TBD | Not started | - |
