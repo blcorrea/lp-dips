@@ -6,9 +6,9 @@ current_phase: 3
 current_phase_name: Affiliate Gallery & i18n
 status: verifying
 stopped_at: Phase 3 UI-SPEC approved
-last_updated: "2026-06-18T14:12:46.084Z"
+last_updated: "2026-06-18T14:55:00.000Z"
 last_activity: 2026-06-18
-last_activity_desc: Phase 3 execution started
+last_activity_desc: "Completed quick task 260618-gjn: affiliate creatives UI tweaks"
 progress:
   total_phases: 3
   completed_phases: 3
@@ -31,7 +31,7 @@ See: .planning/PROJECT.md (updated 2026-06-18)
 Phase: 3 (Affiliate Gallery & i18n) — EXECUTING
 Plan: 1 of 1
 Status: Phase complete — ready for verification
-Last activity: 2026-06-18 — Phase 3 execution started
+Last activity: 2026-06-18 — Completed quick task 260618-gjn: affiliate creatives UI tweaks
 
 Progress: [█████████████░░░░░░░] 2/3 phases (67%)
 
@@ -84,6 +84,12 @@ None yet.
 ### Blockers/Concerns
 
 - None. BLOB_READ_WRITE_TOKEN was provisioned and Phase 2 admin uploads (image + video > 4.5MB) verified end-to-end in UAT.
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260618-gjn | Affiliate creatives UI tweaks: full-aspect photos, denser 4-5 col grid, remove admin video poster upload (first-frame default) | 2026-06-18 | 5168eb3 | [260618-gjn-affiliate-creatives-ui-tweaks-photos-sho](./quick/260618-gjn-affiliate-creatives-ui-tweaks-photos-sho/) |
 
 ## Deferred Items
 
