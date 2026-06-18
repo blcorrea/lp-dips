@@ -30,8 +30,8 @@ See: .planning/PROJECT.md (updated 2026-06-18)
 
 Phase: 3 (complete) — milestone v1.0 100%
 Plan: Not started
-Status: Milestone complete — ready to archive (/gsd-complete-milestone) or start next milestone
-Last activity: 2026-06-18 — Phase 3 complete (UAT 8/8, + quick task 260618-gjn UI tweaks)
+Status: Milestone v1.0 shipped — PR #12 open (→ feature/headless-shopify-stripe)
+Last activity: 2026-06-18 — Opened PR #12 for milestone v1.0 (Affiliate Creatives)
 
 Progress: [████████████████████] 3/3 phases (100%)
 
