@@ -46,11 +46,12 @@ function CreativeCard({ row, t }: { row: CreativeRow; t: T }) {
 
       {/* ── Media frame ──────────────────────────────────────────────── */}
       {row.type === 'IMAGE' ? (
-        // IMAGE: fixed-aspect media region. object-contain shows the whole image
-        // (never cropped) and centers it within the region, so an image whose
-        // aspect doesn't fill the box is letterboxed evenly top/bottom (centered)
-        // rather than pinned to the top.
-        <div className="relative w-full aspect-[4/5] bg-black/20 overflow-hidden">
+        // IMAGE: fixed-HEIGHT media region (h-52). A fixed pixel height is more
+        // reliable than aspect-ratio + next/image `fill` (which can collapse).
+        // object-contain shows the whole image (never cropped) and centers it,
+        // so an image that doesn't fill the region is letterboxed evenly
+        // top/bottom (centered) instead of pinned to the top.
+        <div className="relative w-full h-52 bg-black/20 overflow-hidden">
           <Image
             src={row.url}
             alt={row.title}
@@ -64,11 +65,11 @@ function CreativeCard({ row, t }: { row: CreativeRow; t: T }) {
           </span>
         </div>
       ) : (
-        // VIDEO: inline playable, never autoplay (D-01, D-02). Same fixed-aspect
+        // VIDEO: inline playable, never autoplay (D-01, D-02). Same fixed-height
         // region as images; object-contain centers the frame within the box.
         // preload="metadata" + #t=0.001 fragment paints the first frame as the
         // default poster when no explicit thumbnailUrl is set.
-        <div className="relative w-full aspect-[4/5] bg-black/20 overflow-hidden">
+        <div className="relative w-full h-52 bg-black/20 overflow-hidden">
           <video
             ref={videoRef}
             src={row.thumbnailUrl ? row.url : `${row.url}#t=0.001`}
