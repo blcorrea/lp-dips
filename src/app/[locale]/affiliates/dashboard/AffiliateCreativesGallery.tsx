@@ -55,7 +55,7 @@ function CreativeCard({ row, t }: { row: CreativeRow; t: T }) {
             width={800}
             height={800}
             className="w-full h-auto"
-            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            sizes="(max-width: 640px) 80vw, 180px"
           />
           {/* Type badge — top-left, localized (I18N-01) */}
           <span className="absolute top-2 left-2 inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold tracking-[0.08em] uppercase bg-black/50 text-white">
@@ -146,8 +146,11 @@ export default function AffiliateCreativesGallery({ rows }: AffiliateCreativesGa
   const t = useTranslations('AffiliateCreatives');
 
   return (
-    // D-09: denser grid — 1 col mobile → up to 4-5 cols on large desktop
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-3">
+    // D-09: dense thumbnail grid. The dashboard container is capped at max-w-4xl
+    // (~850px usable), so fixed viewport breakpoints (lg/2xl) never trigger and
+    // leave huge cards. auto-fill + a small min column width packs as many small
+    // previews as fit the available width instead — ~4 cols on narrow, ~5 on wide.
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3">
       {rows.map((row) => (
         <CreativeCard key={row.id} row={row} t={t} />
       ))}
