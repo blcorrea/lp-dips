@@ -46,15 +46,16 @@ function CreativeCard({ row, t }: { row: CreativeRow; t: T }) {
 
       {/* ── Media frame ──────────────────────────────────────────────── */}
       {row.type === 'IMAGE' ? (
-        // IMAGE: natural aspect ratio — no fixed-height crop, no object-cover.
-        // Wrap in a relative container so the absolute type badge anchors correctly.
-        <div className="relative w-full bg-black/20">
+        // IMAGE: fixed-aspect media region (4/5). object-contain shows the whole
+        // image (never cropped) and centers it within the region, so an image
+        // whose aspect doesn't fill the box is letterboxed evenly top/bottom
+        // (centered) rather than pinned to the top.
+        <div className="relative w-full aspect-[4/5] bg-black/20 overflow-hidden">
           <Image
             src={row.url}
             alt={row.title}
-            width={800}
-            height={800}
-            className="w-full h-auto"
+            fill
+            className="object-contain"
             sizes="(max-width: 640px) 80vw, 180px"
           />
           {/* Type badge — top-left, localized (I18N-01) */}
@@ -63,10 +64,11 @@ function CreativeCard({ row, t }: { row: CreativeRow; t: T }) {
           </span>
         </div>
       ) : (
-        // VIDEO: inline playable, never autoplay (D-01, D-02). Preserves natural
-        // aspect via w-full. preload="metadata" + #t=0.001 fragment paints the
-        // first frame as the default poster when no explicit thumbnailUrl is set.
-        <div className="relative w-full bg-black/20">
+        // VIDEO: inline playable, never autoplay (D-01, D-02). Same fixed-aspect
+        // region as images; object-contain centers the frame within the box.
+        // preload="metadata" + #t=0.001 fragment paints the first frame as the
+        // default poster when no explicit thumbnailUrl is set.
+        <div className="relative w-full aspect-[4/5] bg-black/20 overflow-hidden">
           <video
             ref={videoRef}
             src={row.thumbnailUrl ? row.url : `${row.url}#t=0.001`}
@@ -74,7 +76,7 @@ function CreativeCard({ row, t }: { row: CreativeRow; t: T }) {
             controls
             preload="metadata"
             aria-label={row.title}
-            className="w-full h-auto"
+            className="w-full h-full object-contain"
           />
           {!row.thumbnailUrl && showVideoOverlay && (
             <button
