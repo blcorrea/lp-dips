@@ -31,7 +31,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     const jsonResponse = await handleUpload({
       body,
       request,
-      onBeforeGenerateToken: async (_pathname) => {
+      onBeforeGenerateToken: async () => {
         // Defense-in-depth: re-verify admin session before issuing the client token.
         // An attacker who obtains the route URL cannot escalate privilege because
         // isAdminAuthenticated() re-validates the session cookie here (Pitfall 3).
