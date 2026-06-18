@@ -4,7 +4,17 @@
 
 DIPS is a multilingual (en/es/pt) e-commerce storefront for a chocolate product, built on Next.js 15. It sells via Shopify product data + Stripe checkout, has an admin dashboard for orders/affiliates/commissions/users, and runs an affiliate program where partners log in via magic link, get a referral code, and earn snapshotted commissions on attributed orders.
 
-This milestone adds an **Affiliate Creatives** section: a single shared library of marketing assets (images and videos) that admins upload via Vercel Blob, and that logged-in affiliates can browse, download, and copy ready-made captions from — so affiliates have on-brand content to promote with.
+The **Affiliate Creatives** section — a single shared library of marketing assets (images and videos) that admins upload via Vercel Blob, and that logged-in affiliates browse, download, and copy ready-made captions from — shipped in v1.0.
+
+## Current State
+
+**Shipped: v1.0 Affiliate Creatives (2026-06-18)** — Phases 1-3, 4 plans, 9 tasks. Merged to `feature/headless-shopify-stripe` via PR #12; tagged `v1.0`.
+
+- Admins manage the full creative library (upload via Vercel Blob client-upload, edit, reorder, activate/deactivate, delete) at `/admin/creatives`.
+- Affiliates browse a dense, localized "Criativos" gallery on their dashboard — download + copy-caption, photos at natural aspect, videos with first-frame poster.
+- Fully localized en/es/pt. Security review SECURED (11/11 threats). UAT 8/8 on Phases 2 and 3.
+
+**Next milestone (v2.0, planned):** download/usage analytics (ANLY-01/02) and organization — categories/tags/folders + drag-and-drop reorder (ORG-01/02). Run `/gsd-new-milestone` to scope.
 
 ## Core Value
 
@@ -114,4 +124,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-18 after Phase 3 (Affiliate Gallery & i18n) completion — milestone v1.0 complete*
+*Last updated: 2026-06-18 after v1.0 milestone (Affiliate Creatives) — shipped, merged (PR #12), tagged v1.0*
