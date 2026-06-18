@@ -2,12 +2,12 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 3
-status: milestone_complete
-stopped_at: Phase 3 complete — milestone v1.0 100%
-last_updated: "2026-06-18T15:21:45.512Z"
+current_phase: 0
+status: Awaiting next milestone
+stopped_at: Phase 3 complete — milestone v1.0 100% (all 3 phases shipped)
+last_updated: "2026-06-18T17:13:36.055Z"
 last_activity: 2026-06-18
-last_activity_desc: Phase 3 complete
+last_activity_desc: Milestone v1.0 completed and archived
 progress:
   total_phases: 3
   completed_phases: 3
@@ -28,12 +28,10 @@ See: .planning/PROJECT.md (updated 2026-06-18)
 
 ## Current Position
 
-Phase: 3 (complete) — milestone v1.0 100%
-Plan: Not started
-Status: Milestone v1.0 shipped — PR #12 open (→ feature/headless-shopify-stripe)
-Last activity: 2026-06-18 — Opened PR #12 for milestone v1.0 (Affiliate Creatives)
-
-Progress: [████████████████████] 3/3 phases (100%)
+Phase: Milestone v1.0 complete
+Plan: —
+Status: Awaiting next milestone
+Last activity: 2026-06-18 — Milestone v1.0 completed and archived
 
 ## Performance Metrics
 
@@ -104,3 +102,7 @@ None yet.
 Last session: 2026-06-18
 Stopped at: Phase 3 complete — milestone v1.0 100% (all 3 phases shipped)
 Resume file: None
+
+## Operator Next Steps
+
+- Start the next milestone with /gsd-new-milestone
