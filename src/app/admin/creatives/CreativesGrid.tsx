@@ -43,7 +43,6 @@ export default function CreativesGrid({ rows }: { rows: CreativeRow[] }) {
   // Create form state
   const [form, setForm]         = useState({ title: '', description: '', caption: '' });
   const [assetFile, setAssetFile]   = useState<File | null>(null);
-  const [posterFile, setPosterFile] = useState<File | null>(null);
 
   // Edit form state (per-card)
   const [editForm, setEditForm] = useState({ title: '', description: '', caption: '', active: true });
@@ -123,21 +122,10 @@ export default function CreativesGrid({ rows }: { rows: CreativeRow[] }) {
       const assetBlob = await upload(`creatives/${assetFile.name}`, assetFile, {
         access: 'public',
         handleUploadUrl: '/api/admin/creatives/upload-token',
-        onUploadProgress: ({ percentage }) => setProgress(Math.round(percentage * 0.8)),
+        onUploadProgress: ({ percentage }) => setProgress(Math.round(percentage)),
       });
 
-      // Step 2: Upload poster (video-only, if provided) — SEQUENTIAL, never parallel (Pitfall 4)
-      let posterBlob: { url: string; pathname: string } | null = null;
-      if (posterFile) {
-        const pb = await upload(`creatives/${posterFile.name}`, posterFile, {
-          access: 'public',
-          handleUploadUrl: '/api/admin/creatives/upload-token',
-          onUploadProgress: ({ percentage }) => setProgress(80 + Math.round(percentage * 0.15)),
-        });
-        posterBlob = { url: pb.url, pathname: pb.pathname };
-      }
-
-      // Step 3: Create DB row via POST (avoids onUploadCompleted localhost limitation)
+      // Step 2: Create DB row via POST (avoids onUploadCompleted localhost limitation)
       setProgress(98);
       const res = await fetch('/api/admin/creatives', {
         method:  'POST',
@@ -151,8 +139,8 @@ export default function CreativesGrid({ rows }: { rows: CreativeRow[] }) {
           fileName:          assetFile.name,
           fileSize:          assetFile.size,
           mimeType:          assetFile.type,
-          thumbnailUrl:      posterBlob?.url ?? null,
-          thumbnailBlobPath: posterBlob?.pathname ?? null,
+          thumbnailUrl:      null,
+          thumbnailBlobPath: null,
         }),
       });
       const data = (await res.json()) as { ok?: boolean; error?: string };
@@ -161,15 +149,11 @@ export default function CreativesGrid({ rows }: { rows: CreativeRow[] }) {
         setShowCreate(false);
         setForm({ title: '', description: '', caption: '' });
         setAssetFile(null);
-        setPosterFile(null);
         router.refresh();
       } else {
-        // WR-02: log BOTH orphaned blob paths (asset + poster) so neither is
-        // silently lost. The project accepts orphaned-blob (RESEARCH Pitfall 2);
-        // no automatic remote cleanup, but logging must be complete for manual cleanup.
-        console.error('Row creation failed after upload — orphaned blobs:', {
-          asset:  assetBlob.pathname,
-          poster: posterBlob?.pathname ?? null,
+        // WR-02: log orphaned asset blob path for manual cleanup if needed.
+        console.error('Row creation failed after upload — orphaned blob:', {
+          asset: assetBlob.pathname,
         });
         flash(false, data.error ?? 'Create failed after upload.');
       }
@@ -287,27 +271,10 @@ export default function CreativesGrid({ rows }: { rows: CreativeRow[] }) {
                 onChange={(e) => {
                   const f = e.target.files?.[0] ?? null;
                   setAssetFile(f);
-                  // Clear poster when switching back to image
-                  if (f && !f.type.startsWith('video/')) {
-                    setPosterFile(null);
-                  }
                 }}
                 className={`${inputCls} w-full`}
               />
             </div>
-            {/* Poster — video only, conditionally mounted */}
-            {assetFile?.type.startsWith('video/') && (
-              <div className="sm:col-span-2">
-                <label htmlFor="create-poster" className={labelCls}>Poster (video only)</label>
-                <input
-                  id="create-poster"
-                  type="file"
-                  accept={ACCEPTED_IMAGE_MIME.join(',')}
-                  onChange={(e) => setPosterFile(e.target.files?.[0] ?? null)}
-                  className={`${inputCls} w-full`}
-                />
-              </div>
-            )}
           </div>
 
           {/* Progress bar — visible only during upload */}
