@@ -1,247 +1,326 @@
-<!-- refreshed: 2026-05-14 -->
+<!-- refreshed: 2026-06-17 -->
 # Architecture
 
-**Analysis Date:** 2026-05-14
+**Analysis Date:** 2026-06-17
 
 ## System Overview
 
 ```text
-┌─────────────────────────────────────────────────────────────────────────┐
-│                      Browser (Next.js Client)                            │
-│                                                                          │
-│  Storefront Pages              Admin Pages                               │
-│  `src/app/[locale]/*`          `src/app/admin/*`                         │
-│                                                                          │
-│  React Context Layer:                                                    │
-│  CartContext · CustomerContext · TrackingProvider                        │
-│  `src/contexts/`               `src/components/TrackingProvider.tsx`    │
-└─────────────┬───────────────────────────────┬───────────────────────────┘
-              │ fetch()                        │ Server Components (RSC)
-              ▼                               ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│                    Next.js 15 App Router (Server)                        │
-│                                                                          │
-│  API Routes                   Server Components                          │
-│  `src/app/api/`               `src/app/[locale]/`                        │
-│                               `src/app/admin/`                           │
-│                                                                          │
-│  Service Layer  `src/lib/`                                               │
-│  orders.ts · affiliates.ts · shopify.ts · email.ts · tracking.ts        │
-└────────┬──────────────┬────────────────┬───────────────┬────────────────┘
-         │              │                │               │
-         ▼              ▼                ▼               ▼
-    PostgreSQL      Shopify          Stripe          SMTP +
-    (Prisma)     Storefront API    Checkout +       Google
-  `src/lib/        `src/lib/        Webhooks        Sheets
-  prisma.ts`      shopify*.ts`    `src/lib/       `src/lib/
-                                   stripe.ts`    google-sheets.ts`
+┌─────────────────────────────────────────────────────────────┐
+│            Next.js App Router (Pages & APIs)                │
+│  ├── Customer Storefront [locale]/...                       │
+│  ├── Admin Dashboard /admin/...                             │
+│  └── API Routes /api/...                                    │
+├──────────────────┬──────────────────┬───────────────────────┤
+│   Client Layer   │   Server Layer   │    Edge Middleware    │
+│  (React Hooks)   │  (Server Comps)  │   (Authentication)    │
+│  `src/app/`      │  `src/lib/`      │   `src/middleware.ts` │
+│  `src/contexts/` │  (Route Handlers)│                       │
+└────────┬─────────┴────────┬─────────┴──────────┬────────────┘
+         │                  │                     │
+         ▼                  ▼                     ▼
+┌─────────────────────────────────────────────────────────────┐
+│            Business Logic & Integration Layer               │
+│  • Auth (Admin, Affiliate): `src/lib/admin-auth.ts`,        │
+│    `src/lib/affiliate-auth.ts`                              │
+│  • Orders & Commissions: `src/lib/orders.ts`                │
+│  • Email Templates: `src/lib/email-templates.ts`            │
+│  • External Services: Stripe, Shopify, Google Sheets        │
+└─────────────────────────────────────────────────────────────┘
+         │
+         ▼
+┌─────────────────────────────────────────────────────────────┐
+│               Data Access Layer (Prisma ORM)                │
+│  PostgreSQL Database Connection via Prisma Adapter          │
+│  `src/lib/prisma.ts` (singleton instance)                   │
+└─────────────────────────────────────────────────────────────┘
+         │
+         ▼
+┌─────────────────────────────────────────────────────────────┐
+│  External Integrations (Storage, Payment, Email, Tracking)  │
+│  • PostgreSQL Database                                      │
+│  • Stripe (Payments)                                        │
+│  • Shopify (Products)                                       │
+│  • SMTP (Email via Nodemailer)                              │
+│  • Google Sheets (Commission tracking)                      │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ## Component Responsibilities
 
 | Component | Responsibility | File |
 |-----------|----------------|------|
-| Middleware | i18n routing, admin auth gate | `src/middleware.ts` |
-| LocaleLayout | Provider tree (i18n, cart, customer, tracking) | `src/app/[locale]/layout.tsx` |
-| AdminLayout | Admin nav, secondary auth check | `src/app/admin/layout.tsx` |
-| CartContext | Client-side cart state, persisted to localStorage | `src/contexts/CartContext.tsx` |
-| CustomerContext | Mock customer session, wishlist (demo/POC) | `src/contexts/CustomerContext.tsx` |
-| TrackingProvider | Captures URL attribution params on mount | `src/components/TrackingProvider.tsx` |
-| BuyNowButton | Initiates Stripe checkout, fires tracking events | `src/components/BuyNowButton.tsx` |
-| create-checkout-session | Creates Stripe Checkout Session with product/attribution metadata | `src/app/api/stripe/create-checkout-session/route.ts` |
-| stripe/webhook | Idempotent webhook: creates Order, triggers email + Sheets sync | `src/app/api/stripe/webhook/route.ts` |
-| lib/orders | All Order CRUD, pagination, stats, dashboard data | `src/lib/orders.ts` |
-| lib/affiliates | Affiliate + Commission CRUD, state machine | `src/lib/affiliates.ts` |
-| lib/shopify | Product data from Shopify Storefront API | `src/lib/shopify.ts` |
-| lib/pricing | Locale-to-currency mapping (en→USD, pt→BRL, es→EUR) | `src/lib/pricing.ts` |
-| lib/email | Nodemailer SMTP transport | `src/lib/email.ts` |
-| lib/google-sheets | Warehouse mirror spreadsheet (append + update ops) | `src/lib/google-sheets.ts` |
-| lib/tracking | Meta Pixel, GA4, Google Ads events; attribution capture/read | `src/lib/tracking.ts` |
-| lib/prisma | Singleton Prisma client with PrismaPostgres adapter | `src/lib/prisma.ts` |
+| **Customer Pages** | Multi-language storefront with product browsing, cart, checkout, orders | `src/app/[locale]/` |
+| **Admin Pages** | Order management, affiliate management, commission tracking, user management | `src/app/admin/` |
+| **API Routes** | RESTful endpoints for checkout, order updates, affiliate operations, admin functions | `src/app/api/` |
+| **Contexts (Client)** | Global client state for cart and customer data via React Context | `src/contexts/CartContext.tsx`, `CustomerContext.tsx` |
+| **Auth Middleware** | Edge Runtime cookie validation + redirect logic for admin and affiliate routes | `src/middleware.ts` |
+| **Admin Auth** | Server-side admin session verification via cookie + DB lookup | `src/lib/admin-auth.ts` |
+| **Affiliate Auth** | Token-based affiliate authentication (magic links, session tokens) | `src/lib/affiliate-auth.ts`, `affiliate-tokens.ts` |
+| **Order Logic** | Order creation, status updates, commission calculation, fulfillment | `src/lib/orders.ts` |
+| **Email Service** | SMTP transporter, template rendering, async delivery | `src/lib/email.ts`, `email-templates.ts` |
+| **Stripe Integration** | Checkout session creation, webhook processing, payment intent handling | `src/lib/stripe.ts`, `src/app/api/stripe/` |
+| **Shopify Integration** | Product queries, variant data, inventory sync | `src/lib/shopify.ts`, `shopify-client.ts`, `shopify-product.ts` |
+| **Prisma Client** | Singleton database connection with pooling via PrismaPg adapter | `src/lib/prisma.ts` |
 
 ## Pattern Overview
 
-**Overall:** Next.js 15 App Router with a thin service layer — Server Components fetch directly from `src/lib/` services, Client Components hit API routes.
+**Overall:** Layered Next.js 15 app with server and client components, using middleware for auth routing and server-side business logic in API routes and server components.
 
 **Key Characteristics:**
-- Server Components handle all data fetching for admin and storefront pages; no client-side data fetching for page content
-- API routes are the sole integration surface for client components that need server actions (checkout, admin mutations)
-- Middleware handles two cross-cutting concerns: i18n locale routing and admin cookie-based auth
-- All monetary values stored and transmitted as integer cents (USD) — conversion happens at display boundaries
-- Stripe webhook is the canonical source of truth for order creation; no order is written outside the webhook handler
+- **Server-first approach**: Most auth, data fetching, and side effects in Server Components or Route Handlers
+- **Client state (local)**: Cart and customer data in React Context with localStorage persistence
+- **Database-backed auth**: Admin sessions and affiliate login tokens stored in PostgreSQL
+- **Async email delivery**: Email sends via `after()` callback to avoid blocking checkout
+- **Commission snapshots**: Rate and amount captured at order creation time (immutable for historical payouts)
+- **i18n via middleware**: next-intl middleware rewrites locale from URL; server fetches messages
 
 ## Layers
 
-**Presentation (Pages):**
-- Purpose: Route-level UI, composes components, fetches from service layer
-- Location: `src/app/[locale]/` (storefront), `src/app/admin/` (admin)
-- Contains: Server Components (async page.tsx), Client Components co-located where interactivity is needed
-- Depends on: `src/lib/`, `src/components/`, `src/contexts/`
-- Used by: Next.js router
+**Edge Middleware:**
+- Purpose: Early-stage auth checks and locale routing before hitting the app
+- Location: `src/middleware.ts`
+- Contains: Cookie validation, redirect logic, i18n middleware delegation
+- Depends on: Next.js Request/Response, next-intl routing config
+- Used by: All routes matching `/, /en|es|pt/:path*, /admin/:path*, /api/admin/:path*`
 
-**API Routes:**
-- Purpose: Server-side mutations and integrations callable from the browser
-- Location: `src/app/api/`
-- Contains: `route.ts` files — Stripe checkout, Stripe webhook, admin CRUD endpoints
-- Depends on: `src/lib/`
-- Used by: Client Components (fetch), Stripe webhooks
+**Page & API Layer (App Router):**
+- Purpose: Route handlers and page components that serve HTTP responses
+- Location: `src/app/`
+  - `[locale]/`: Customer pages (products, cart, checkout, orders, affiliates)
+  - `admin/`: Admin dashboard pages (orders, affiliates, commissions, users)
+  - `api/`: REST endpoints for checkout, order updates, affiliate operations
+- Depends on: Middleware auth, Business Logic layer
+- Used by: Browsers and client applications
 
-**Service Layer:**
-- Purpose: All business logic, database queries, and external integrations
-- Location: `src/lib/`
-- Contains: orders.ts, affiliates.ts, shopify*.ts, email.ts, google-sheets.ts, pricing.ts, tracking.ts, admin-auth.ts
-- Depends on: `src/generated/prisma/`, external SDKs (Stripe, googleapis, nodemailer)
-- Used by: Pages (Server Components), API routes
+**Business Logic Layer:**
+- Purpose: Core business operations: orders, commissions, auth, email, integrations
+- Location: `src/lib/` (utility functions and services)
+- Contains:
+  - `admin-auth.ts` — Admin session validation
+  - `affiliate-auth.ts`, `affiliate-tokens.ts` — Affiliate login & token generation
+  - `orders.ts` — Order creation, status updates, commission calculation
+  - `email.ts`, `email-templates.ts` — Email composition and sending
+  - `stripe.ts` — Stripe API interaction (session creation, refunds)
+  - `shopify.ts`, `shopify-client.ts`, `shopify-product.ts` — Product data
+  - `pricing.ts` — Localized pricing logic
+  - `google-sheets.ts` — Commission export to Google Sheets
+  - `utils.ts` — Common helpers (formatting, validation)
+- Depends on: Prisma client, external APIs (Stripe, Shopify, SMTP)
+- Used by: API routes, Server Components
 
-**Context / Client State:**
-- Purpose: React state shared across the client component tree
-- Location: `src/contexts/`
-- Contains: CartContext (localStorage-backed cart), CustomerContext (demo mock session)
-- Depends on: `src/data/products.ts` (for CartItem shape)
-- Used by: Client Components throughout the storefront
+**Data Access Layer (Prisma):**
+- Purpose: Type-safe database access with connection pooling
+- Location: `src/lib/prisma.ts`
+- Contains: PrismaClient singleton, PrismaPg adapter for PostgreSQL
+- Depends on: PostgreSQL database, environment DATABASE_URL
+- Used by: All business logic that reads/writes to DB
 
-**Static Data:**
-- Purpose: Hardcoded product definitions and mock data for POC features
-- Location: `src/data/`
-- Contains: products.ts, customers.ts, orders.ts, inventory.ts
-- Depends on: nothing
-- Used by: CartContext, CustomerContext, storefront pages that reference product data
+**Client Components:**
+- Purpose: Interactive UI with client-side state (cart, filters, forms)
+- Location: `src/components/`, marked with `"use client"`
+- Depends on: React Context (CartContext, CustomerContext)
+- Used by: Page components
 
-**i18n:**
-- Purpose: next-intl routing configuration, locale detection
-- Location: `src/i18n/`
-- Contains: routing.ts (locales: en/es/pt), request.ts
-- Depends on: next-intl
-- Used by: Middleware, LocaleLayout
+**Data & Constants:**
+- Purpose: Static product catalog, inventory, customer templates
+- Location: `src/data/` (products, orders, inventory, reviews, customers)
+- Depends on: None
+- Used by: Client pages and product queries
 
 ## Data Flow
 
-### Storefront Purchase (Primary Path)
+### Primary Request Path: Product Browse → Cart → Checkout → Order
 
-1. User lands on product page with `?ref=influencer&utm_source=...` — `TrackingProvider` mounts (`src/components/TrackingProvider.tsx`) and calls `captureAttribution()` to persist to localStorage (30-day TTL, first-touch)
-2. User clicks "Buy Now" in `BuyNowButton` (`src/components/BuyNowButton.tsx`):
-   - Fires `trackBeginCheckout()` (Meta Pixel + GA4)
-   - Saves `PendingCheckout` to sessionStorage
-   - Calls `POST /api/stripe/create-checkout-session` with `{ quantity, locale, attribution }`
-3. `create-checkout-session` route (`src/app/api/stripe/create-checkout-session/route.ts`):
-   - Fetches product from Shopify via `getPurchasableDipsProduct()` (`src/lib/shopify-product.ts`)
-   - Resolves locale-to-currency via `getLocalizedPricing()` (`src/lib/pricing.ts`)
-   - Creates Stripe Checkout Session with product metadata and attribution metadata
-   - Returns `{ ok: true, url }` — client redirects to Stripe-hosted checkout
-4. Stripe redirects to `/{locale}/checkout/success?session_id=...`
-5. Success page (`src/app/[locale]/checkout/success/page.tsx`) fires `trackPurchase()` using sessionStorage data
-6. Stripe delivers `checkout.session.completed` webhook to `POST /api/stripe/webhook`:
-   - Verifies Stripe signature
-   - Opens `prisma.$transaction()` — first writes `StripeEvent` record (idempotency claim)
-   - Creates `Order` + `OrderItem` records
-   - If `influencerRef` matches an active `Affiliate`, creates `Commission` record
-   - Captures email data for post-transaction dispatch
-7. After transaction commits: sends order confirmation email via `sendOrderConfirmationEmail()` (`src/lib/email-templates.ts`) + syncs row to Google Sheets via `appendOrderToSheet()` (`src/lib/google-sheets.ts`) + sends warehouse notification email
+1. **Customer lands on product page** (`src/app/[locale]/product/[slug]/page.tsx`)
+   - Server renders page with static product data from `src/data/products.ts`
+   - Client hydrates with CartProvider context (reads cart from localStorage)
 
-### Admin Order Management
+2. **Customer adds product to cart** (Cart is stored in localStorage via CartContext)
+   - Client-side CartContext updates `localStorage['dpis-cart']`
+   - Cart persists across page reloads
 
-1. Admin navigates to `/admin/orders` — middleware validates `admin_token` cookie (`src/middleware.ts`)
-2. `AdminOrdersPage` Server Component (`src/app/admin/orders/page.tsx`) calls `getOrders()`, `getOrderStats()`, `getDashboardData()` from `src/lib/orders.ts` in parallel
-3. Client component `OrdersTable` (`src/app/admin/orders/OrdersTable.tsx`) manages row selection and bulk operations via `POST /api/admin/orders/bulk`
-4. Order detail edit (`src/app/admin/orders/[id]/EditForm.tsx`) calls `PATCH /api/admin/orders/[id]/route.ts` which calls `updateOrder()` and optionally triggers fulfillment email + Google Sheets sync
+3. **Customer navigates to checkout** (`src/app/[locale]/checkout/page.tsx`)
+   - Server Component fetches cart state from client context
+   - CheckoutForm component renders and accepts customer email, shipping address
+   - On submit: POST to `src/app/api/stripe/create-checkout-session`
 
-### Affiliate Commission Flow
+4. **Create checkout session** (`src/app/api/stripe/create-checkout-session/route.ts`)
+   - Validates price IDs against Stripe environment variables
+   - Calls Stripe API to create checkout session
+   - Returns `sessionId` to client
+   - Client redirects to Stripe Checkout
 
-1. Admin creates affiliate via `POST /api/admin/affiliates` → `createAffiliate()` (`src/lib/affiliates.ts`)
-2. Affiliate link is `https://www.dipschocolate.com/en?ref={ref}&utm_source=...` — tracked via `captureAttribution()`
-3. On purchase, webhook matches `influencerRef` to `Affiliate.ref` and creates `Commission` at `commissionRate` snapshot
-4. Admin transitions commission status: PENDING → APPROVED → PAID via `PATCH /api/admin/commissions/[id]` → `transitionCommission()` (`src/lib/affiliates.ts`)
+5. **Customer completes payment on Stripe**
+   - Stripe processes payment, redirects back to `/{locale}/checkout/success` or `/checkout/cancel`
+
+6. **Webhook processes payment** (`src/app/api/stripe/webhook/route.ts`)
+   - Stripe sends `charge.succeeded` event
+   - Webhook validates Stripe signature
+   - Finds/creates Order in PostgreSQL
+   - Calculates commission and creates Commission record (with snapshotted rate)
+   - Sends confirmation email via `after()` callback (non-blocking)
+
+7. **Admin reviews order** (`src/app/admin/orders/page.tsx`)
+   - Fetches orders from PostgreSQL via `/api/admin/orders/[id]`
+   - Admin can update fulfillment status
+   - PATCH `/api/admin/orders/bulk` updates multiple orders
+   - Email sends via `after()` callback when status changes
+
+### Secondary Flow: Affiliate Signup → Login → Dashboard
+
+1. **Affiliate joins** (`src/app/[locale]/affiliates/join/page.tsx`)
+   - POST `/api/affiliates/join` with email and name
+   - Backend validates email uniqueness via Prisma
+   - Creates Affiliate record with lowercased email and slug ref code
+   - Creates AffiliateLoginToken (15-min TTL)
+   - Sends magic link email via Nodemailer
+
+2. **Affiliate clicks magic link** (`src/app/[locale]/affiliates/login/page.tsx`)
+   - GET `/api/affiliates/verify?token=<TOKEN>`
+   - Validates token against database
+   - Creates affiliate_session cookie (8-hour TTL)
+   - Redirects to dashboard
+
+3. **Affiliate dashboard** (`src/app/[locale]/affiliates/dashboard/page.tsx`)
+   - Middleware checks affiliate_session cookie (Edge Runtime)
+   - Server Component fetches affiliate's commissions, earnings
+   - Displays orders attributed to affiliate via influencerRef
+
+4. **Admin manages affiliates** (`src/app/admin/affiliates/page.tsx`)
+   - Requires admin_token cookie (set during admin login)
+   - Middleware redirects unauthenticated users to `/admin/login`
+   - Admin can create, update, deactivate affiliates
+   - Can export commissions to Google Sheets via `/api/admin/commissions/export`
 
 **State Management:**
-- Server state: Prisma/PostgreSQL (orders, affiliates, commissions, stripe events)
-- Client cart state: React Context + localStorage (`CART_STORAGE_KEY = 'dpis-cart'`)
-- Attribution state: localStorage with 30-day TTL (`'dips_attribution'`)
-- Pending checkout context: sessionStorage (`'dips_pending_checkout'`)
-- Admin session: `admin_token` cookie (compared against `ADMIN_SECRET` env var)
+- **Client-side**: CartContext (localStorage) and CustomerContext (in-memory)
+- **Server-side**: Request context via cookies (admin_token, affiliate_session)
+- **Database**: Orders, Commissions, Affiliates, AdminUsers, AffiliateLoginTokens
+- **Idempotency**: Stripe events logged in StripeEvent table (keyed by event ID)
 
 ## Key Abstractions
 
-**Service Functions:**
-- Purpose: Thin wrappers over Prisma queries; typed inputs/outputs; Prisma types never leak to pages
-- Examples: `src/lib/orders.ts`, `src/lib/affiliates.ts`
-- Pattern: Functions like `getOrders(input: GetOrdersInput): Promise<PaginatedOrders>` — input shapes defined in the same file
+**Order:**
+- Purpose: Represents a customer purchase with payment, fulfillment, and shipping tracking
+- Examples: `src/lib/orders.ts`, `prisma/schema.prisma` (Order model)
+- Pattern: Rich value object with enums (OrderStatus, PaymentStatus, FulfillmentStatus), address fields, and Stripe references
 
-**Localized Pricing:**
-- Purpose: Maps Next-intl locale to Stripe currency and unit price
-- Examples: `src/lib/pricing.ts`
-- Pattern: `LOCALIZED_PRICING` record keyed by `SupportedLocale`; `getLocalizedPricing(locale)` with `en` fallback
+**Commission:**
+- Purpose: Payable record snapshotted at order time (rate and amount immutable)
+- Examples: `prisma/schema.prisma` (Commission model)
+- Pattern: Snapshot pattern — stores affiliateId, baseAmount, rate, and calculated amount; status tracks approval/payment
 
-**Shopify Product Abstraction:**
-- Purpose: Decouples Stripe checkout from raw Shopify GraphQL types
-- Examples: `src/lib/shopify-product.ts` → `PurchasableProduct`
-- Pattern: `getPurchasableDipsProduct()` calls `getDipsProduct()` and maps to a shape safe for checkout
+**Affiliate:**
+- Purpose: Referral partner with configurable commission rate
+- Examples: `src/lib/affiliates.ts`, `prisma/schema.prisma` (Affiliate model)
+- Pattern: Lowercased email uniqueness, slug ref code, AffiliateLoginToken for magic-link auth
 
-**Stripe Idempotency:**
-- Purpose: Prevents duplicate order creation when Stripe retries webhooks
-- Examples: `src/app/api/stripe/webhook/route.ts`
-- Pattern: `StripeEvent.create()` is the first write in the DB transaction; P2002 on `id` means already processed — returns `{ ok: true, duplicate: true }`
+**EmailPayload:**
+- Purpose: Structured email envelope passed to sendEmail()
+- Examples: `src/lib/email.ts`
+- Pattern: Simple {to, subject, html} tuple; templates render HTML in `email-templates.ts`
+
+**AdminUser:**
+- Purpose: Multi-user admin authentication with password hashing
+- Examples: `prisma/schema.prisma` (AdminUser model)
+- Pattern: Email-based login, bcryptjs password hashing, 8-hour session cookie TTL
 
 ## Entry Points
 
-**Storefront:**
-- Location: `src/app/[locale]/page.tsx`
-- Triggers: User request to `/{locale}`
-- Responsibilities: Renders landing page sections
+**Customer Storefront:**
+- Location: `src/app/[locale]/layout.tsx`
+- Triggers: Browser navigation to `/{en|es|pt}/*`
+- Responsibilities: Provides i18n context, CartProvider, CustomerProvider; wraps children in providers
 
-**Admin:**
-- Location: `src/app/admin/orders/page.tsx`
-- Triggers: Authenticated request to `/admin/orders`
-- Responsibilities: Order dashboard with stats, charts, filters, CSV export
+**Admin Dashboard:**
+- Location: `src/app/admin/layout.tsx`
+- Triggers: Browser navigation to `/admin/*`
+- Responsibilities: Auth check via `isAdminAuthenticated()`; renders navbar if authenticated; renders children (login page if not)
 
-**Middleware:**
-- Location: `src/middleware.ts`
-- Triggers: Every request matching `['/', '/(en|es|pt)/:path*', '/admin/:path*', '/api/admin/:path*']`
-- Responsibilities: Admin auth gate, i18n locale redirect
+**Checkout Session Creator:**
+- Location: `src/app/api/stripe/create-checkout-session/route.ts`
+- Triggers: POST request from checkout form
+- Responsibilities: Validates request, creates Stripe session, returns sessionId for redirect
 
 **Stripe Webhook:**
 - Location: `src/app/api/stripe/webhook/route.ts`
-- Triggers: Stripe POST events (`checkout.session.completed`, `payment_intent.succeeded`, `payment_intent.payment_failed`, `charge.refunded`)
-- Responsibilities: Order creation, commission creation, confirmation email, Google Sheets sync
+- Triggers: `charge.succeeded`, `charge.refunded` events from Stripe
+- Responsibilities: Verifies signature, creates Order, calculates commission, sends email (async)
+
+**Affiliate Signup:**
+- Location: `src/app/api/affiliates/join/route.ts`
+- Triggers: POST request from join form
+- Responsibilities: Validates email, creates Affiliate, generates login token, sends magic link
+
+**Affiliate Login:**
+- Location: `src/app/api/affiliates/verify/route.ts`
+- Triggers: GET request with token query param (from magic link)
+- Responsibilities: Validates token, sets affiliate_session cookie, redirects to dashboard
+
+**Admin Login:**
+- Location: `src/app/api/admin/login/route.ts`
+- Triggers: POST request with email/password or GET with logout=1
+- Responsibilities: Validates credentials via bcryptjs, creates admin_token cookie, redirects
 
 ## Architectural Constraints
 
-- **Threading:** Single-threaded Node.js event loop; no worker threads. Prisma uses connection pool via `PrismaPostgres` adapter.
-- **Global state:** `prisma` singleton attached to `globalThis` in development to prevent hot-reload pool exhaustion (`src/lib/prisma.ts`). No other module-level mutable singletons.
-- **Circular imports:** None detected.
-- **Monetary precision:** All amounts stored as integer cents in PostgreSQL. Stripe amounts are also cents. Conversion to display units (divide by 100) only happens in UI formatting functions.
-- **Email sends are post-transaction:** Email and Google Sheets writes happen after `prisma.$transaction()` commits. A failure in either does NOT roll back the order record.
-- **Admin auth is cookie-only:** No JWT, no sessions table. `admin_token` cookie value must equal `ADMIN_SECRET` env var. Checked in Edge middleware (inline) and again in `src/lib/admin-auth.ts` for Server Components/API routes.
+- **Threading:** Single-threaded event loop (Node.js). Database pool configured in PrismaPg adapter (default 10 connections). Email sends asynchronously via Nodemailer transporter.
+- **Global state:** Prisma client singleton attached to `globalThis` in development to prevent connection exhaustion on hot reload (`src/lib/prisma.ts`). Module-scoped Nodemailer transporter in `src/lib/email.ts`. Stripe SDK instance created once per module load.
+- **Circular imports:** None detected. Imports follow clear dependency direction: App → Business Logic → Prisma.
+- **Database transaction isolation:** Stripe webhook idempotency via StripeEvent PK (Stripe event ID); multiple delivery attempts won't duplicate orders.
+- **Edge Runtime limitation:** Middleware cannot import Prisma; cookie validation only via raw headers. Full auth check deferred to Server Components / Route Handlers.
+- **Locale propagation:** URL-driven via next-intl middleware; all Server Components and client pages must accept `params.locale`.
+- **Affiliate session scope:** Affiliate cookie independent from admin cookie; a user can have both (e.g., an affiliate who is also staff), but middleware routes admin-with-no-affiliate-cookie away from affiliate pages.
 
 ## Anti-Patterns
 
-### CustomerContext uses mock/auto-login data
+### Blocking Email in Checkout Response
 
-**What happens:** `src/contexts/CustomerContext.tsx` uses `mockCustomer` from `src/data/customers.ts` and has `autoLogin = true` hardcoded. All customers are auto-logged in as a demo user.
-**Why it's wrong:** Customer-facing features (orders page, profile, wishlist) show mock data, not real data. The customer session is not real.
-**Do this instead:** Replace with real auth (e.g. Supabase Auth or NextAuth) or remove the customer-facing routes until real auth is implemented.
+**What happens:** Email sends synchronously within checkout session creation, delaying the Stripe redirect.
+**Why it's wrong:** Long SMTP delays could timeout the request or keep the customer waiting; better to send after response is committed.
+**Do this instead:** Use `after()` callback (Next.js 15+) to queue email after response. See `src/app/api/stripe/webhook/route.ts` for pattern: `after(() => sendOrderShippedEmail(...))`.
 
-### Static product data duplicates Shopify source of truth
+### Cart as Database Record
 
-**What happens:** `src/data/products.ts` contains hardcoded product definitions (prices, variants, stock). `CartContext` uses these local types. The Shopify integration (`src/lib/shopify.ts`) is used only for checkout session creation.
-**Why it's wrong:** Prices in `data/products.ts` may drift from Shopify. Stock levels are static. The cart uses local prices while Stripe uses `getLocalizedPricing()` — two separate price sources.
-**Do this instead:** Drive cart prices from Shopify Storefront API responses or unify through `getLocalizedPricing()` as the single price source.
+**What happens:** Cart stored as dedicated table in database, requiring sync logic.
+**Why it's wrong:** Complicates order creation, requires cleanup, adds DB load; ephemeral client state better served by localStorage.
+**Do this instead:** Keep cart in React Context with localStorage persistence (CartContext). Only commit to Order when checkout succeeds. See `src/contexts/CartContext.tsx`.
+
+### Hardcoded Stripe Price IDs in Client
+
+**What happens:** Frontend knows price ID, passes it directly to checkout API.
+**Why it's wrong:** Price changes require code updates; validation deferred to backend allows flexibility.
+**Do this instead:** Validate price ID against allow-list in API route. See `src/app/api/stripe/create-checkout-session/route.ts` lines 14–16: `const VALID_BUNDLE_PRICE_IDS = new Set(...)`.
+
+### Real-time Commission Calculations
+
+**What happens:** Commission amount recalculated from affiliate.commissionRate and order total when querying.
+**Why it's wrong:** If commission rate changes, historical payouts appear to change; auditing fails.
+**Do this instead:** Snapshot rate and calculated amount at order creation time in Commission record (immutable). See `prisma/schema.prisma` Commission model: rate stored, not recomputed.
 
 ## Error Handling
 
-**Strategy:** Throw on unrecoverable errors; catch at API route boundary and return structured JSON error responses. Non-critical side effects (email, Sheets) are wrapped in try/catch and log errors without affecting the HTTP response.
+**Strategy:** Async errors logged to console; HTTP errors return JSON with status code; database errors bubble up and are caught by Next.js error boundary.
 
 **Patterns:**
-- Service functions throw (Prisma errors surface as-is, or as typed errors)
-- API route handlers wrap logic in try/catch; return `NextResponse.json({ ok: false, error: message }, { status: N })`
-- Webhook handler uses P2002 detection to distinguish idempotent duplicates from real errors
-- Tracking functions are no-ops when env vars are absent — never throw
+- **API route errors:** Return `NextResponse.json({ error: 'message' }, { status: ### })`. See `src/app/api/admin/orders/bulk/route.ts` lines 23–50.
+- **Email errors:** Logged and re-thrown so callers know delivery failed. See `src/lib/email.ts` lines 50–54.
+- **Auth errors:** Middleware redirects to login; route handlers return 401 Unauthorized.
+- **Stripe errors:** Logged; webhook returns 200 to acknowledge Stripe (don't retry on our validation error).
+- **Database errors:** Prisma throws; caught by Next.js error boundary and returned as 500.
 
 ## Cross-Cutting Concerns
 
-**Logging:** `console.log` / `console.error` / `console.warn` throughout. Structured objects passed as second argument to log calls in webhook handler. No structured logging framework.
-**Validation:** Manual type checks in API routes (e.g. `typeof body.quantity === 'number'`); Prisma enforces schema constraints at DB level.
-**Authentication:** Admin-only. Edge middleware checks `admin_token` cookie value against `ADMIN_SECRET`. No user auth for storefront (mock only).
+**Logging:** Console.log with emoji prefixes (📧 for email, 📨 for success, ❌ for error). No structured logging library. See `src/lib/email.ts`, `src/lib/stripe.ts`.
+
+**Validation:** Manual type guards and regex validation. See `src/app/api/stripe/create-checkout-session/route.ts` lines 26–50 (CLIENT_REF_PATTERN, attrString helpers). No Zod/Yup.
+
+**Authentication:** 
+- **Admin:** Cookie + database lookup for active status. See `src/lib/admin-auth.ts`.
+- **Affiliate:** Cookie-based session set after magic-link verification. See `src/lib/affiliate-auth.ts`.
+- **Middleware:** Cookie presence check (Edge Runtime). See `src/middleware.ts` lines 15–21.
 
 ---
 
-*Architecture analysis: 2026-05-14*
+*Architecture analysis: 2026-06-17*

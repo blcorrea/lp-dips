@@ -2,8 +2,10 @@ import { getTranslations } from 'next-intl/server';
 import { redirect } from 'next/navigation';
 import { getAffiliateSessionId } from '@/lib/affiliate-auth';
 import { getAffiliateDashboardData } from '@/lib/affiliates';
+import { listCreatives } from '@/lib/creatives';
 import CopyLinkButton from './CopyLinkButton';
 import LogoutButton from './LogoutButton';
+import AffiliateCreativesGallery from './AffiliateCreativesGallery';
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -82,6 +84,9 @@ export default async function AffiliateDashboardPage({ params }: Props) {
   const { affiliate, stats, recentCommissions } = data;
   const rate = Math.round(affiliate.commissionRate * 100);
 
+  const creatives = await listCreatives({ activeOnly: true });
+  const tCreatives = await getTranslations({ locale, namespace: 'AffiliateCreatives' });
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-brand-purple to-[#3b1c5a] px-6 py-12">
       <div className="mx-auto max-w-4xl space-y-8">
@@ -157,6 +162,23 @@ export default async function AffiliateDashboardPage({ params }: Props) {
                   ))}
                 </tbody>
               </table>
+            </div>
+          )}
+        </div>
+
+        {/* ── Criativos section ────────────────────────────────────────────── */}
+        <div className="rounded-2xl bg-white/10 backdrop-blur-sm overflow-hidden">
+          <div className="px-6 py-4 border-b border-white/10">
+            <h2 className="text-white font-semibold text-[16px]">{tCreatives('sectionTitle')}</h2>
+          </div>
+
+          {creatives.length === 0 ? (
+            <p className="px-6 py-10 text-center text-white/40 text-sm">
+              {tCreatives('noCreatives')}
+            </p>
+          ) : (
+            <div className="p-6">
+              <AffiliateCreativesGallery rows={creatives} />
             </div>
           )}
         </div>

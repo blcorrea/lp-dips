@@ -1,145 +1,215 @@
 # Coding Conventions
 
-**Analysis Date:** 2026-05-14
+**Analysis Date:** 2026-06-17
 
 ## Naming Patterns
 
 **Files:**
-- React page components: `page.tsx` (Next.js App Router convention)
-- React layout components: `layout.tsx`
-- React client components (co-located with pages): `PascalCase.tsx` — e.g., `OrdersTable.tsx`, `EditForm.tsx`, `LoginForm.tsx`
-- Shared components: `PascalCase.tsx` in `src/components/` — e.g., `CartDrawer.tsx`, `ProductCard.tsx`
-- UI primitives: `lowercase.tsx` in `src/components/ui/` — e.g., `button.tsx`, `select.tsx`
-- Library/utility modules: `kebab-case.ts` in `src/lib/` — e.g., `admin-auth.ts`, `shopify-product.ts`
-- API route files: `route.ts` (Next.js convention)
-- Context providers: `PascalCaseContext.tsx` — e.g., `CartContext.tsx`, `CustomerContext.tsx`
-- Data modules: `plural-noun.ts` in `src/data/` — e.g., `products.ts`, `orders.ts`
+- Components: PascalCase (e.g., `Header.tsx`, `CartContext.tsx`, `AffiliatesTable.tsx`)
+- Pages: `page.tsx` (Next.js convention, exact lowercase)
+- Routes: `route.ts` (Next.js API convention)
+- Utilities/libraries: camelCase (e.g., `utils.ts`, `email.ts`, `prisma.ts`, `admin-auth.ts`)
+- Data files: camelCase (e.g., `products.ts`, `customers.ts`, `inventory.ts`)
+- Middleware: `middleware.ts` (exact case)
 
 **Functions:**
-- camelCase for all functions: `createOrder`, `getLocalizedPricing`, `isAdminAuthenticated`
-- Boolean predicates prefixed with `is` or `has`: `isInCart`, `isInWishlist`, `hasDiscount`, `isSupportedLocale`, `isAdminAuthenticated`
-- Factory/getter functions: `createPrismaClient`, `getStripe`, `getPurchasableDipsProduct`
-- Event handlers: `handle` prefix — `handleAddToCart`, `handleWishlistToggle`
-- Builder/internal helpers: `build` prefix — `buildOrderWhere`, `buildCommissionWhere`, `buildAffiliateLink`
+- camelCase, descriptive verbs: `createAffiliate()`, `isAdminAuthenticated()`, `sendEmail()`, `getOrderById()`
+- Boolean predicates start with `is` or `has`: `isValidAffiliateType()`, `isAdminAuthed()`, `hasSelection`
+- Private/internal functions: same camelCase (no leading underscore convention observed)
 
 **Variables:**
-- camelCase throughout: `stripeSecretKey`, `webhookSecret`, `normalizedLocale`
-- Single-letter abbreviations used for loop/map vars: `a` (affiliate), `g` (group), `r` (result), `c` (commission), `b` (bucket)
-- Constants (module-level, non-exported): SCREAMING_SNAKE_CASE — `CLIENT_REF_PATTERN`, `CART_STORAGE_KEY`, `ADMIN_COOKIE_NAME`
-- Exported constants: SCREAMING_SNAKE_CASE — `VALID_COMMISSION_STATUSES`, `REF_REGEX`, `LOCALIZED_PRICING`
+- camelCase: `transporter`, `itemCount`, `selectedIds`, `currentItems`
+- Constants: UPPER_SNAKE_CASE: `ADMIN_COOKIE_NAME`, `STRIPE_PUBLISHABLE_KEY`, `VALID_AFFILIATE_TYPES`
+- State variables: camelCase: `values`, `saving`, `success`, `error`
+- Type instances: camelCase: `builder`, `res`, `data`, `orders`
 
-**Types and Interfaces:**
-- PascalCase for all types/interfaces: `CreateOrderInput`, `AffiliateRow`, `CartItem`
-- `Input` suffix for function parameter types: `CreateOrderInput`, `UpdateOrderInput`, `GetOrdersInput`
-- `Row` suffix for serializable/flat display types: `AffiliateRow`, `CommissionRow`, `OrderRow`
-- `type` keyword preferred over `interface` for most definitions — `interface` used for React props and exported API shapes
-- Props interfaces named `ComponentNameProps`: `ProductCardProps`, `ButtonProps`
+**Types:**
+- Interfaces/Types: PascalCase: `CartContextType`, `EmailPayload`, `EditFormValues`, `AffiliateRow`, `Order`
+- Type imports: `type { Order, OrderStatus }` (explicit `type` keyword)
+- Enum-like objects: UPPER_SNAKE_CASE keys: `PAYMENT_METHODS`, `STATUS_COLORS`, `FULFILLMENT_OPTIONS`
 
 ## Code Style
 
 **Formatting:**
-- No Prettier config detected — formatting is ad hoc (indentation varies: 2 spaces in `src/lib/`, 4 spaces in `src/components/`)
-- Single quotes for strings in most files; double quotes in some JSX attributes
-- Trailing commas in multi-line objects/arrays
+- No explicit Prettier config found; uses ESLint and Next.js defaults
+- Line breaks: Uses `\n` (Unix style) throughout
+- Indentation: 2 spaces (consistent across files)
+- Trailing commas: Used in multiline objects/arrays
+- Semicolons: Required (enforced by ESLint config extending `next/typescript`)
 
 **Linting:**
-- ESLint with `next/core-web-vitals` and `next/typescript` rule sets
-- Config: `eslint.config.mjs` using ESLint flat config format
-- `eslint-disable` comments used sparingly (e.g., `@typescript-eslint/no-explicit-any` in `src/app/[locale]/layout.tsx`)
+- Tool: ESLint (v9) with flat config
+- Config: `eslint.config.mjs` extends `next/core-web-vitals` and `next/typescript`
+- No custom rules beyond Next.js defaults
+- TypeScript strict mode enabled in `tsconfig.json`
 
-**TypeScript:**
-- `strict: true` in `tsconfig.json`
-- `noEmit: true` — TypeScript used for type-checking only, not compilation
-- Target `ES2017`
-- Prefer explicit return types on exported async functions: `Promise<Order>`, `Promise<boolean>`
-- Use `unknown` for untyped input, then narrow: `body as Record<string, unknown>` pattern in API routes
+**Line length:**
+- No hard limit enforced; typical patterns show ~80-120 characters before wrapping
 
 ## Import Organization
 
 **Order:**
-1. Next.js/React built-ins: `import { NextRequest, NextResponse } from 'next/server'`, `import React from 'react'`
-2. Third-party packages: `import Stripe from 'stripe'`, `import nodemailer from 'nodemailer'`
-3. Internal `@/lib/*` modules
-4. Internal `@/components/*` modules
-5. Internal `@/contexts/*`, `@/data/*`, `@/i18n/*` modules
+1. External third-party libraries (`react`, `next/*`, `stripe`, etc.)
+2. Type imports from third-party (`import type`)
+3. Internal absolute imports (`@/lib/*`, `@/components/*`, `@/contexts/*`)
+4. Type imports from internal (`import type { Order } from '@/lib/orders'`)
+
+**Examples from codebase:**
+```typescript
+// Header.tsx
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import Image from "next/image";
+import { ShoppingCart, Menu, X } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
+import SocialMediaButtons from "@/components/SocialMediaButtons";
+
+// admin-affiliates/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { Prisma } from '@/generated/prisma/client/client';
+import { isAdminAuthenticated } from '@/lib/admin-auth';
+import { createAffiliate, getAffiliatesWithStats } from '@/lib/affiliates';
+```
 
 **Path Aliases:**
-- `@/*` maps to `./src/*` — used throughout (e.g., `@/lib/prisma`, `@/components/ui/button`, `@/contexts/CartContext`)
-- Relative imports only used within the same sub-tree (e.g., `'../generated/prisma/client/client'` in `src/lib/`)
+- `@/*` maps to `./src/*` (configured in `tsconfig.json`)
+- Always use absolute imports with `@/` prefix; never relative paths for module boundaries
 
 ## Error Handling
 
-**API Routes (server-side):**
-- Wrap entire handler body in `try/catch`
-- Return typed JSON: `NextResponse.json({ error: message }, { status: N })`
-- Use `ok: true/false` as response envelope — e.g., `{ ok: true, order }` vs `{ ok: false, error: '...' }`
-- Prisma error codes checked explicitly: `P2002` (unique constraint), `P2025` (not found)
-- Pattern: `err instanceof Error ? err.message : 'Fallback message'`
+**Patterns:**
+- Validation errors: Return `NextResponse.json({ error: string }, { status: 400|401|409 })` from API routes
+- Type checking: Explicit `typeof` checks before use (seen in route handlers)
+- Try-catch blocks: Used for JSON parsing and database operations
+- Prisma errors: Check `err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002'`
+- Promise handling: `Promise.allSettled()` for bulk operations to capture partial failures
+- Error re-throwing: Explicitly re-throw after logging (example in `email.ts` line 53)
 
-**Client-side:**
-- `try/catch` around localStorage access (e.g., `CartContext.tsx`, `CustomerContext.tsx`)
-- Error state surfaced via `console.error` in contexts
-- UI error state: `useState` for local `error: string | null` field
-
-**Library functions:**
-- Throw on missing required env vars at module initialization (fail-fast): `throw new Error('Missing DATABASE_URL')`
-- Return `null` (not throw) for optional "not found" results: `getOrderById`, `getPurchasableDipsProduct`
-- Result-object pattern for state-machine transitions: `{ ok: true } | { ok: false; reason: string }` in `transitionCommission`
+**Console error patterns:**
+```typescript
+console.error('❌ Email error:', error);
+console.error('❌ Failed to send shipping notification email:', err);
+console.error('Bulk set_fulfillment error:', r.reason);
+```
 
 ## Logging
 
-**Framework:** `console` (no structured logger library)
+**Framework:** `console.log()`, `console.warn()`, `console.error()` (no external logging library)
 
 **Patterns:**
-- Server/API code: prefixed emoji labels for quick visual scanning:
-  - `✅` — success
-  - `❌` — failure/error
-  - `⚠️` — warning/duplicate
-  - `ℹ️` — informational/skipped
-  - `💰` — commission events
-  - `📧`/`📨` — email events
-  - `🚀` — operation started
-- Log objects as second argument for structured context: `console.log('✅ order created', { eventId, sessionId })`
-- `console.error` for caught exceptions; `console.log` for business events; `console.warn` for non-critical anomalies
-- No logging in pure data/utility functions (`src/lib/pricing.ts`, `src/lib/utils.ts`)
-- Debug `console.log` left in client pages (e.g., `src/app/[locale]/checkout/page.tsx` lines 33–35) — not systematically removed
+- Informational: Emoji prefix for clarity: `📧`, `📨`, `✅`, `❌`, `ℹ️`, `⚠️`, `💰`
+- Log structure: `console.log('Message', { context: data })`
+- Error logs: Always include error object or message
+- Location: Logs appear in API routes, email functions, and Stripe webhook handlers
+- No log levels or structured logging framework
+
+**Examples:**
+```typescript
+console.log('📧 Sending email to:', options.to);
+console.log('📨 Email sent:', info.messageId);
+console.error('❌ Email error:', error);
+console.log('✅ Order operational data synced to Google Sheets', { orderId, sheetRow });
+console.error('❌ Google Sheets update sync failed (non-critical):', err);
+```
 
 ## Comments
 
 **When to Comment:**
-- Section dividers using dashed rule comments: `// ─────────────────── Section Name ───────────────────`
-- Inline `// ── Sub-section heading ──` for visual scoping within large files
-- JSDoc `/** ... */` blocks on exported functions explaining non-obvious behavior or caveats
-- Inline comments explaining business rules or tradeoffs (e.g., webhook idempotency strategy)
-- Portuguese comments appear occasionally in layout files (mixed-language code comments)
+- Section separators: Dashed lines (`// ──────────────────────────────────────...`)
+- Complex logic: Explain the "why" before conditional branches
+- Non-obvious state management: Document why state is managed a certain way
+- Edge cases: Document workarounds and their rationale
 
 **JSDoc/TSDoc:**
-- Used on exported library functions in `src/lib/orders.ts` and `src/lib/affiliates.ts`
-- Not consistently applied across components or API routes
+- Function documentation: Yes, used for public APIs in `lib/*.ts` files
+- Example from `email-templates.ts`:
+```typescript
+/**
+ * Maps a period preset (or 'custom') and optional custom date strings to a
+ * UTC date range suitable for filtering orders by createdAt.
+ *
+ *   today       → [00:00 UTC today,          00:00 UTC tomorrow)
+ *   yesterday   → [00:00 UTC yesterday,       00:00 UTC today)
+ *   ...
+ */
+export function resolvePeriod(period: string, fromStr: string, toStr: string): DateRange
+```
+- Component props: Minimal JSDoc; interfaces define the shape
+
+**Section headers:**
+- Format: `// ─────────────────────────────────────────────────────────────────────────────`
+- Used to organize code into logical chunks (Types, Setup, Operations, Helpers)
 
 ## Function Design
 
-**Size:** Large functions are common in route handlers (webhook handler in `src/app/api/stripe/webhook/route.ts` is ~550 lines). Helper extraction used within files but no systematic size limit enforced.
+**Size:** 
+- Small utility functions: ~5–15 lines (formatting, validation)
+- Handlers: ~20–60 lines (API route handlers, event handlers)
+- Large complex functions: 100+ lines (webhook processing, dashboard queries)
+- No explicit size limit; composition preferred over monolithic functions
 
-**Parameters:** Input objects (typed with `*Input` suffix) preferred over positional parameters for functions with more than 2 args.
+**Parameters:**
+- Use destructuring for related parameters: `{ email, password }` from request body
+- Object params for configurations: `{ page, limit, status, ... }` in filter objects
+- Single complex objects for data: `input: CreateOrderInput` rather than spreading fields
 
 **Return Values:**
-- Async functions always return `Promise<T>` with explicit generic
-- Nullable results typed as `T | null` (not `T | undefined`)
-- Collections return `T[]` (never `null` for empty sets — see `getOrdersByIds`)
+- Explicit return types: `Promise<Order | null>`, `NextResponse`, `PaginatedOrders`
+- Null for "not found" patterns (never throw): `getOrderById() → Order | null`
+- Wrapped responses: API routes always return JSON: `NextResponse.json({ ok: true, data }, { status })`
+- Type narrowing: Use type predicates for validation: `isValidAffiliateType(v): v is AffiliateType`
 
 ## Module Design
 
 **Exports:**
-- Named exports preferred throughout (`export function`, `export type`, `export const`)
-- Default export only for Next.js conventions (page components, layout, middleware, API routes)
-- `"use client"` directive at top of client component files; absent means Server Component by default
+- Named exports for utility functions: `export function sendEmail()`, `export async function createOrder()`
+- Default export for components: `export default function Header()`
+- Type exports: `export type { Order, CommissionRow }`
+- Re-exports for public interfaces: `export type { OrderStatus } from Prisma`
 
-**Barrel Files:** Not used. No `index.ts` re-exports. Consumers import directly from source file paths.
+**Barrel Files:**
+- Not used; imports are direct to modules (e.g., `@/lib/email`, `@/lib/prisma`)
+- Generated Prisma client in `src/generated/prisma/client/` is the closest to a barrel
 
-**Section Organization in Lib Files:**
-- Large lib files (`orders.ts`, `affiliates.ts`) use visual section dividers (`// ── Section ──`) grouping: Types → Input types → Helpers → Read operations → Write operations
+**Module organization in `src/lib/`:**
+- `admin-auth.ts`: Admin session management
+- `affiliate-auth.ts`: Affiliate session management
+- `prisma.ts`: Prisma client singleton
+- `email.ts`: SMTP transport
+- `email-templates.ts`: Email HTML generation
+- `orders.ts`: Order CRUD and queries
+- `affiliates.ts`: Affiliate and commission queries
+- `stripe.ts`: Stripe client and payment method constants
+- `google-sheets.ts`: Google Sheets integration
+- Boundary: Libraries export public types so consumers don't import generated Prisma client directly
+
+## Async/Await
+
+**Patterns:**
+- Used extensively in API routes and server components
+- Promise.all() for parallel operations
+- Promise.allSettled() for bulk operations where partial failures are acceptable
+- No callback-based patterns; Promises are standard
+- Transaction use: `prisma.$transaction(async (tx) => { ... })`
+
+## Conditional Rendering (React)
+
+**Patterns:**
+- Inline ternary for simple cases: `{itemCount > 0 && <span>...</span>}`
+- Short-circuit evaluation: `{condition && <Component />}`
+- Multiple sections: Separate `{section1} {section2}` renders
+
+## Tailwind CSS
+
+**Patterns:**
+- Class string construction: `const inputCls = 'rounded-lg border ... '`
+- Conditional classes: `className={cn(baseClass, { 'extra-class': condition })}`
+- `cn()` utility function from `src/lib/utils.ts` merges Tailwind classes with `clsx` + `tailwind-merge`
+- No custom CSS files; all styling via Tailwind classes
+- Color tokens: `text-brand-purple`, `bg-brand-orange`, `bg-brand-cream` (custom theme configured)
 
 ---
 
-*Convention analysis: 2026-05-14*
+*Convention analysis: 2026-06-17*

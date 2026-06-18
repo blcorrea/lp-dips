@@ -1,311 +1,391 @@
 # Codebase Structure
 
-**Analysis Date:** 2026-05-14
+**Analysis Date:** 2026-06-17
 
 ## Directory Layout
 
 ```
 lp-dips/
 ├── src/
-│   ├── app/
-│   │   ├── [locale]/           # Storefront — i18n-prefixed routes (en/es/pt)
-│   │   │   ├── layout.tsx      # Root layout: providers + metadata
-│   │   │   ├── page.tsx        # Landing page (home)
-│   │   │   ├── cart/           # Cart page
-│   │   │   ├── checkout/       # Checkout redirect + success page
+│   ├── app/                    # Next.js App Router (pages, APIs, middleware)
+│   │   ├── [locale]/           # Customer storefront (multi-language)
+│   │   │   ├── page.tsx        # Root page (redirects to /en)
+│   │   │   ├── layout.tsx      # Global layout with i18n, providers
+│   │   │   ├── (home)/         # Route group for landing page
+│   │   │   ├── products/       # Product catalog
 │   │   │   ├── product/        # Product detail pages
-│   │   │   │   ├── [slug]/     # Dynamic product page
-│   │   │   │   └── dips-chocolate/  # Static alias for main product
-│   │   │   ├── products/       # Product listing/shop
-│   │   │   ├── shop/           # Shop page
-│   │   │   ├── orders/         # Customer order history (mock/POC)
-│   │   │   │   └── [id]/       # Individual order detail (mock/POC)
-│   │   │   ├── profile/        # Customer profile (mock/POC)
-│   │   │   ├── wishlist/       # Customer wishlist (mock/POC)
-│   │   │   ├── ingredients-pdf/ # PDF-friendly ingredients page
+│   │   │   ├── cart/           # Shopping cart
+│   │   │   ├── checkout/       # Checkout flow + success page
+│   │   │   ├── orders/         # Customer order history
+│   │   │   ├── affiliates/     # Affiliate signup, login, dashboard
+│   │   │   ├── wishlist/       # Wishlist pages
+│   │   │   ├── profile/        # Customer profile
+│   │   │   ├── about/          # About page
 │   │   │   ├── privacy/        # Privacy policy
 │   │   │   ├── terms/          # Terms of service
+│   │   │   ├── shipping-policy/# Shipping policy
 │   │   │   ├── return-policy/  # Return policy
-│   │   │   └── shipping-policy/ # Shipping policy
-│   │   ├── admin/              # Admin dashboard (no locale prefix)
-│   │   │   ├── layout.tsx      # Admin nav shell (auth-aware)
-│   │   │   ├── orders/         # Order management + dashboard
-│   │   │   │   ├── page.tsx    # Orders list with stats + charts
-│   │   │   │   ├── OrdersTable.tsx     # Client: row selection + bulk actions
-│   │   │   │   ├── OrderFilters.tsx    # Client: filter controls
-│   │   │   │   ├── DashboardCharts.tsx # Client: Recharts charts
-│   │   │   │   └── [id]/       # Order detail + edit form
+│   │   │   ├── ingredients-pdf/# PDF ingredients download
+│   │   │   └── globals.css     # Global Tailwind styles
+│   │   ├── admin/              # Admin dashboard (protected)
+│   │   │   ├── layout.tsx      # Admin navbar + auth check
+│   │   │   ├── login/          # Admin login page
+│   │   │   ├── orders/         # Order management
 │   │   │   ├── affiliates/     # Affiliate management
-│   │   │   │   ├── page.tsx
-│   │   │   │   └── AffiliatesTable.tsx
-│   │   │   ├── commissions/    # Commission management
-│   │   │   │   ├── page.tsx
-│   │   │   │   └── CommissionsTable.tsx
-│   │   │   └── login/          # Admin login form
-│   │   ├── api/
-│   │   │   ├── stripe/
-│   │   │   │   ├── create-checkout-session/route.ts  # POST: create Stripe session
-│   │   │   │   └── webhook/route.ts                  # POST: Stripe webhook handler
+│   │   │   ├── commissions/    # Commission tracking & export
+│   │   │   └── users/          # Admin user management
+│   │   ├── api/                # API Route Handlers (REST endpoints)
 │   │   │   ├── admin/
-│   │   │   │   ├── login/route.ts                    # POST: set cookie / GET: logout
-│   │   │   │   ├── orders/route.ts                   # GET: list orders
-│   │   │   │   ├── orders/[id]/route.ts               # GET+PATCH: single order
-│   │   │   │   ├── orders/bulk/route.ts               # PATCH: bulk status update
-│   │   │   │   ├── orders/export/route.ts             # GET: CSV export
-│   │   │   │   ├── affiliates/route.ts                # GET+POST: list/create affiliates
-│   │   │   │   ├── affiliates/[id]/route.ts           # PATCH: update affiliate
-│   │   │   │   ├── commissions/route.ts               # GET: list commissions
-│   │   │   │   ├── commissions/[id]/route.ts          # PATCH: transition status
-│   │   │   │   └── commissions/export/route.ts        # GET: CSV export
-│   │   │   └── test-shopify/route.ts                  # Dev: test Shopify connectivity
-│   │   └── ingredients/        # Standalone ingredients page (no locale prefix)
-│   ├── components/
-│   │   ├── Header.tsx          # Site header/navigation
-│   │   ├── Footer.tsx          # Site footer
-│   │   ├── Hero.tsx            # Landing page hero section
-│   │   ├── BuySection.tsx      # Buy/CTA section on landing page
-│   │   ├── BuyNowButton.tsx    # Checkout initiator (client)
-│   │   ├── ProductSection.tsx  # Product feature section
-│   │   ├── AboutSection.tsx
-│   │   ├── IngredientsSection.tsx
-│   │   ├── WhyDipsSection.tsx
-│   │   ├── FAQSection.tsx
-│   │   ├── LegalPageLayout.tsx # Shared layout for policy pages
-│   │   ├── TrackingProvider.tsx # Attribution capture on mount (client)
-│   │   ├── TrackViewItem.tsx   # Client: fires view_item tracking event
-│   │   ├── AgeVerificationModal.tsx
-│   │   ├── SocialMediaButtons.tsx
-│   │   ├── LiveProductPurchase.tsx
-│   │   ├── ProductPurchaseBox.tsx
-│   │   ├── BuyImageGallery.tsx
-│   │   ├── animations/         # Framer Motion animation wrappers
-│   │   │   ├── FadeIn.tsx
-│   │   │   ├── ScaleIn.tsx
-│   │   │   ├── ScrollReveal.tsx
-│   │   │   └── SlideIn.tsx
-│   │   ├── cart/               # Cart UI components
-│   │   │   ├── CartDrawer.tsx
-│   │   │   ├── CartItem.tsx
-│   │   │   └── CartSummary.tsx
-│   │   ├── checkout/           # Checkout form
-│   │   │   └── CheckoutForm.tsx
-│   │   ├── products/           # Product listing components
-│   │   │   ├── ProductCard.tsx
-│   │   │   ├── ProductFilters.tsx
-│   │   │   ├── ProductGrid.tsx
-│   │   │   ├── ProductSidebar.tsx
-│   │   │   ├── QuantitySelector.tsx
-│   │   │   └── VariantSelector.tsx
-│   │   └── ui/                 # Shadcn/ui primitives
-│   │       ├── accordion.tsx
-│   │       ├── button.tsx
-│   │       ├── checkbox.tsx
-│   │       ├── label.tsx
-│   │       └── select.tsx
-│   ├── contexts/
-│   │   ├── CartContext.tsx     # Cart state + localStorage persistence
-│   │   └── CustomerContext.tsx # Customer session (mock/demo)
-│   ├── data/                   # Static/mock data (NOT database data)
-│   │   ├── products.ts         # Hardcoded product catalog
-│   │   ├── customers.ts        # Mock customer for demo
-│   │   ├── orders.ts           # Mock order data
-│   │   └── inventory.ts        # Mock inventory data
-│   ├── generated/
-│   │   └── prisma/             # Auto-generated Prisma client (DO NOT EDIT)
-│   │       └── client/
-│   ├── i18n/
-│   │   ├── routing.ts          # Locale list (en, es, pt) + navigation helpers
-│   │   └── request.ts          # next-intl server request config
-│   ├── lib/                    # Server-side service layer
-│   │   ├── prisma.ts           # Singleton Prisma client
-│   │   ├── orders.ts           # Order CRUD, stats, dashboard queries
-│   │   ├── affiliates.ts       # Affiliate + Commission CRUD, state machine
-│   │   ├── shopify.ts          # Shopify Storefront API product fetch
-│   │   ├── shopify-client.ts   # Raw GraphQL fetch wrapper for Shopify
+│   │   │   │   ├── login/      # POST/GET admin login, logout
+│   │   │   │   ├── orders/     # GET, PATCH order endpoints
+│   │   │   │   ├── affiliates/ # CRUD affiliate endpoints
+│   │   │   │   ├── commissions/# GET commissions, export endpoint
+│   │   │   │   └── users/      # CRUD admin users
+│   │   │   ├── affiliates/
+│   │   │   │   ├── join/       # POST affiliate signup
+│   │   │   │   ├── login/      # POST affiliate login request
+│   │   │   │   ├── logout/     # POST affiliate logout
+│   │   │   │   └── verify/     # GET verify magic link token
+│   │   │   └── stripe/
+│   │   │       ├── create-checkout-session/  # POST checkout
+│   │   │       └── webhook/    # POST Stripe webhook
+│   │   ├── ingredients/        # Ingredients page (no locale prefix)
+│   │   ├── favicon.ico         # Favicon
+│   │   └── globals.css         # Global styles
+│   │
+│   ├── lib/                    # Business logic & utilities
+│   │   ├── prisma.ts           # Prisma client singleton
+│   │   ├── admin-auth.ts       # Admin session verification
+│   │   ├── affiliate-auth.ts   # Affiliate session retrieval
+│   │   ├── affiliate-tokens.ts # Magic link token generation
+│   │   ├── affiliates.ts       # Affiliate CRUD operations
+│   │   ├── orders.ts           # Order creation, status updates
+│   │   ├── email.ts            # SMTP transporter
+│   │   ├── email-templates.ts  # Email composition (signup, order, shipped)
+│   │   ├── stripe.ts           # Stripe API calls
+│   │   ├── shopify.ts          # Shopify queries & sync
+│   │   ├── shopify-client.ts   # Shopify GraphQL client
+│   │   ├── shopify-product.ts  # Product variant queries
 │   │   ├── shopify-queries.ts  # GraphQL query strings
-│   │   ├── shopify-product.ts  # Maps Shopify product to PurchasableProduct
-│   │   ├── pricing.ts          # Locale-to-currency/price mapping
-│   │   ├── stripe.ts           # Stripe SDK instance (if any shared config)
-│   │   ├── email.ts            # Nodemailer SMTP transport
-│   │   ├── email-templates.ts  # Order confirmation + warehouse notification HTML
-│   │   ├── google-sheets.ts    # Google Sheets warehouse mirror (append + update)
-│   │   ├── tracking.ts         # Meta Pixel, GA4, Google Ads events; attribution
-│   │   ├── admin-auth.ts       # isAdminAuthenticated() for Server Components
-│   │   └── utils.ts            # Shared utility functions (cn, etc.)
-│   └── middleware.ts           # Edge middleware: i18n routing + admin auth
+│   │   ├── google-sheets.ts    # Commission export to Sheets
+│   │   ├── pricing.ts          # Localized pricing lookup
+│   │   ├── tracking.ts         # UTM/influencer tracking
+│   │   └── utils.ts            # Formatting, validation helpers
+│   │
+│   ├── components/             # React components
+│   │   ├── Header.tsx          # Navigation header
+│   │   ├── Footer.tsx          # Footer
+│   │   ├── Hero.tsx            # Landing hero section
+│   │   ├── ProductSection.tsx  # Product showcase
+│   │   ├── BuySection.tsx      # Call-to-action section
+│   │   ├── BuyNowButton.tsx    # CTA button component
+│   │   ├── ReviewsSection.tsx  # Customer reviews
+│   │   ├── FeaturesStrip.tsx   # Features marquee
+│   │   ├── IngredientsSection.tsx # Ingredients section
+│   │   ├── AboutSection.tsx    # About section
+│   │   ├── FAQSection.tsx      # FAQ accordion
+│   │   ├── SocialMediaButtons.tsx # Social links
+│   │   ├── AgeVerificationModal.tsx # Age check modal
+│   │   ├── BuyImageGallery.tsx # Product gallery
+│   │   ├── ProductPurchaseBox.tsx # Product card
+│   │   ├── LiveProductPurchase.tsx # Interactive product
+│   │   ├── TrackingProvider.tsx # Tracking/attribution wrapper
+│   │   ├── TrackViewItem.tsx  # Product view tracking
+│   │   ├── LegalPageLayout.tsx # Legal page wrapper
+│   │   ├── animations/         # Framer Motion animations
+│   │   │   └── *.tsx           # Scroll triggers, parallax
+│   │   ├── cart/
+│   │   │   ├── CartItem.tsx    # Cart line item component
+│   │   │   └── *.tsx           # Cart-related components
+│   │   ├── checkout/
+│   │   │   └── CheckoutForm.tsx # Stripe Elements form
+│   │   ├── products/
+│   │   │   ├── ProductGrid.tsx # Product listing grid
+│   │   │   └── ProductSidebar.tsx # Filter sidebar
+│   │   └── ui/                 # Radix UI primitives
+│   │       ├── button.tsx      # <Button /> component
+│   │       ├── accordion.tsx   # <Accordion /> component
+│   │       ├── checkbox.tsx    # <Checkbox /> component
+│   │       ├── label.tsx       # <Label /> component
+│   │       └── select.tsx      # <Select /> component
+│   │
+│   ├── contexts/               # React Context providers
+│   │   ├── CartContext.tsx     # Shopping cart state (localStorage)
+│   │   └── CustomerContext.tsx # Customer data (email, info)
+│   │
+│   ├── data/                   # Static data & constants
+│   │   ├── products.ts         # Product catalog (hardcoded)
+│   │   ├── inventory.ts        # Stock levels
+│   │   ├── reviews.ts          # Customer reviews
+│   │   ├── customers.ts        # Example customer data
+│   │   └── orders.ts           # Example order data
+│   │
+│   ├── i18n/                   # Internationalization
+│   │   ├── routing.ts          # Locale config (en, es, pt)
+│   │   └── *.json              # Translation files per locale
+│   │
+│   ├── generated/              # Auto-generated code
+│   │   └── prisma/             # Prisma client (generated)
+│   │
+│   └── middleware.ts           # Next.js middleware (auth, redirects)
+│
 ├── prisma/
-│   ├── schema.prisma           # Database schema (Order, OrderItem, StripeEvent,
-│   │                           #   Affiliate, Commission)
-│   └── migrations/             # Timestamped SQL migration files
-│       ├── 20260325000823_init/
-│       ├── 20260329124456_add_email_sent_at_timestamps/
-│       ├── 20260506232233_add_influencer_attribution/
-│       └── 20260507024217_add_affiliate_commissions/
-├── messages/                   # next-intl translation files
-│   ├── en/
-│   ├── es/
-│   └── pt/
-├── public/
-│   ├── images/                 # Product images, OG image
-│   ├── videos/                 # Brand videos
+│   ├── schema.prisma           # Database schema & enums
+│   └── migrations/             # Database migrations
+│
+├── public/                     # Static assets
+│   ├── images/                 # Product images, logos
 │   └── fonts/                  # Custom fonts
-├── scripts/                    # One-off utility scripts
-├── .planning/codebase/         # GSD architecture docs
-├── next.config.mjs             # Next.js config (next-intl plugin)
-├── prisma.config.ts            # Prisma config (output path override)
-├── tsconfig.json               # TypeScript config (@/ path alias)
-├── components.json             # Shadcn/ui component config
-└── package.json
+│
+├── .next/                      # Next.js build output (git ignored)
+│
+├── node_modules/              # Dependencies (git ignored)
+│
+├── .claude/                    # Claude Code settings
+│   ├── settings.json           # Base configuration
+│   └── settings.local.json     # Local overrides
+│
+├── .env*                       # Environment variables (git ignored)
+├── .gitignore                  # Git ignore rules
+├── tsconfig.json               # TypeScript config
+├── tailwind.config.js          # Tailwind CSS config
+├── next.config.js              # Next.js config
+├── package.json                # Node.js dependencies
+├── package-lock.json           # Dependency lock
+└── README.md                   # Project documentation
 ```
 
 ## Directory Purposes
 
 **`src/app/[locale]/`:**
-- Purpose: Internationalized storefront pages. All routes under this directory are locale-prefixed (e.g. `/en/product/dips-chocolate`)
-- Contains: Async Server Component pages, client components co-located where needed
-- Key files: `layout.tsx` (provider tree), `page.tsx` (landing page)
+- Purpose: Multi-language customer-facing pages and layouts
+- Contains: Page components (page.tsx), nested layouts (layout.tsx), route groups for organization
+- Key files: `layout.tsx` (i18n + provider setup), `page.tsx` (route handler per page)
+- Pattern: URL-driven locale in param `{locale: string}`, all pages accept `params.locale`
 
 **`src/app/admin/`:**
-- Purpose: Admin-only management UI. Not locale-prefixed. Protected by middleware.
-- Contains: Server Component pages with inline client components for interactive tables/filters
-- Key files: `layout.tsx`, `orders/page.tsx`, `orders/OrdersTable.tsx`
+- Purpose: Protected admin dashboard for order, affiliate, and user management
+- Contains: Page components for admin operations, layout with navbar
+- Key files: `layout.tsx` (auth + navbar), individual pages for orders/affiliates/users
+- Auth: `isAdminAuthenticated()` check in layout; redirects to login if no valid cookie
+- Pattern: All pages are Server Components; access DB directly
 
 **`src/app/api/`:**
-- Purpose: All HTTP API endpoints. Two subtrees: `stripe/` (public webhook + checkout) and `admin/` (protected REST-ish endpoints)
-- Contains: `route.ts` files only — no UI
-- Key files: `stripe/webhook/route.ts`, `stripe/create-checkout-session/route.ts`
-
-**`src/components/`:**
-- Purpose: Reusable React components. Top level = page-section components. Subdirectories = feature-grouped components.
-- Contains: Server and Client Components. Client Components are marked `"use client"` at the top.
-- Key files: `BuyNowButton.tsx`, `TrackingProvider.tsx`, `Header.tsx`
+- Purpose: REST API endpoints for checkout, webhooks, CRUD operations
+- Contains: Route handlers (route.ts) organized by resource and method (GET, POST, PATCH, DELETE)
+- Key files: Stripe checkout and webhook, affiliate signup/login, admin resource CRUD
+- Pattern: Validate auth in handler, return JSON with status codes, use business logic layer (src/lib/)
 
 **`src/lib/`:**
-- Purpose: All server-side business logic. Imported by Server Components and API routes only — never imported by Client Components directly.
-- Contains: Service functions, SDK clients, utility functions
-- Key files: `orders.ts`, `affiliates.ts`, `shopify.ts`, `prisma.ts`
+- Purpose: Shared business logic, integrations, and utilities
+- Contains: Service functions (orders, email, auth), client libraries (Stripe, Shopify, Prisma), helpers
+- Pattern: Export pure functions or initialized clients (e.g., Prisma singleton); no exports of React components
+- Key responsibilities:
+  - `prisma.ts` — DB connection (singleton, prevents pool exhaustion)
+  - `admin-auth.ts`, `affiliate-auth.ts` — Auth checks and user retrieval
+  - `orders.ts` — Order CRUD and commission calculation
+  - `email.ts`, `email-templates.ts` — Email composition and sending
+  - `stripe.ts` — Stripe API (sessions, refunds)
+  - `shopify*.ts` — Product and variant queries
+  - `affiliates.ts` — Affiliate management CRUD
+  - `google-sheets.ts` — Commission export
+
+**`src/components/`:**
+- Purpose: React components for UI rendering (client and server)
+- Contains: Page sections (Hero, ProductSection, etc.), form components (CheckoutForm), UI primitives
+- Key subdirectories:
+  - `ui/` — Radix UI base components (button, checkbox, select, label, accordion)
+  - `cart/` — Shopping cart display and manipulation
+  - `checkout/` — Checkout form with Stripe Elements
+  - `products/` — Product grid and filter sidebar
+  - `animations/` — Framer Motion scroll/parallax effects
+- Pattern: Mix of "use client" components (interactive) and Server Components (display); use `@/` path alias
 
 **`src/contexts/`:**
-- Purpose: React Context providers for client-side shared state
-- Contains: `CartContext.tsx`, `CustomerContext.tsx`
+- Purpose: Global client-side state via React Context API
+- Contains: CartContext (cart items, actions), CustomerContext (customer info)
+- Key files:
+  - `CartContext.tsx` — Cart state with localStorage persistence, add/remove/update/clear actions
+  - `CustomerContext.tsx` — Customer email and info (set at checkout)
+- Pattern: Provider wraps layout; hooks export for use in pages/components; localStorage key `dpis-cart`
 
 **`src/data/`:**
-- Purpose: Static hardcoded data and mock data for POC features. Not connected to the database.
-- Contains: TypeScript modules exporting typed arrays and helper functions
+- Purpose: Static data constants (products, inventory, reviews)
+- Contains: TypeScript exports of product array, review data, example orders/customers
+- Key files: `products.ts` (Product[] with variants), `reviews.ts`, `inventory.ts`
+- Pattern: Hardcoded data; real product/pricing from Shopify in future; no dynamic load from DB
 
-**`src/generated/prisma/`:**
-- Purpose: Auto-generated Prisma client output
-- Generated: Yes (by `prisma generate`)
-- Committed: Yes (configured via `prisma.config.ts` to output to `src/generated/prisma/`)
-- DO NOT edit manually
+**`src/i18n/`:**
+- Purpose: Internationalization setup and routing config
+- Contains: `routing.ts` (locale definitions), translation JSON files per locale
+- Locales: en, es, pt
+- Pattern: next-intl middleware uses routing config; Server Components call `getMessages()` to fetch translations
 
 **`prisma/`:**
-- Purpose: Database schema and migration history
-- Contains: `schema.prisma`, `migrations/` directory
-- Key files: `schema.prisma` is the source of truth for all DB models
+- Purpose: Database schema, migrations, and ORM configuration
+- Contains: `schema.prisma` (data model), `migrations/` (SQL migration files)
+- Key models: Order, OrderItem, Affiliate, AffiliateLoginToken, Commission, AdminUser, StripeEvent
+- Pattern: Models reference by CUID primary keys; enums for status fields (OrderStatus, CommissionStatus, etc.)
 
-**`messages/`:**
-- Purpose: next-intl translation JSON files, one subdirectory per locale
-- Contains: `en/`, `es/`, `pt/` subdirectories
+**`public/`:**
+- Purpose: Static assets served directly by Next.js
+- Contains: Images (product photos, logos), fonts
+- Pattern: Reference in JSX as `/images/...` or `/fonts/...`
+
+**`.claude/`:**
+- Purpose: Claude Code project configuration
+- Contains: `settings.json` (base), `settings.local.json` (local overrides)
+- Pattern: User-specific settings; shared config in base settings.json
 
 ## Key File Locations
 
 **Entry Points:**
-- `src/middleware.ts`: Request interception for auth + i18n
-- `src/app/[locale]/layout.tsx`: Storefront provider tree
-- `src/app/admin/layout.tsx`: Admin shell
-- `src/app/[locale]/page.tsx`: Home/landing page
+- `src/app/[locale]/layout.tsx` — Customer storefront root (i18n + providers)
+- `src/app/admin/layout.tsx` — Admin dashboard root (auth + navbar)
+- `src/app/[locale]/page.tsx` — Home page redirect
+- `src/middleware.ts` — Edge middleware (auth routing, i18n, locale redirects)
 
 **Configuration:**
-- `next.config.mjs`: Next.js config with next-intl plugin
-- `tsconfig.json`: TypeScript with `@/` alias pointing to `src/`
-- `prisma/schema.prisma`: Database schema
-- `prisma.config.ts`: Prisma output directory override
-- `components.json`: Shadcn/ui configuration
-- `src/i18n/routing.ts`: Supported locales
+- `tsconfig.json` — TypeScript config with `@/*` path alias to `src/`
+- `next.config.js` — Next.js options (image optimization, env vars, etc.)
+- `tailwind.config.js` — Tailwind CSS utilities and theme
+- `prisma/schema.prisma` — Database schema and enums
+- `.env.local` — Local environment variables (git ignored)
 
 **Core Logic:**
-- `src/app/api/stripe/webhook/route.ts`: Order creation (primary write path)
-- `src/lib/orders.ts`: All order queries and mutations
-- `src/lib/affiliates.ts`: Affiliate + commission management
-- `src/lib/pricing.ts`: Locale-to-price mapping
-- `src/lib/tracking.ts`: All analytics event functions
+- `src/lib/prisma.ts` — Database client (singleton pattern for connection pooling)
+- `src/lib/admin-auth.ts` — Admin authentication (cookie + DB verification)
+- `src/lib/affiliate-auth.ts` — Affiliate session retrieval
+- `src/lib/orders.ts` — Order CRUD and commission calculation
+- `src/lib/email.ts` — SMTP transporter and sendEmail function
+- `src/lib/email-templates.ts` — Email composition (signup, confirmation, shipped)
+- `src/lib/stripe.ts` — Stripe API calls (checkout sessions, refunds)
+- `src/lib/shopify.ts` — Shopify GraphQL queries
 
-**Database:**
-- `src/lib/prisma.ts`: Prisma client singleton
-- `src/generated/prisma/client/`: Generated Prisma client (import from here)
+**Testing:**
+- No dedicated test files in current structure; tests would be co-located as `*.test.ts` or `*.spec.ts` (not found)
+
+**API Endpoints:**
+- `src/app/api/stripe/create-checkout-session/route.ts` — POST to create Stripe session
+- `src/app/api/stripe/webhook/route.ts` — POST webhook receiver (idempotent via StripeEvent)
+- `src/app/api/affiliates/join/route.ts` — POST affiliate signup
+- `src/app/api/affiliates/login/route.ts` — POST request magic link
+- `src/app/api/affiliates/verify/route.ts` — GET verify token + set session
+- `src/app/api/admin/login/route.ts` — POST/GET admin login/logout
+- `src/app/api/admin/orders/bulk/route.ts` — PATCH bulk order updates
+- `src/app/api/admin/commissions/export/route.ts` — GET export to Google Sheets
 
 ## Naming Conventions
 
 **Files:**
-- Page files: `page.tsx` (Next.js App Router convention)
-- Layout files: `layout.tsx`
-- API route files: `route.ts`
-- Component files: PascalCase — `BuyNowButton.tsx`, `CartDrawer.tsx`
-- Service/utility files: kebab-case — `shopify-client.ts`, `email-templates.ts`
-- Context files: PascalCase + `Context` suffix — `CartContext.tsx`
+- Page components: `page.tsx` (Next.js convention)
+- Layout files: `layout.tsx` (Next.js convention)
+- API routes: `route.ts` (Next.js convention for handlers)
+- Client components: `.tsx` with `"use client"` directive at top
+- Server components: `.tsx` (default in App Router)
+- Utilities: Lowercase with hyphens (e.g., `admin-auth.ts`, `email-templates.ts`)
+- Components: PascalCase (e.g., `CartContext.tsx`, `CheckoutForm.tsx`)
 
 **Directories:**
-- App routes: lowercase kebab-case — `checkout/`, `products/`, `return-policy/`
-- Component groups: lowercase — `cart/`, `products/`, `ui/`, `animations/`
-- Locale: `[locale]` dynamic segment, values `en`, `es`, `pt`
+- Feature folders (plural): `components/`, `contexts/`, `lib/`, `data/`, `i18n/`
+- Route segments: Lowercase (e.g., `admin/`, `affiliates/`, `checkout/`)
+- Dynamic segments: Square brackets (e.g., `[locale]/`, `[id]/`)
+- Route groups: Parentheses (e.g., `(home)/`, `(auth)/`)
+- Generated code: `generated/` (Prisma client auto-generated here)
 
-**Exports:**
-- Context providers: Named exports — `export function CartProvider`, `export function useCart`
-- Service functions: Named exports — `export async function getOrders`
-- Components: Default exports — `export default function BuyNowButton`
-- Types: Named exports at top of service files — `export type OrderRow`
+**Functions & Exports:**
+- Utilities: camelCase (e.g., `isAdminAuthenticated()`, `sendEmail()`)
+- React components: PascalCase (e.g., `CartProvider`, `CheckoutForm`)
+- Constants: UPPER_SNAKE_CASE (e.g., `ADMIN_COOKIE_NAME`, `CART_STORAGE_KEY`)
+- Type definitions: PascalCase (e.g., `CartItem`, `EmailPayload`, `AdminUserRow`)
 
 ## Where to Add New Code
 
-**New Storefront Page:**
-- Create `src/app/[locale]/{route-name}/page.tsx`
-- If needed, add translations to `messages/en/`, `messages/es/`, `messages/pt/`
+**New Feature (e.g., Wishlist):**
+- Primary code: `src/app/[locale]/wishlist/page.tsx` (customer page), `src/app/api/wishlist/route.ts` (API)
+- Business logic: `src/lib/wishlist.ts` (CRUD functions)
+- Database: Add `Wishlist` model to `prisma/schema.prisma`, run migration
+- Tests: `src/app/api/wishlist/route.test.ts` (co-located with route handler)
 
-**New Admin Page:**
-- Create `src/app/admin/{feature-name}/page.tsx`
-- Add nav link in `src/app/admin/layout.tsx`
-- Add corresponding API routes under `src/app/api/admin/{feature-name}/route.ts`
+**New Component/Module:**
+- Implementation: `src/components/` (if UI) or `src/lib/` (if business logic)
+- Client state: `src/contexts/NewContext.tsx` (if global state needed)
+- Types: Define inline in file or in a separate `types.ts` if large
+- Styling: Tailwind classes directly in JSX; custom CSS in `src/app/globals.css` if needed
 
-**New API Endpoint:**
-- Public (Stripe/webhooks): `src/app/api/stripe/{endpoint}/route.ts`
-- Admin-protected: `src/app/api/admin/{endpoint}/route.ts` (middleware handles auth automatically)
+**Utilities & Helpers:**
+- Shared helpers: `src/lib/utils.ts` (append to existing file or create new `src/lib/foo.ts`)
+- Formatting: `src/lib/formatting.ts` or functions in `utils.ts`
+- Validation: `src/lib/validation.ts` or inline in API routes with type guards
 
-**New Service Function:**
-- Database operations: Add to relevant file in `src/lib/` (e.g. order queries → `src/lib/orders.ts`)
-- New integration: Create `src/lib/{service-name}.ts`
+**Email Templates:**
+- New email type: Add function to `src/lib/email-templates.ts` (e.g., `buildRefundEmail()`)
+- Send email: Call `sendEmail()` from route handler or job queue (currently uses `after()` in webhooks)
 
-**New Component:**
-- Page-section component: `src/components/{ComponentName}.tsx`
-- Feature-grouped component: `src/components/{feature}/{ComponentName}.tsx`
-- UI primitive: `src/components/ui/{component-name}.tsx` (follow Shadcn/ui pattern)
+**Admin Features:**
+- Page: `src/app/admin/[feature]/page.tsx` with `isAdminAuthenticated()` check in layout
+- API: `src/app/api/admin/[feature]/route.ts` with auth check (returns 401 if not authenticated)
+- Access: All requests must carry `admin_token` cookie (set by `/api/admin/login`)
 
-**New Database Table:**
-- Add model to `prisma/schema.prisma`
-- Run `npx prisma migrate dev --name {description}` to create migration
-- Run `npx prisma generate` to regenerate client in `src/generated/prisma/`
+**Affiliate Features:**
+- Page: `src/app/[locale]/affiliates/[feature]/page.tsx` with affiliate auth check (middleware + cookie)
+- API: `src/app/api/affiliates/[feature]/route.ts` with optional auth check
+- Access: Dashboard requires `affiliate_session` cookie (set by `/api/affiliates/verify`)
 
-**New Translation Key:**
-- Add key to `messages/en/{file}.json`, `messages/es/{file}.json`, `messages/pt/{file}.json`
-- Use `useTranslations('{namespace}')` in Client Components, `getTranslations()` in Server Components
+**Database Model Changes:**
+1. Update `prisma/schema.prisma`
+2. Run `npx prisma migrate dev --name describe_change`
+3. Prisma client auto-generates in `src/generated/prisma/client/`
+4. Import `{ prisma }` from `@/lib/prisma` and use in services
+
+**API Route Pattern:**
+```typescript
+// src/app/api/[resource]/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { isAdminAuthenticated } from '@/lib/admin-auth';
+
+export async function POST(request: NextRequest) {
+  if (!(await isAdminAuthenticated())) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  
+  try {
+    const body = await request.json();
+    // Validate, call business logic
+    return NextResponse.json({ ok: true, data: result });
+  } catch (error) {
+    console.error('Error:', error);
+    return NextResponse.json({ error: 'Internal error' }, { status: 500 });
+  }
+}
+```
 
 ## Special Directories
 
-**`.next/`:**
-- Purpose: Next.js build output and cache
-- Generated: Yes
-- Committed: No (gitignored)
-
 **`src/generated/`:**
-- Purpose: Prisma-generated client code
+- Purpose: Auto-generated code (Prisma client)
 - Generated: Yes (by `prisma generate`)
-- Committed: Yes
+- Committed: No (output path points to build artifacts; sources in `prisma/schema.prisma`)
+- Do NOT edit manually
 
-**`.planning/`:**
-- Purpose: GSD planning documents (phases, codebase analysis)
-- Generated: Yes (by GSD commands)
+**`src/app/globals.css`:**
+- Purpose: Global Tailwind CSS and custom styles
+- Generated: No
 - Committed: Yes
+- Pattern: Import in root layout; used across all pages
+
+**`.next/`:**
+- Purpose: Next.js build output and type definitions
+- Generated: Yes (by `npm run build`)
+- Committed: No
+- Pattern: Contains type stubs; referenced by TypeScript but not source
+
+**`prisma/migrations/`:**
+- Purpose: Database migration history (SQL files)
+- Generated: Yes (by `prisma migrate` commands)
+- Committed: Yes (for reproducible schema changes)
+- Pattern: Each migration file numbered chronologically; applied in order
 
 ---
 
-*Structure analysis: 2026-05-14*
+*Structure analysis: 2026-06-17*

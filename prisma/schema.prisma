@@ -54,6 +54,11 @@ enum CommissionStatus {
   CANCELLED
 }
 
+enum CreativeType {
+  IMAGE
+  VIDEO
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Order
 // ─────────────────────────────────────────────────────────────────────────────
@@ -271,4 +276,33 @@ model AdminUser {
   updatedAt    DateTime @updatedAt
 
   @@index([email])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AffiliateCreative — marketing assets managed by admins, browsable by affiliates
+// ─────────────────────────────────────────────────────────────────────────────
+
+model AffiliateCreative {
+  id                String       @id @default(cuid())
+  title             String
+  description       String?
+  caption           String?
+  type              CreativeType
+  /// Public URL returned by Vercel Blob after upload
+  url               String
+  /// Pathname used with @vercel/blob del() on hard delete — follows creatives/<id>/<filename> scheme
+  blobPath          String
+  thumbnailUrl      String?
+  thumbnailBlobPath String?
+  fileName          String
+  /// File size in bytes
+  fileSize          Int
+  mimeType          String
+  sortOrder         Int          @default(0)
+  active            Boolean      @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([active, sortOrder])
 }
