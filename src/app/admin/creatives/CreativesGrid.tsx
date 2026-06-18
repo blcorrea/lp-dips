@@ -349,7 +349,7 @@ export default function CreativesGrid({ rows }: { rows: CreativeRow[] }) {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
           {rows.map((row, idx) => (
             <div
               key={row.id}
@@ -363,7 +363,7 @@ export default function CreativesGrid({ rows }: { rows: CreativeRow[] }) {
                     alt={row.title}
                     fill
                     className="object-cover"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1536px) 25vw, 20vw"
                   />
                 ) : (
                   /* Video without poster */
