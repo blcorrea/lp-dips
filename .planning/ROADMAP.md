@@ -86,4 +86,4 @@ Phases execute in numeric order: 1 → 2 → 3
 |-------|----------------|--------|-----------|
 | 1. Foundation | 1/1 | Complete    | 2026-06-17 |
 | 2. Admin Creatives | 2/2 | Complete    | 2026-06-17 |
-| 3. Affiliate Gallery & i18n | 1/1 | Complete   | 2026-06-18 |
+| 3. Affiliate Gallery & i18n | 1/1 | Complete    | 2026-06-18 |

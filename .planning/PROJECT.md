@@ -36,15 +36,16 @@ Affiliates can grab ready-to-post, on-brand creative assets (with a copy-paste c
 - ✓ Admin can edit a creative's metadata (title, description, caption, active state) — Phase 2
 - ✓ Admin can reorder creatives with up/down controls (sortOrder) — Phase 2
 - ✓ Admin can deactivate/activate and delete a creative (delete also removes the blob) — Phase 2
+- ✓ Logged-in affiliates see a "Criativos" section on their dashboard (grid of cards) — Phase 3
+- ✓ Affiliate can download a creative and copy its caption to clipboard — Phase 3
+- ✓ Empty state when no creatives exist — Phase 3
+- ✓ All new UI strings localized in en/es/pt (next-intl `AffiliateCreatives` namespace) — Phase 3
 
 ### Active
 
-<!-- This milestone: Affiliate Creatives. Hypotheses until shipped. -->
+<!-- Milestone v1.0 (Affiliate Creatives) complete — no active requirements. -->
 
-- [ ] Logged-in affiliates see a "Criativos" section on their dashboard (grid of cards)
-- [ ] Affiliate can download a creative and copy its caption to clipboard
-- [ ] Empty state when no creatives exist
-- [ ] All new UI strings localized in en/es/pt (next-intl `AffiliateCreatives` namespace)
+_None — milestone v1.0 shipped. Next milestone's requirements go here._
 
 ### Out of Scope
 
@@ -53,6 +54,7 @@ Affiliates can grab ready-to-post, on-brand creative assets (with a copy-paste c
 - Drag-and-drop reordering — up/down controls cover v1; DnD adds dependency/complexity
 - Per-affiliate or segmented creative visibility — all active creatives visible to all affiliates
 - Affiliate-facing API — affiliate dashboard reads creatives directly in a server component
+- Admin-chosen video poster/cover image — removed post-UAT (quick task 260618-gjn); videos default to their first frame. `thumbnailUrl`/`thumbnailBlobPath` columns retained but no longer populated by the admin form
 
 ## Context
 
@@ -81,13 +83,18 @@ Affiliates can grab ready-to-post, on-brand creative assets (with a copy-paste c
 | Affiliate view reads via server component (no affiliate API) | Matches existing server-first pattern | — Pending |
 | Vercel Blob + client upload | Handle video > serverless 4.5MB body limit | ✓ Good (admin upload shipped + UAT-verified in Phase 2) |
 | Up/down reordering (sortOrder int) over drag-drop | Lower complexity, no new dependency | ✓ Good (shipped in Phase 2) |
-| Single shared creative library (no segmentation) | Simplest model that delivers value | ✓ Good (admin surface shipped in Phase 2) |
+| Single shared creative library (no segmentation) | Simplest model that delivers value | ✓ Good (full affiliate-facing library shipped in Phase 3) |
 | `onUploadCompleted` no-op; DB row via follow-up POST | Avoids localhost webhook limitation in client-upload flow | ✓ Good (Phase 2) |
 | `mimeType` re-validated server-side; `CreativeType` derived server-side | Defense-in-depth; never trust client-declared type (T-02-05) | ✓ Good (Phase 2, security-verified) |
+| Affiliate view reads via server component (no affiliate API) | Matches existing server-first pattern | ✓ Good (shipped in Phase 3) |
+| Affiliate gallery uses auto-fill dense thumbnail grid (not fixed breakpoints) | Dashboard is capped at max-w-4xl, so viewport breakpoints never fired; auto-fill packs small previews regardless of container width | ✓ Good (quick task 260618-gjn, UAT-confirmed) |
+| Drop admin video poster upload; default to first frame (#t=0.001) | Choosing a cover was unnecessary friction; first frame is a good-enough poster | ✓ Good (quick task 260618-gjn) |
 
 **Phase 1 (Foundation) complete (2026-06-17):** `AffiliateCreative` model + `CreativeType` enum migrated; `@vercel/blob` wired; `src/lib/creatives.ts` data-access shipped. DATA-01/02/03 validated.
 
 **Phase 2 (Admin Creatives) complete (2026-06-18):** Full admin management surface — Vercel Blob client-upload token route + collection/item API routes, `/admin/creatives` page with `CreativesGrid` (upload/edit/reorder/activate/delete), and admin nav link. UAT 8/8 passed; security review SECURED (11/11 threats closed). ADMIN-01..07 validated.
+
+**Phase 3 (Affiliate Gallery & i18n) complete (2026-06-18):** Affiliate-facing "Criativos" section on the dashboard server component — dense thumbnail grid of active creatives with download, copy-caption, empty state, and localized strings (en/es/pt). UAT 8/8 passed. Post-UAT polish via quick task 260618-gjn: natural-aspect photos, first-frame video poster, denser auto-fill grid, removed admin poster upload. **Milestone v1.0 (Affiliate Creatives) is 100% complete.**
 
 ## Evolution
 
@@ -107,4 +114,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-18 after Phase 2 (Admin Creatives) completion*
+*Last updated: 2026-06-18 after Phase 3 (Affiliate Gallery & i18n) completion — milestone v1.0 complete*

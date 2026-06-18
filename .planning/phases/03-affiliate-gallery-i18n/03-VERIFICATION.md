@@ -1,7 +1,8 @@
 ---
 phase: 03-affiliate-gallery-i18n
 verified: 2026-06-18T15:00:00Z
-status: human_needed
+status: passed
+resolved_by: 03-UAT.md (8/8 passed, 2026-06-18) — all human-verification items confirmed in a live browser session
 score: 8/8
 behavior_unverified: 3
 overrides_applied: 0
@@ -49,7 +50,7 @@ human_verification:
 
 **Phase Goal:** Logged-in affiliates can browse, download, and copy captions from the active creative library, with all strings localized in en/es/pt
 **Verified:** 2026-06-18T15:00:00Z
-**Status:** human_needed
+**Status:** passed (human-verification items confirmed via 03-UAT.md — 8/8 passed in a live browser)
 **Re-verification:** No — initial verification
 
 ---
