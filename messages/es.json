@@ -505,5 +505,14 @@
         "status_PAID": "Pagado",
         "status_CANCELLED": "Cancelado",
         "logout": "Cerrar sesión"
+    },
+    "AffiliateCreatives": {
+        "sectionTitle": "Creativos",
+        "photoLabel": "Foto",
+        "videoLabel": "Video",
+        "download": "Descargar",
+        "copyCaption": "Copiar leyenda",
+        "copied": "Copiado!",
+        "noCreatives": "Todavía no hay creativos disponibles. Vuelve pronto."
     }
 }

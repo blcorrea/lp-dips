@@ -504,5 +504,14 @@
         "status_PAID": "Paid",
         "status_CANCELLED": "Cancelled",
         "logout": "Sign out"
+    },
+    "AffiliateCreatives": {
+        "sectionTitle": "Marketing Creatives",
+        "photoLabel": "Photo",
+        "videoLabel": "Video",
+        "download": "Download",
+        "copyCaption": "Copy caption",
+        "copied": "Copied!",
+        "noCreatives": "No creatives available yet. Check back soon."
     }
 }
