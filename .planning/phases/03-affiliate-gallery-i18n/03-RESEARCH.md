@@ -603,14 +603,16 @@ export default function AffiliateCreativesGallery({ rows }: { rows: CreativeRow[
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Video-without-poster layout (planner's discretion)**
+   - RESOLVED: Adopted in 03-01-PLAN.md Task 2 — `<Video>` icon placeholder + click-to-reveal video, matching the admin grid's placeholder-icon approach.
    - What we know: Some VIDEO creatives may have `thumbnailUrl: null` (admin did not upload a poster).
    - What's unclear: Whether to show a pure icon placeholder and require a click to reveal the `<video>`, or render the `<video>` at full opacity immediately (which shows a blank black frame until play is pressed).
    - Recommendation: Show `<Video>` icon as placeholder + `<video>` hidden, clicking the icon replaces it with the video element. The admin grid uses the same placeholder-icon approach. This keeps the grid visually consistent when posters are missing.
 
 2. **`copiedId` vs separate `copied` boolean per card**
+   - RESOLVED: Adopted in 03-01-PLAN.md Task 2 — single `copiedId: string | null` state atom in the gallery component.
    - What we know: `CopyLinkButton` uses a single `copied` boolean because it's one card. The gallery is multi-card.
    - What's unclear: Whether to track `copiedId: string | null` (one state atom for all cards) or lift `CopyCaptionButton` into its own component with local state per card.
    - Recommendation: Single `copiedId` atom in the gallery component — simpler state, naturally only one card can be "copied" at a time.
