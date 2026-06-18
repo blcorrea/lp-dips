@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Prisma model, Vercel Blob config, and data-access module (completed 2026-06-17)
 - [x] **Phase 2: Admin Creatives** - Admin upload, edit, reorder, activate/deactivate, delete, and nav link (completed 2026-06-17)
-- [ ] **Phase 3: Affiliate Gallery & i18n** - Affiliate creative gallery with download, copy caption, empty state, and full localization
+- [x] **Phase 3: Affiliate Gallery & i18n** - Affiliate creative gallery with download, copy caption, empty state, and full localization (completed 2026-06-18)
 
 ## Phase Details
 
@@ -71,9 +71,9 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. When no active creatives exist, an empty state message is displayed instead of the grid
   5. All new UI strings (title, download label, copy label, copied confirmation, empty state, photo/video labels) are present and correct in `messages/en.json`, `messages/es.json`, and `messages/pt.json` under the `AffiliateCreatives` namespace
 
-**Plans**: 1 plan
+**Plans**: 1/1 plans complete
 
-- [ ] 03-01-PLAN.md — Criativos affiliate gallery (glass grid, image/video preview, download, copy caption, empty state) + AffiliateCreatives i18n in en/es/pt
+- [x] 03-01-PLAN.md — Criativos affiliate gallery (glass grid, image/video preview, download, copy caption, empty state) + AffiliateCreatives i18n in en/es/pt
 
 **UI hint**: yes
 
@@ -86,4 +86,4 @@ Phases execute in numeric order: 1 → 2 → 3
 |-------|----------------|--------|-----------|
 | 1. Foundation | 1/1 | Complete    | 2026-06-17 |
 | 2. Admin Creatives | 2/2 | Complete    | 2026-06-17 |
-| 3. Affiliate Gallery & i18n | 0/TBD | Not started | - |
+| 3. Affiliate Gallery & i18n | 1/1 | Complete   | 2026-06-18 |

@@ -27,15 +27,15 @@ Requirements for the Affiliate Creatives milestone. Each maps to roadmap phases.
 
 ### Affiliate
 
-- [ ] **AFFL-01**: Logged-in affiliate sees a "Criativos" section on the dashboard rendered as a grid of cards (glassmorphism style)
-- [ ] **AFFL-02**: Affiliate can download a creative file
-- [ ] **AFFL-03**: Affiliate can copy a creative's caption to clipboard, with a "copied" confirmation
-- [ ] **AFFL-04**: Empty state shown when no active creatives exist
-- [ ] **AFFL-05**: Only active creatives are shown to affiliates, ordered by `sortOrder`
+- [x] **AFFL-01**: Logged-in affiliate sees a "Criativos" section on the dashboard rendered as a grid of cards (glassmorphism style)
+- [x] **AFFL-02**: Affiliate can download a creative file
+- [x] **AFFL-03**: Affiliate can copy a creative's caption to clipboard, with a "copied" confirmation
+- [x] **AFFL-04**: Empty state shown when no active creatives exist
+- [x] **AFFL-05**: Only active creatives are shown to affiliates, ordered by `sortOrder`
 
 ### Internationalization
 
-- [ ] **I18N-01**: New `AffiliateCreatives` next-intl namespace added to `messages/en.json`, `es.json`, and `pt.json` covering all new strings (title, "Baixar", "Copiar legenda", "Copiado", empty state, photo/video labels)
+- [x] **I18N-01**: New `AffiliateCreatives` next-intl namespace added to `messages/en.json`, `es.json`, and `pt.json` covering all new strings (title, "Baixar", "Copiar legenda", "Copiado", empty state, photo/video labels)
 
 ## v2 Requirements
 
@@ -79,12 +79,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ADMIN-05 | Phase 2 | Complete |
 | ADMIN-06 | Phase 2 | Complete |
 | ADMIN-07 | Phase 2 | Complete |
-| AFFL-01 | Phase 3 | Pending |
-| AFFL-02 | Phase 3 | Pending |
-| AFFL-03 | Phase 3 | Pending |
-| AFFL-04 | Phase 3 | Pending |
-| AFFL-05 | Phase 3 | Pending |
-| I18N-01 | Phase 3 | Pending |
+| AFFL-01 | Phase 3 | Complete |
+| AFFL-02 | Phase 3 | Complete |
+| AFFL-03 | Phase 3 | Complete |
+| AFFL-04 | Phase 3 | Complete |
+| AFFL-05 | Phase 3 | Complete |
+| I18N-01 | Phase 3 | Complete |
 
 **Coverage:**
 
