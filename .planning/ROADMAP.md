@@ -71,7 +71,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. When no active creatives exist, an empty state message is displayed instead of the grid
   5. All new UI strings (title, download label, copy label, copied confirmation, empty state, photo/video labels) are present and correct in `messages/en.json`, `messages/es.json`, and `messages/pt.json` under the `AffiliateCreatives` namespace
 
-**Plans**: TBD
+**Plans**: 1 plan
+
+- [ ] 03-01-PLAN.md — Criativos affiliate gallery (glass grid, image/video preview, download, copy caption, empty state) + AffiliateCreatives i18n in en/es/pt
+
 **UI hint**: yes
 
 ## Progress
