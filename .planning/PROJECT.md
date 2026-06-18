@@ -31,16 +31,16 @@ Affiliates can grab ready-to-post, on-brand creative assets (with a copy-paste c
 - ✓ Affiliate dashboard showing attributed earnings/commissions — existing
 - ✓ Commission export to Google Sheets — existing
 - ✓ Transactional email via Nodemailer (async `after()`) — existing
+- ✓ Admin can upload a creative (image or video) with title, description, and caption — Phase 2
+- ✓ Large files (esp. video) upload directly to Vercel Blob via client upload (bypass ~4.5MB serverless body limit) — Phase 2
+- ✓ Admin can edit a creative's metadata (title, description, caption, active state) — Phase 2
+- ✓ Admin can reorder creatives with up/down controls (sortOrder) — Phase 2
+- ✓ Admin can deactivate/activate and delete a creative (delete also removes the blob) — Phase 2
 
 ### Active
 
 <!-- This milestone: Affiliate Creatives. Hypotheses until shipped. -->
 
-- [ ] Admin can upload a creative (image or video) with title, description, and caption
-- [ ] Large files (esp. video) upload directly to Vercel Blob via client upload (bypass ~4.5MB serverless body limit)
-- [ ] Admin can edit a creative's metadata (title, description, caption, active state)
-- [ ] Admin can reorder creatives with up/down controls (sortOrder)
-- [ ] Admin can deactivate/activate and delete a creative (delete also removes the blob)
 - [ ] Logged-in affiliates see a "Criativos" section on their dashboard (grid of cards)
 - [ ] Affiliate can download a creative and copy its caption to clipboard
 - [ ] Empty state when no creatives exist
@@ -79,9 +79,15 @@ Affiliates can grab ready-to-post, on-brand creative assets (with a copy-paste c
 | Up/down reordering (sortOrder int) over drag-drop | Lower complexity, no new dependency | — Pending |
 | No download analytics in v1 | Not required to validate the library | — Pending |
 | Affiliate view reads via server component (no affiliate API) | Matches existing server-first pattern | — Pending |
-| Vercel Blob + client upload | Handle video > serverless 4.5MB body limit | ✓ Good (foundation shipped in Phase 1) |
+| Vercel Blob + client upload | Handle video > serverless 4.5MB body limit | ✓ Good (admin upload shipped + UAT-verified in Phase 2) |
+| Up/down reordering (sortOrder int) over drag-drop | Lower complexity, no new dependency | ✓ Good (shipped in Phase 2) |
+| Single shared creative library (no segmentation) | Simplest model that delivers value | ✓ Good (admin surface shipped in Phase 2) |
+| `onUploadCompleted` no-op; DB row via follow-up POST | Avoids localhost webhook limitation in client-upload flow | ✓ Good (Phase 2) |
+| `mimeType` re-validated server-side; `CreativeType` derived server-side | Defense-in-depth; never trust client-declared type (T-02-05) | ✓ Good (Phase 2, security-verified) |
 
 **Phase 1 (Foundation) complete (2026-06-17):** `AffiliateCreative` model + `CreativeType` enum migrated; `@vercel/blob` wired; `src/lib/creatives.ts` data-access shipped. DATA-01/02/03 validated.
+
+**Phase 2 (Admin Creatives) complete (2026-06-18):** Full admin management surface — Vercel Blob client-upload token route + collection/item API routes, `/admin/creatives` page with `CreativesGrid` (upload/edit/reorder/activate/delete), and admin nav link. UAT 8/8 passed; security review SECURED (11/11 threats closed). ADMIN-01..07 validated.
 
 ## Evolution
 
@@ -101,4 +107,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-17 after Phase 1 (Foundation) completion*
+*Last updated: 2026-06-18 after Phase 2 (Admin Creatives) completion*
