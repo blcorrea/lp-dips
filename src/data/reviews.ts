@@ -13,7 +13,6 @@ export type Review = {
   mediaUrl?: string;          // product photo or video thumbnail
   mediaType?: 'image' | 'video';
   stars:     1 | 2 | 3 | 4 | 5;
-  platform?: 'instagram' | 'tiktok' | 'google';
 };
 
 export const reviews: Review[] = [
@@ -24,7 +23,6 @@ export const reviews: Review[] = [
     handle:   '@sophiar',
     photoUrl: '',
     stars:    5,
-    platform: 'instagram',
   },
   {
     id:       '2',
@@ -40,7 +38,6 @@ export const reviews: Review[] = [
     handle:   '@camilledupont',
     photoUrl: '',
     stars:    5,
-    platform: 'tiktok',
   },
   {
     id:       '4',
@@ -48,7 +45,6 @@ export const reviews: Review[] = [
     name:     'Jordan K.',
     photoUrl: '',
     stars:    5,
-    platform: 'google',
   },
   {
     id:       '5',
@@ -57,7 +53,6 @@ export const reviews: Review[] = [
     handle:   '@isabelle.m',
     photoUrl: '',
     stars:    5,
-    platform: 'instagram',
   },
   {
     id:       '6',
@@ -65,7 +60,6 @@ export const reviews: Review[] = [
     name:     'Daniel F.',
     photoUrl: '',
     stars:    5,
-    platform: 'google',
   },
   {
     id:       '7',
@@ -73,7 +67,6 @@ export const reviews: Review[] = [
     name:     'Priya & Ravi',
     photoUrl: '',
     stars:    5,
-    platform: 'google',
   },
   {
     id:       '8',
@@ -82,7 +75,6 @@ export const reviews: Review[] = [
     handle:   '@leab_',
     photoUrl: '',
     stars:    5,
-    platform: 'instagram',
   },
   {
     id:       '9',
@@ -91,7 +83,6 @@ export const reviews: Review[] = [
     handle:   '@natalieworks',
     photoUrl: '',
     stars:    5,
-    platform: 'tiktok',
   },
   {
     id:       '10',
@@ -106,7 +97,6 @@ export const reviews: Review[] = [
     name:     'Chris A.',
     photoUrl: '',
     stars:    5,
-    platform: 'google',
   },
   {
     id:       '12',
@@ -115,6 +105,5 @@ export const reviews: Review[] = [
     handle:   '@emilyr',
     photoUrl: '',
     stars:    5,
-    platform: 'instagram',
   },
 ];

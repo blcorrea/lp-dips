@@ -25,12 +25,6 @@ function avatarColor(id: string): string {
   return AVATAR_COLORS[id.charCodeAt(0) % AVATAR_COLORS.length];
 }
 
-const PLATFORM_LABEL: Record<string, string> = {
-  instagram: 'Instagram',
-  tiktok:    'TikTok',
-  google:    'Google',
-};
-
 // ── Stars ─────────────────────────────────────────────────────────────────────
 
 function Stars({ count }: { count: number }) {
@@ -87,15 +81,8 @@ function ReviewCard({ review }: { review: Review }) {
         <MediaBlock url={review.mediaUrl} type={review.mediaType} />
       )}
 
-      {/* Stars + platform */}
-      <div className="flex items-center justify-between">
-        <Stars count={review.stars} />
-        {review.platform && (
-          <span className="text-[10px] font-semibold text-white/30 tracking-wider uppercase">
-            {PLATFORM_LABEL[review.platform]}
-          </span>
-        )}
-      </div>
+      {/* Stars */}
+      <Stars count={review.stars} />
 
       {/* Quote */}
       <p className="text-white/90 text-[14px] sm:text-[15px] leading-relaxed flex-1">
