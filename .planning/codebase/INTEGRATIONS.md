@@ -1,150 +1,113 @@
 # External Integrations
 
-**Analysis Date:** 2026-05-14
+**Analysis Date:** 2026-07-03
 
 ## APIs & External Services
 
 **Payments:**
-- Stripe - Hosted checkout sessions, payment intents, webhooks, and refund tracking
-  - SDK/Client (server): `stripe` package; instantiated in `src/app/api/stripe/create-checkout-session/route.ts` and `src/app/api/stripe/webhook/route.ts`
-  - SDK/Client (browser): `@stripe/stripe-js`; loaded via `src/lib/stripe.ts`
-  - Auth (server secret): `STRIPE_SECRET_KEY`
-  - Auth (publishable): `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
-  - Webhook secret: `STRIPE_WEBHOOK_SECRET`
-  - Supported payment methods: Card, Apple Pay, Google Pay (PayPal, Klarna, Afterpay noted as unsupported stubs in `src/lib/stripe.ts`)
+- Stripe Checkout (hosted payment page) - `src/lib/stripe.ts`, `src/app/api/stripe/create-checkout-session/route.ts`
+  - Server SDK: `stripe` npm package, client instantiated with `new Stripe(stripeSecretKey)` (no explicit `apiVersion` pin)
+  - Client SDK: `@stripe/stripe-js`, loaded via `getStripe()` in `src/lib/stripe.ts`
+  - Auth: `STRIPE_SECRET_KEY` (server), `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` (client, falls back to a hardcoded demo test key if unset — see line 6 of `src/lib/stripe.ts`)
+  - Also uses: `STRIPE_WEBHOOK_SECRET` (webhook signature verification), `STRIPE_SHIPPING_RATE_ID` (flat-rate shipping option applied at checkout)
+  - Checkout session creation collects shipping address for a broad allow-list of countries (US, CA, most of Latin America, EU, GB, AU, NZ) — `src/app/api/stripe/create-checkout-session/route.ts`
 
-**Product Catalog:**
-- Shopify Storefront API (GraphQL) - Product data and availability lookup only; checkout is handled by Stripe, not Shopify
-  - Client: custom `shopifyFetch` wrapper in `src/lib/shopify-client.ts`
-  - GraphQL queries: `src/lib/shopify-queries.ts`
-  - Product helper: `src/lib/shopify-product.ts`; `src/lib/shopify.ts`
-  - Auth: `SHOPIFY_STOREFRONT_ACCESS_TOKEN` (sent as `X-Shopify-Storefront-Access-Token` header)
-  - Store domain: `SHOPIFY_STORE_DOMAIN`
-  - API version: `SHOPIFY_API_VERSION` (default `2024-10`)
-  - Product handle: `SHOPIFY_PRODUCT_HANDLE` (default `dips-chocolate`)
-  - Image CDN: `cdn.shopify.com` whitelisted in `next.config.mjs` for `next/image`
+**E-commerce / Product Catalog:**
+- Shopify Storefront GraphQL API (read-only product data source, not used for checkout) - `src/lib/shopify-client.ts`, `src/lib/shopify-product.ts`, `src/lib/shopify-queries.ts`, `src/lib/shopify.ts`
+  - Custom `shopifyFetch()` wrapper posts GraphQL queries to `https://${SHOPIFY_STORE_DOMAIN}/api/${SHOPIFY_API_VERSION}/graphql.json` with header `X-Shopify-Storefront-Access-Token`
+  - Auth: `SHOPIFY_STOREFRONT_ACCESS_TOKEN`
+  - Config: `SHOPIFY_STORE_DOMAIN`, `SHOPIFY_API_VERSION` (defaults to `2024-10`), `SHOPIFY_PRODUCT_HANDLE`
+  - Product/variant IDs from Shopify are snapshotted into Stripe metadata and the `Order`/`OrderItem` Prisma models at purchase time (`shopifyProductId`, `shopifyVariantId`, `shopifyHandle`)
 
-**Google Sheets (Warehouse Mirror):**
-- Google Sheets API v4 - Operational order log written after each successful Stripe payment; admin updates fulfillment/tracking columns back into the sheet
-  - SDK: `googleapis` package; `src/lib/google-sheets.ts`
-  - Auth: Google Service Account credentials (JWT)
-  - Env vars: `GOOGLE_SHEETS_SPREADSHEET_ID`, `GOOGLE_SHEETS_CLIENT_EMAIL`, `GOOGLE_SHEETS_PRIVATE_KEY`, `GOOGLE_SHEETS_SHEET_NAME` (default `Orders`)
-  - Scope: `https://www.googleapis.com/auth/spreadsheets`
+**Spreadsheet Sync (warehouse/fulfillment mirror):**
+- Google Sheets API v4 via `googleapis` - `src/lib/google-sheets.ts`
+  - Service-account auth: `google.auth.GoogleAuth` with `GOOGLE_SHEETS_CLIENT_EMAIL` + `GOOGLE_SHEETS_PRIVATE_KEY` (newline-escaped, normalized via `normalisePrivateKey()`), scope `https://www.googleapis.com/auth/spreadsheets`
+  - Target: `GOOGLE_SHEETS_SPREADSHEET_ID`, tab name `GOOGLE_SHEETS_SHEET_NAME` (defaults to `Orders`)
+  - `appendOrderToSheet()` writes one row per order line item (30-column schema, columns A–Z original + AA–AD operational fields added later); auto-migrates old 26-col header to 30-col
+  - `updateOrderInSheet()` finds rows by order number and updates fulfillment/carrier/tracking columns (AA–AD)
+  - Called from the Stripe webhook (`src/app/api/stripe/webhook/route.ts`) after order creation, and from admin order-update flows — always wrapped in try/catch; failures are logged and non-blocking
+
+**Analytics / Ad Tracking (client-side, no-op if unconfigured):**
+- Meta (Facebook) Pixel - `src/lib/tracking.ts`, config `NEXT_PUBLIC_META_PIXEL_ID`, events: `ViewContent`, `AddToCart`, `InitiateCheckout`, `Purchase`
+- Google Analytics 4 - config `NEXT_PUBLIC_GA4_ID`, events: `view_item`, `add_to_cart`, `begin_checkout`, `purchase`
+- Google Ads conversion tracking - config `NEXT_PUBLIC_GOOGLE_ADS_ID` + `NEXT_PUBLIC_GOOGLE_ADS_LABEL`, fired alongside GA4 `purchase` event
+- All tracking functions are pure no-ops on the server or when the relevant env var is missing (`typeof window === 'undefined'` guards)
+- Provider component: `src/components/TrackingProvider.tsx`; view-item trigger: `src/components/TrackViewItem.tsx`
 
 ## Data Storage
 
 **Databases:**
-- PostgreSQL via Prisma ORM
-  - Recommended providers: Neon (serverless; pooled connections) or Supabase (per `.env.example`)
-  - Connection: `DATABASE_URL` environment variable
-  - Client: `PrismaClient` with `PrismaPg` adapter; singleton in `src/lib/prisma.ts`
-  - Generated client output: `src/generated/prisma/client/`
-  - Schema: `prisma/schema.prisma`
-  - Migrations: `prisma/migrations/`
-  - Tables: `Order`, `OrderItem`, `Affiliate`, `Commission`, `StripeEvent` (idempotency log)
+- PostgreSQL (provider `postgresql` in `prisma/schema.prisma`)
+  - Connection: `DATABASE_URL` (read in `prisma.config.ts` and `src/lib/prisma.ts`)
+  - Client: `@prisma/client` 7.5.0 with `@prisma/adapter-pg` (driver adapter over `pg`), custom generated output at `src/generated/prisma/client` (gitignored)
+  - Singleton pattern: `globalThis.prisma` cached in dev to avoid connection-pool exhaustion on hot reload (`src/lib/prisma.ts`)
+  - Models: `Order`, `OrderItem`, `Affiliate`, `Commission`, `AdminUser`, `StripeEvent` (idempotency log for Stripe webhook events) — `prisma/schema.prisma`
+  - Migrations: `prisma/migrations/20260325000823_init`, `20260329124456_add_email_sent_at_timestamps`, `20260506232233_add_influencer_attribution`, `20260507024217_add_affiliate_commissions`, `20260702000000_add_admin_users`
 
 **File Storage:**
-- Local filesystem only — `public/images/`, `public/videos/`, `public/fonts/`
-- Shopify CDN (`cdn.shopify.com`) used for product images fetched from Storefront API
+- Local filesystem only for static assets (`public/`); product images served via Shopify CDN (`cdn.shopify.com`, whitelisted in `next.config.mjs`)
 
 **Caching:**
-- None — Shopify fetches use `cache: 'no-store'` (see `src/lib/shopify-client.ts`)
+- None detected (no Redis, no explicit cache layer). Shopify fetches use `cache: 'no-store'` (`src/lib/shopify-client.ts`).
 
 ## Authentication & Identity
 
-**Admin Auth:**
-- Custom cookie-based session (no third-party auth provider)
-  - Implementation: `src/lib/admin-auth.ts`
-  - Cookie name: `admin_token`; TTL: 8 hours
-  - Validation: cookie value must equal `ADMIN_SECRET` env var
-  - Login route: `src/app/api/admin/login/`
-  - Protected admin UI: `src/app/admin/`
+**Customer-facing:**
+- No customer login/identity system detected. Checkout is guest checkout via Stripe; customer context (`src/contexts/CustomerContext.tsx`) appears to be local/session state, not a backing auth provider.
 
-**Customer Auth:**
-- Not detected — customers are identified by email at checkout via Stripe; no account/session system
+**Admin Auth Provider:**
+- Custom-built, not a third-party provider.
+  - Credentials: email + password (scrypt hash, format `scrypt$<salt>$<hash>`) — `src/lib/password.ts` (Node `node:crypto`, no external hashing library)
+  - Session: signed JWT (HS256) via `jose`, stored in `admin_token` httpOnly cookie (`ADMIN_COOKIE_NAME`, 8-hour max age) — `src/lib/session.ts`, `src/lib/admin-auth.ts`
+  - Signing secret: `ADMIN_SECRET` (dual-purpose: also acts as a one-time bootstrap master password for creating the first `SUPER_ADMIN` when `AdminUser` table is empty — `src/app/api/admin/login/route.ts`)
+  - Enforcement: `src/middleware.ts` intercepts all `/admin/*` and `/api/admin/*` routes (Edge runtime), verifies the JWT, and additionally gates `/admin/users*` and `/api/admin/users*` to `SUPER_ADMIN` role only
+  - Roles: `SUPER_ADMIN`, `OPERATOR` (`AdminRole` enum in `prisma/schema.prisma`)
+  - Bootstrap tooling: `scripts/create-admin.ts` (run via `npm run create-admin`)
 
 ## Monitoring & Observability
 
-**Analytics — Google Analytics 4:**
-- Client-side event tracking via `gtag`; `src/lib/tracking.ts`
-- Events: `view_item`, `add_to_cart`, `begin_checkout`, `purchase`
-- Env var: `NEXT_PUBLIC_GA4_ID`
-
-**Analytics — Google Ads Conversions:**
-- Client-side conversion tracking via `gtag`; `src/lib/tracking.ts`
-- Env vars: `NEXT_PUBLIC_GOOGLE_ADS_ID`, `NEXT_PUBLIC_GOOGLE_ADS_LABEL`
-
-**Analytics — Meta Pixel:**
-- Client-side event tracking via `window.fbq`; `src/lib/tracking.ts`
-- Events: `ViewContent`, `AddToCart`, `InitiateCheckout`, `Purchase`
-- Env var: `NEXT_PUBLIC_META_PIXEL_ID`
-
 **Error Tracking:**
-- None detected — errors logged to `console.error`
+- None detected (no Sentry, no error-tracking SDK in `package.json`)
 
 **Logs:**
-- `console.log` / `console.error` with structured objects throughout API route handlers and lib files
+- `console.log`/`console.error`/`console.warn` throughout server code (emoji-prefixed for readability), e.g. `src/app/api/stripe/webhook/route.ts`, `src/lib/email.ts`, `src/lib/google-sheets.ts` — no structured logging framework
 
 ## CI/CD & Deployment
 
 **Hosting:**
-- Vercel (strongly implied by Neon recommendation and Next.js 15 App Router usage)
+- Vercel (implied by Next.js conventions, `.vercel` in `.gitignore`, Vercel-style `images.remotePatterns`); not explicitly confirmed by a `vercel.json`
 
 **CI Pipeline:**
-- None detected in source tree
-
-## Email
-
-**Transactional Email (SMTP):**
-- Provider: Zoho Mail (per `.env.example`; any SMTP host supported)
-  - Library: `nodemailer`; `src/lib/email.ts`
-  - Template builder: `src/lib/email-templates.ts`
-  - Triggers: order confirmation to customer (post-webhook), warehouse notification to internal inbox
-  - Env vars: `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM_EMAIL`, `SMTP_FROM_NAME`
-  - Warehouse recipient: `WAREHOUSE_NOTIFICATION_EMAIL`
-  - Warehouse sheet link (optional): `WAREHOUSE_SHEET_URL`
+- None detected (no `.github/workflows/`, no CI config files found)
 
 ## Environment Configuration
 
-**Required env vars (all must be set for production):**
-- `DATABASE_URL` — PostgreSQL connection string
-- `STRIPE_SECRET_KEY` — Server-side Stripe secret
-- `STRIPE_WEBHOOK_SECRET` — Stripe webhook signature verification
-- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` — Client-side Stripe key
-- `NEXT_PUBLIC_SITE_URL` — Absolute base URL for Stripe redirect URLs
-- `SHOPIFY_STORE_DOMAIN` — Shopify store domain
-- `SHOPIFY_STOREFRONT_ACCESS_TOKEN` — Shopify Storefront API access token
-- `ADMIN_SECRET` — Shared secret for admin cookie auth
-- `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` — SMTP credentials
-- `GOOGLE_SHEETS_SPREADSHEET_ID`, `GOOGLE_SHEETS_CLIENT_EMAIL`, `GOOGLE_SHEETS_PRIVATE_KEY` — Google Sheets service account
-
-**Optional env vars:**
-- `SHOPIFY_API_VERSION` (default `2024-10`)
-- `SHOPIFY_PRODUCT_HANDLE` (default `dips-chocolate`)
-- `GOOGLE_SHEETS_SHEET_NAME` (default `Orders`)
-- `SMTP_FROM_EMAIL`, `SMTP_FROM_NAME`
-- `WAREHOUSE_NOTIFICATION_EMAIL`, `WAREHOUSE_SHEET_URL`
-- `NEXT_PUBLIC_META_PIXEL_ID`, `NEXT_PUBLIC_GA4_ID`, `NEXT_PUBLIC_GOOGLE_ADS_ID`, `NEXT_PUBLIC_GOOGLE_ADS_LABEL`
+**Required env vars** (from `.env.example`, names only — see `.env.example` for structure, never read actual secret values):
+- Stripe: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `STRIPE_SHIPPING_RATE_ID`
+- Site: `NEXT_PUBLIC_SITE_URL`
+- Shopify: `SHOPIFY_STORE_DOMAIN`, `SHOPIFY_STOREFRONT_ACCESS_TOKEN`, `SHOPIFY_API_VERSION`, `SHOPIFY_PRODUCT_HANDLE`
+- Database: `DATABASE_URL`
+- Admin: `ADMIN_SECRET`
+- SMTP/email: `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM_EMAIL`, `SMTP_FROM_NAME`
+- Tracking: `NEXT_PUBLIC_META_PIXEL_ID`, `NEXT_PUBLIC_GA4_ID`, `NEXT_PUBLIC_GOOGLE_ADS_ID`, `NEXT_PUBLIC_GOOGLE_ADS_LABEL`
+- Google Sheets: `GOOGLE_SHEETS_SPREADSHEET_ID`, `GOOGLE_SHEETS_CLIENT_EMAIL`, `GOOGLE_SHEETS_PRIVATE_KEY`, `GOOGLE_SHEETS_SHEET_NAME`
+- Warehouse notifications: `WAREHOUSE_NOTIFICATION_EMAIL`, `WAREHOUSE_SHEET_URL`
 
 **Secrets location:**
-- `.env` and `.env.local` at project root (gitignored); `.env.example` documents all keys
+- `.env` / `.env.local` locally (both gitignored). `.env.example` is committed and tracks required variable names only (as of commit `e1e843b`, untracked from `.gitignore` deliberately so the template stays in version control).
 
 ## Webhooks & Callbacks
 
 **Incoming:**
-- `POST /api/stripe/webhook` (`src/app/api/stripe/webhook/route.ts`) — receives Stripe events:
-  - `checkout.session.completed` → creates Order + OrderItems + Commission (if affiliate ref present); sends confirmation email; syncs to Google Sheets; sends warehouse notification
-  - `payment_intent.succeeded` → updates order `paymentStatus` to PAID
-  - `payment_intent.payment_failed` → sets order status to CANCELLED
-  - `charge.refunded` → sets order to REFUNDED; cancels PENDING/APPROVED commissions
-  - Idempotency enforced via `StripeEvent` table (atomic DB claim on `event.id`)
+- Stripe webhook - `src/app/api/stripe/webhook/route.ts` (`POST /api/stripe/webhook`)
+  - Verifies `stripe-signature` header against `STRIPE_WEBHOOK_SECRET` via `stripe.webhooks.constructEvent()`
+  - Handles: `checkout.session.completed` (creates `Order` + `OrderItem`s + optional `Commission`, sends confirmation email, syncs to Google Sheets, sends warehouse notification email), `payment_intent.succeeded`, `payment_intent.payment_failed`, `charge.refunded` (also cancels pending/approved commissions)
+  - Idempotency: `StripeEvent` table used as an atomic "claim" — first write inside a Prisma `$transaction`; duplicate `event.id` triggers a P2002 constraint violation that is caught and treated as a safe no-op
 
 **Outgoing:**
-- Stripe: `POST` to Stripe API for checkout session creation (`src/app/api/stripe/create-checkout-session/route.ts`)
-- Shopify: `POST` to `https://{SHOPIFY_STORE_DOMAIN}/api/{version}/graphql.json` for product queries (`src/lib/shopify-client.ts`)
-- Google Sheets: Sheets API v4 `batchUpdate` and `append` (`src/lib/google-sheets.ts`)
-- SMTP: outbound emails via nodemailer (`src/lib/email.ts`)
+- SMTP email sends via `nodemailer` - `src/lib/email.ts`, templates in `src/lib/email-templates.ts` (order confirmation email to customer, warehouse notification email to `WAREHOUSE_NOTIFICATION_EMAIL`)
+- Google Sheets API calls (append/update) - `src/lib/google-sheets.ts`, triggered from the Stripe webhook and admin order-update endpoints (`src/app/api/admin/orders/[id]/route.ts`)
 
 ---
 
-*Integration audit: 2026-05-14*
+*Integration audit: 2026-07-03*

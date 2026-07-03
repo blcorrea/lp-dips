@@ -1,95 +1,84 @@
 # Technology Stack
 
-**Analysis Date:** 2026-05-14
+**Analysis Date:** 2026-07-03
 
 ## Languages
 
 **Primary:**
-- TypeScript 5.9.3 - All source files in `src/`; strict mode enabled (`tsconfig.json`)
+- TypeScript 5.9.3 (strict mode) - entire `src/` tree (`tsconfig.json`)
 
 **Secondary:**
-- CSS (Tailwind utility classes) - Component styling throughout `src/components/` and `src/app/`
+- SQL (Prisma migrations) - `prisma/migrations/*/migration.sql`
+- CSS (Tailwind v4 utility classes + globals) - `src/app/globals.css`
 
 ## Runtime
 
 **Environment:**
-- Node.js 20.x (v20.19.6 confirmed on dev machine; `package-lock.json` lockfileVersion 3)
+- Node.js v20.19.6 (pinned via `.nvmrc`)
+- Deployment target implied: Vercel (Next.js app, `images.remotePatterns` for Shopify CDN in `next.config.mjs`)
 
 **Package Manager:**
-- npm
-- Lockfile: `package-lock.json` present (lockfileVersion 3)
+- npm (lockfile: `package-lock.json` present, 317KB)
 
 ## Frameworks
 
 **Core:**
-- Next.js 15.3.6 - App Router; server components (`rsc: true`); entry at `src/app/layout.tsx`
-- React 19.0.0 - UI rendering; React DOM 19.0.0
-- next-intl 4.5.8 - i18n routing and translation; configured in `next.config.mjs` via `createNextIntlPlugin`; locales: `en`, `es`, `pt`; routing at `src/i18n/routing.ts`
-
-**ORM / Database:**
-- Prisma 7.5.0 - Schema at `prisma/schema.prisma`; generated client output at `src/generated/prisma/client/`; configured via `prisma.config.ts`
-- `@prisma/adapter-pg` 7.5.0 - PostgreSQL adapter; used in `src/lib/prisma.ts` with `PrismaPg`
-- `pg` 8.20.0 - Underlying PostgreSQL driver
-
-**UI Components:**
-- shadcn/ui (new-york style) - Component library scaffolded via `components.json`; components in `src/components/ui/`
-- Radix UI primitives: `@radix-ui/react-accordion`, `@radix-ui/react-checkbox`, `@radix-ui/react-label`, `@radix-ui/react-select`, `@radix-ui/react-slot`
-- lucide-react 0.559.0 - Icon library (configured as iconLibrary in `components.json`)
-- framer-motion 12.23.26 - Animation; components in `src/components/animations/`
-
-**Styling:**
-- Tailwind CSS 4.x - Utility-first CSS; PostCSS via `postcss.config.mjs` using `@tailwindcss/postcss`
-- tailwind-merge 3.4.0 - Class merging utility (`src/lib/utils.ts`)
-- tailwindcss-animate 1.0.7 - Animation utilities
-- class-variance-authority 0.7.1 - Variant styling for components
+- Next.js 15.3.6 (App Router, React Server Components) - `src/app/`, `next.config.mjs`
+- React 19.0.0 / React DOM 19.0.0
+- next-intl 4.5.8 - i18n routing/middleware (`src/i18n/routing.ts`, `src/i18n/request.ts`, `src/middleware.ts`), locales: `en` (default), `es`, `pt`
 
 **Testing:**
-- Not detected — no test framework configured
+- Not detected — no test runner, no `*.test.*`/`*.spec.*` files, no `jest.config.*`/`vitest.config.*` found in the repo.
 
 **Build/Dev:**
-- ESLint 9 with `eslint-config-next` 15.3.6 - Linting; config at `eslint.config.mjs` using `next/core-web-vitals` and `next/typescript` rulesets
-- TypeScript compiler - `noEmit: true`; build type-checks only; `tsconfig.json`
+- Tailwind CSS v4 (`@tailwindcss/postcss` plugin) - `postcss.config.mjs`, styling via `components.json` (shadcn/ui, "new-york" style, `neutral` base color, `lucide` icons)
+- ESLint 9 (flat config) extending `next/core-web-vitals` and `next/typescript` - `eslint.config.mjs`
+- Prisma CLI 7.5.0 - schema/migrations (`prisma/schema.prisma`, `prisma.config.ts`)
+- `tsx` (via `npx tsx`) - runs the admin bootstrap script (`scripts/create-admin.ts`)
 
 ## Key Dependencies
 
 **Critical:**
-- `stripe` 20.0.0 - Server-side Stripe SDK; used in `src/app/api/stripe/create-checkout-session/route.ts` and `src/app/api/stripe/webhook/route.ts`
-- `@stripe/stripe-js` 8.5.3 - Client-side Stripe.js loader; `src/lib/stripe.ts`
-- `googleapis` 171.4.0 - Google Sheets API via service account; `src/lib/google-sheets.ts`
-- `nodemailer` 8.0.4 - SMTP email delivery (Zoho Mail); `src/lib/email.ts`
-- `dotenv` 17.3.1 - Environment loading in `prisma.config.ts` for Prisma CLI commands
+- `stripe` 20.0.0 (server SDK) + `@stripe/stripe-js` 8.5.3 (client SDK) - payments, checkout sessions, webhooks (`src/lib/stripe.ts`, `src/app/api/stripe/*`)
+- `@prisma/client` 7.5.0 + `@prisma/adapter-pg` 7.5.0 + `pg` 8.20.0 - PostgreSQL ORM/driver, custom output path `src/generated/prisma/client` (`src/lib/prisma.ts`)
+- `jose` 6.2.3 - Edge-safe JWT signing/verification for admin sessions (`src/lib/session.ts`)
+- `googleapis` 171.4.0 - Google Sheets API client for warehouse order sync (`src/lib/google-sheets.ts`)
+- `nodemailer` 8.0.4 - transactional email via SMTP (`src/lib/email.ts`, `src/lib/email-templates.ts`)
+- Node built-in `node:crypto` (scrypt) - admin password hashing, no external dependency (`src/lib/password.ts`)
+
+**UI/Presentation:**
+- Radix UI primitives: `@radix-ui/react-accordion`, `react-checkbox`, `react-label`, `react-select`, `react-slot`
+- `class-variance-authority`, `clsx`, `tailwind-merge`, `tailwindcss-animate` - styling utility stack (shadcn/ui pattern)
+- `framer-motion` 12.23.26 - animation components (`src/components/animations/*`)
+- `lucide-react` - icon library
 
 **Infrastructure:**
-- `next-intl` 4.5.8 - Multi-locale routing and message loading; messages in `messages/en.json`, `messages/es.json`, `messages/pt.json`
-- `clsx` 2.1.1 - Conditional class joining
+- `dotenv` 17.3.1 - loads env vars for Prisma CLI config (`prisma.config.ts`)
 
 ## Configuration
 
 **Environment:**
-- `.env.example` documents all required variables (see INTEGRATIONS.md for full list)
-- `.env` and `.env.local` present at project root (never committed)
-- `NEXT_PUBLIC_*` vars are inlined at build time for client-side use
+- `.env` / `.env.local` present locally (not committed; `.gitignore` excludes `.env*` except `.env.example`)
+- `.env.example` documents required vars (names only, see INTEGRATIONS.md)
+- Env vars read directly via `process.env.*` throughout `src/lib/*` — no centralized config/env-validation module (e.g. no `zod` env schema detected)
 
 **Build:**
-- `next.config.mjs` - Wraps next-intl plugin; allows remote images from `cdn.shopify.com`
-- `tsconfig.json` - Path alias `@/*` maps to `./src/*`; target ES2017; `isolatedModules: true`
-- `prisma.config.ts` - Schema path and migrations path; reads `DATABASE_URL` from env
-- `postcss.config.mjs` - Tailwind CSS PostCSS plugin
-- `components.json` - shadcn/ui configuration; CSS variables enabled; base color neutral
+- `next.config.mjs` - wraps config with `next-intl` plugin, whitelists `cdn.shopify.com` for `next/image`
+- `tsconfig.json` - path alias `@/*` → `./src/*`, target ES2017, strict mode, bundler module resolution
+- `components.json` - shadcn/ui generator config (aliases for `@/components`, `@/lib`, `@/hooks`, `@/components/ui`)
+- `prisma.config.ts` - Prisma 7 config format (schema path, migrations path, datasource URL from env)
 
 ## Platform Requirements
 
 **Development:**
-- Node.js 20.x
-- PostgreSQL-compatible database (Neon or Supabase recommended per `.env.example`)
-- `npm install` triggers `prisma generate` via `postinstall` script
-- `npm run dev` starts Next.js dev server
+- Node 20.x, npm, local PostgreSQL (or remote `DATABASE_URL`) for Prisma
+- `npm run dev` (Next.js dev server), `npm run create-admin` (bootstrap script via `scripts/create-admin.ts`)
 
 **Production:**
-- Deployment target: Vercel (implied by Neon recommendation in `.env.example` and Next.js 15 App Router)
-- Build command: `prisma generate && next build` (defined in `package.json` `build` script)
-- Requires all env vars populated; Stripe webhook endpoint must be registered
+- `npm run build` → runs `prisma generate` then `next build` (see `package.json` `build` script)
+- `postinstall` hook also runs `prisma generate` automatically after `npm install`
+- Requires PostgreSQL database, Stripe account, Shopify Storefront API access, SMTP provider, and optionally Google Sheets service account + Meta/Google tracking IDs (see INTEGRATIONS.md)
 
 ---
 
-*Stack analysis: 2026-05-14*
+*Stack analysis: 2026-07-03*
