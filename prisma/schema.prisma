@@ -54,6 +54,11 @@ enum CommissionStatus {
   CANCELLED
 }
 
+enum AdminRole {
+  SUPER_ADMIN
+  OPERATOR
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Order
 // ─────────────────────────────────────────────────────────────────────────────
@@ -219,6 +224,28 @@ model Commission {
   @@index([affiliateId])
   @@index([status])
   @@index([createdAt])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AdminUser — dashboard operators. Authentication is email + password (scrypt).
+// ─────────────────────────────────────────────────────────────────────────────
+
+model AdminUser {
+  id           String    @id @default(cuid())
+  /// Stored lowercased; uniqueness is enforced.
+  email        String    @unique
+  name         String
+  /// scrypt hash in the form `scrypt$<salt>$<hash>` — never the plaintext.
+  passwordHash String
+  role         AdminRole @default(OPERATOR)
+  /// Deactivated users keep their history but cannot log in.
+  active       Boolean   @default(true)
+  lastLoginAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

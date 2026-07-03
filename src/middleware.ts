@@ -1,6 +1,7 @@
 import createMiddleware from 'next-intl/middleware';
 import { routing } from './i18n/routing';
 import { NextRequest, NextResponse } from 'next/server';
+import { verifySessionToken } from './lib/session';
 
 const intlMiddleware = createMiddleware(routing);
 
@@ -8,13 +9,14 @@ const intlMiddleware = createMiddleware(routing);
 // which uses next/headers (not available in Edge middleware runtime).
 const ADMIN_COOKIE = 'admin_token';
 
-function isAdminAuthed(request: NextRequest): boolean {
-  const secret = process.env.ADMIN_SECRET;
-  if (!secret) return false;
-  return request.cookies.get(ADMIN_COOKIE)?.value === secret;
+function jsonError(message: string, status: number): NextResponse {
+  return new NextResponse(JSON.stringify({ error: message }), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
+  });
 }
 
-export default function middleware(request: NextRequest) {
+export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // ── Admin auth protection ──────────────────────────────────────────────────
@@ -24,22 +26,35 @@ export default function middleware(request: NextRequest) {
   const isAdminLoginUrl = pathname === '/admin/login' || pathname.startsWith('/api/admin/login');
 
   if (isAdminRoute) {
-    // /admin/login and /api/admin/login are always public
-    if (!isAdminLoginUrl && !isAdminAuthed(request)) {
-      // API routes → JSON 401 so fetch() callers get a proper error
-      if (pathname.startsWith('/api/')) {
-        return new NextResponse(
-          JSON.stringify({ error: 'Unauthorized' }),
-          { status: 401, headers: { 'Content-Type': 'application/json' } }
-        );
-      }
-      // Page routes → redirect to login
+    if (isAdminLoginUrl) {
+      // Login endpoints are always public — skip intl middleware entirely.
+      return NextResponse.next();
+    }
+
+    const token   = request.cookies.get(ADMIN_COOKIE)?.value;
+    const session = token ? await verifySessionToken(token) : null;
+    const isApi   = pathname.startsWith('/api/');
+
+    if (!session) {
+      if (isApi) return jsonError('Unauthorized', 401);
       const loginUrl = request.nextUrl.clone();
       loginUrl.pathname = '/admin/login';
       loginUrl.search   = '';
       return NextResponse.redirect(loginUrl);
     }
-    // Authenticated (or public admin URL) — skip intl middleware entirely
+
+    // ── Role gate: user management is SUPER_ADMIN-only ────────────────────────
+    const isUserMgmt =
+      pathname.startsWith('/admin/users') || pathname.startsWith('/api/admin/users');
+    if (isUserMgmt && session.role !== 'SUPER_ADMIN') {
+      if (isApi) return jsonError('Forbidden', 403);
+      const url = request.nextUrl.clone();
+      url.pathname = '/admin/orders';
+      url.search   = '';
+      return NextResponse.redirect(url);
+    }
+
+    // Authenticated — skip intl middleware entirely.
     return NextResponse.next();
   }
 

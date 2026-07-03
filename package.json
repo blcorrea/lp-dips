@@ -9,6 +9,7 @@
     "lint": "next lint",
     "test": "vitest run",
     "test:watch": "vitest",
+    "create-admin": "npx tsx scripts/create-admin.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {
@@ -25,6 +26,7 @@
     "dotenv": "^17.3.1",
     "framer-motion": "^12.23.26",
     "googleapis": "^171.4.0",
+    "jose": "^6.2.3",
     "lucide-react": "^0.559.0",
     "next": "15.3.6",
     "next-intl": "^4.5.8",

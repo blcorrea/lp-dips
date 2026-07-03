@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { isAdminAuthenticated } from '@/lib/admin-auth';
+import { getAdminSession } from '@/lib/admin-auth';
 import '../globals.css';
 
 export const metadata: Metadata = {
@@ -12,13 +12,13 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const ok = await isAdminAuthenticated();
+  const session = await getAdminSession();
 
   // When not authenticated, render children directly (no navbar).
   // Middleware already redirects unauthenticated users to /admin/login for all
   // protected routes, so the only page that reaches here unauthenticated is
   // /admin/login itself — which renders its own full-page UI.
-  if (!ok) {
+  if (!session) {
     return (
       <html lang="en">
         <body className="bg-gray-50 antialiased">{children}</body>
@@ -57,13 +57,35 @@ export default async function AdminLayout({
               >
                 Commissions
               </Link>
+              {session.role === 'SUPER_ADMIN' && (
+                <Link
+                  href="/admin/users"
+                  className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                >
+                  Users
+                </Link>
+              )}
             </nav>
-            <Link
-              href="/api/admin/login?logout=1"
-              className="ml-auto text-xs text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              Log out
-            </Link>
+            <div className="ml-auto flex items-center gap-4">
+              <Link
+                href="/admin/account"
+                className="text-xs text-gray-500 hover:text-gray-900 transition-colors"
+                title="Account settings"
+              >
+                {session.name}
+                {session.role === 'SUPER_ADMIN' && (
+                  <span className="ml-1.5 rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gray-500">
+                    Super
+                  </span>
+                )}
+              </Link>
+              <Link
+                href="/api/admin/login?logout=1"
+                className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                Log out
+              </Link>
+            </div>
           </div>
         </header>
 

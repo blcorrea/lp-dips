@@ -8,6 +8,7 @@ const inputCls =
   'placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500';
 
 export default function LoginForm() {
+  const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
   const [error, setError]       = useState<string | null>(null);
   const [loading, setLoading]   = useState(false);
@@ -22,7 +23,7 @@ export default function LoginForm() {
       const res  = await fetch('/api/admin/login', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ password }),
+        body:    JSON.stringify({ email, password }),
       });
 
       const data = await res.json() as { ok?: boolean; error?: string };
@@ -62,6 +63,25 @@ export default function LoginForm() {
         >
           <div>
             <label
+              htmlFor="email"
+              className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1.5"
+            >
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              autoComplete="username"
+              required
+              value={email}
+              onChange={(e) => { setEmail(e.target.value); setError(null); }}
+              className={inputCls}
+              placeholder="you@dips.com"
+            />
+          </div>
+
+          <div>
+            <label
               htmlFor="password"
               className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1.5"
             >
@@ -75,7 +95,7 @@ export default function LoginForm() {
               value={password}
               onChange={(e) => { setPassword(e.target.value); setError(null); }}
               className={inputCls}
-              placeholder="Enter admin password"
+              placeholder="Enter your password"
             />
           </div>
 
