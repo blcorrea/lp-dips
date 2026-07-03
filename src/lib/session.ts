@@ -23,12 +23,14 @@ const ALG = 'HS256';
 export const SESSION_MAX_AGE = 60 * 60 * 8; // 8 hours, matches the cookie
 
 /**
- * Signing key derived from ADMIN_SECRET. The same secret also acts as the
- * bootstrap master key in the login route, so a single env var configures both.
+ * Signing key derived from SESSION_SECRET, falling back to the legacy
+ * ADMIN_SECRET when SESSION_SECRET is unset (deploy-safe migration path).
+ * The bootstrap master key is a SEPARATE env var (ADMIN_BOOTSTRAP_KEY) handled
+ * by the login route — session forging and admin bootstrapping are decoupled.
  */
 function signingKey(): Uint8Array {
-  const secret = process.env.ADMIN_SECRET;
-  if (!secret) throw new Error('ADMIN_SECRET is not configured on the server.');
+  const secret = process.env.SESSION_SECRET || process.env.ADMIN_SECRET;
+  if (!secret) throw new Error('SESSION_SECRET is not configured on the server.');
   return new TextEncoder().encode(secret);
 }
 
@@ -43,7 +45,7 @@ export async function createSessionToken(payload: SessionPayload): Promise<strin
 
 /**
  * Verify a session token's signature and expiry. Returns the payload, or null
- * if the token is missing, tampered, expired, or ADMIN_SECRET is unset.
+ * if the token is missing, tampered, expired, or no session secret is set.
  */
 export async function verifySessionToken(token: string): Promise<SessionPayload | null> {
   try {

@@ -3,6 +3,11 @@ import { ADMIN_COOKIE_NAME, ADMIN_COOKIE_MAX_AGE } from '@/lib/admin-auth';
 import { createSessionToken, type SessionPayload } from '@/lib/session';
 import { hashPassword, verifyPassword } from '@/lib/password';
 import { prisma } from '@/lib/prisma';
+import {
+  checkLoginAllowed,
+  recordLoginFailure,
+  recordLoginSuccess,
+} from '@/lib/login-rate-limit';
 
 function setSessionCookie(res: NextResponse, token: string): void {
   res.cookies.set(ADMIN_COOKIE_NAME, token, {
@@ -19,6 +24,13 @@ async function issueSession(payload: SessionPayload): Promise<NextResponse> {
   const res = NextResponse.json({ ok: true, user: payload });
   setSessionCookie(res, token);
   return res;
+}
+
+/** First entry of x-forwarded-for (the client), or 'unknown' when absent. */
+function clientIp(request: NextRequest): string {
+  const forwarded = request.headers.get('x-forwarded-for');
+  const first = forwarded?.split(',')[0]?.trim();
+  return first || 'unknown';
 }
 
 // ── POST /api/admin/login — email + password, or bootstrap with master key ────
@@ -43,23 +55,37 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Email and password are required.' }, { status: 400 });
   }
 
-  const masterKey = process.env.ADMIN_SECRET;
-  if (!masterKey) {
+  if (!process.env.SESSION_SECRET && !process.env.ADMIN_SECRET) {
     return NextResponse.json(
-      { error: 'ADMIN_SECRET is not configured on the server.' },
+      { error: 'SESSION_SECRET is not configured on the server.' },
       { status: 500 }
     );
   }
 
-  // ── Bootstrap: the very first login. When no admin users exist yet, the
-  // master key (ADMIN_SECRET) creates the first SUPER_ADMIN using the supplied
-  // email + the master key as its initial password. Once any user exists, the
-  // master key stops working and normal credentials are required.
+  // ── Rate limit gate — checked BEFORE any credential/bootstrap verification.
+  // The error is deliberately generic: it must not reveal whether the lock is
+  // keyed on the email or the IP.
+  const ip = clientIp(request);
+  const gate = await checkLoginAllowed(email, ip);
+  if (!gate.allowed) {
+    return NextResponse.json(
+      { error: 'Too many failed login attempts. Please try again later.' },
+      { status: 429, headers: { 'Retry-After': String(gate.retryAfterSeconds) } }
+    );
+  }
+
+  // ── Bootstrap: the very first login. When no admin users exist yet AND
+  // ADMIN_BOOTSTRAP_KEY is configured, that key creates the first SUPER_ADMIN
+  // using the supplied email + the key as its initial password. Once any user
+  // exists, the key stops working. When ADMIN_BOOTSTRAP_KEY is unset, the
+  // bootstrap path is disabled entirely (normal login is unaffected).
   const userCount = await prisma.adminUser.count();
-  if (userCount === 0) {
-    if (password !== masterKey) {
+  const bootstrapKey = process.env.ADMIN_BOOTSTRAP_KEY;
+  if (userCount === 0 && bootstrapKey) {
+    if (password !== bootstrapKey) {
+      await recordLoginFailure(email, ip);
       return NextResponse.json(
-        { error: 'No admin users exist yet. Sign in with your email and the ADMIN_SECRET master key to bootstrap the first account.' },
+        { error: 'No admin users exist yet. Sign in with your email and the ADMIN_BOOTSTRAP_KEY master key to bootstrap the first account.' },
         { status: 401 }
       );
     }
@@ -67,11 +93,12 @@ export async function POST(request: NextRequest) {
       data: {
         email,
         name:         email.split('@')[0],
-        passwordHash: await hashPassword(masterKey),
+        passwordHash: await hashPassword(bootstrapKey),
         role:         'SUPER_ADMIN',
         lastLoginAt:  new Date(),
       },
     });
+    await recordLoginSuccess(email);
     return issueSession({
       sub:   created.id,
       email: created.email,
@@ -83,6 +110,7 @@ export async function POST(request: NextRequest) {
   // ── Normal path ─────────────────────────────────────────────────────────────
   const user = await prisma.adminUser.findUnique({ where: { email } });
   if (!user || !user.active || !(await verifyPassword(password, user.passwordHash))) {
+    await recordLoginFailure(email, ip);
     return NextResponse.json({ error: 'Invalid email or password.' }, { status: 401 });
   }
 
@@ -90,6 +118,8 @@ export async function POST(request: NextRequest) {
     where: { id: user.id },
     data:  { lastLoginAt: new Date() },
   });
+
+  await recordLoginSuccess(email);
 
   return issueSession({
     sub:   user.id,

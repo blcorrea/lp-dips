@@ -7,9 +7,10 @@ import {
   type SessionPayload,
 } from '@/lib/session';
 
-// ADMIN_SECRET is provided by vitest.config.ts (test.env). Keep a copy so
-// individual tests can unset/restore it.
-const TEST_SECRET = process.env.ADMIN_SECRET!;
+// SESSION_SECRET and the legacy ADMIN_SECRET are provided by vitest.config.ts
+// (test.env). Keep copies so individual tests can unset/restore them.
+const TEST_SECRET   = process.env.SESSION_SECRET!;
+const LEGACY_SECRET = process.env.ADMIN_SECRET!;
 
 const PAYLOAD: SessionPayload = {
   sub: 'admin-user-id-123',
@@ -23,11 +24,13 @@ function keyFor(secret: string): Uint8Array {
 }
 
 beforeEach(() => {
-  process.env.ADMIN_SECRET = TEST_SECRET;
+  process.env.SESSION_SECRET = TEST_SECRET;
+  process.env.ADMIN_SECRET = LEGACY_SECRET;
 });
 
 afterEach(() => {
-  process.env.ADMIN_SECRET = TEST_SECRET;
+  process.env.SESSION_SECRET = TEST_SECRET;
+  process.env.ADMIN_SECRET = LEGACY_SECRET;
 });
 
 describe('createSessionToken / verifySessionToken roundtrip', () => {
@@ -86,8 +89,8 @@ describe('verifySessionToken rejection cases', () => {
       role: PAYLOAD.role,
     })
       .setProtectedHeader({ alg: 'HS256' })
-      .setSubject(PAYLOAD.sub)
       .setIssuedAt(now - SESSION_MAX_AGE - 60)
+      .setSubject(PAYLOAD.sub)
       .setExpirationTime(now - 60) // expired one minute ago
       .sign(keyFor(TEST_SECRET));
 
@@ -127,14 +130,67 @@ describe('verifySessionToken rejection cases', () => {
   });
 });
 
-describe('ADMIN_SECRET handling', () => {
-  it('createSessionToken throws when ADMIN_SECRET is unset', async () => {
-    delete process.env.ADMIN_SECRET;
-    await expect(createSessionToken(PAYLOAD)).rejects.toThrow(/ADMIN_SECRET/);
+describe('secret resolution (SESSION_SECRET → ADMIN_SECRET fallback)', () => {
+  it('uses SESSION_SECRET when set (even when ADMIN_SECRET is also set)', async () => {
+    // Signed with SESSION_SECRET's key → must verify
+    const signedWithSession = await new SignJWT({
+      email: PAYLOAD.email,
+      name: PAYLOAD.name,
+      role: PAYLOAD.role,
+    })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setSubject(PAYLOAD.sub)
+      .setIssuedAt()
+      .setExpirationTime(`${SESSION_MAX_AGE}s`)
+      .sign(keyFor(TEST_SECRET));
+
+    await expect(verifySessionToken(signedWithSession)).resolves.toEqual(PAYLOAD);
+
+    // Signed with the legacy secret's key → must NOT verify while SESSION_SECRET is set
+    const signedWithLegacy = await new SignJWT({
+      email: PAYLOAD.email,
+      name: PAYLOAD.name,
+      role: PAYLOAD.role,
+    })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setSubject(PAYLOAD.sub)
+      .setIssuedAt()
+      .setExpirationTime(`${SESSION_MAX_AGE}s`)
+      .sign(keyFor(LEGACY_SECRET));
+
+    await expect(verifySessionToken(signedWithLegacy)).resolves.toBeNull();
   });
 
-  it('verifySessionToken returns null (does not throw) when ADMIN_SECRET is unset', async () => {
+  it('falls back to ADMIN_SECRET when SESSION_SECRET is unset', async () => {
+    delete process.env.SESSION_SECRET;
+
     const token = await createSessionToken(PAYLOAD);
+    await expect(verifySessionToken(token)).resolves.toEqual(PAYLOAD);
+
+    // Prove the fallback key was actually the legacy secret
+    const signedWithLegacy = await new SignJWT({
+      email: PAYLOAD.email,
+      name: PAYLOAD.name,
+      role: PAYLOAD.role,
+    })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setSubject(PAYLOAD.sub)
+      .setIssuedAt()
+      .setExpirationTime(`${SESSION_MAX_AGE}s`)
+      .sign(keyFor(LEGACY_SECRET));
+
+    await expect(verifySessionToken(signedWithLegacy)).resolves.toEqual(PAYLOAD);
+  });
+
+  it('createSessionToken throws when neither SESSION_SECRET nor ADMIN_SECRET is set', async () => {
+    delete process.env.SESSION_SECRET;
+    delete process.env.ADMIN_SECRET;
+    await expect(createSessionToken(PAYLOAD)).rejects.toThrow(/SESSION_SECRET/);
+  });
+
+  it('verifySessionToken returns null (does not throw) when no secret is set', async () => {
+    const token = await createSessionToken(PAYLOAD);
+    delete process.env.SESSION_SECRET;
     delete process.env.ADMIN_SECRET;
     await expect(verifySessionToken(token)).resolves.toBeNull();
   });

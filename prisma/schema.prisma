@@ -249,6 +249,22 @@ model AdminUser {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// AdminLoginAttempt — DB-backed login throttling (per email and per IP)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model AdminLoginAttempt {
+  id          String    @id @default(cuid())
+  /// Throttle key: "email:<lowercased email>" or "ip:<ip>".
+  key         String    @unique
+  /// Consecutive failures since the last success/decay for this key.
+  failedCount Int       @default(0)
+  /// While set and in the future, login attempts for this key are rejected.
+  lockedUntil DateTime?
+  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime  @default(now())
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // StripeEvent — idempotency log
 // ─────────────────────────────────────────────────────────────────────────────
 
