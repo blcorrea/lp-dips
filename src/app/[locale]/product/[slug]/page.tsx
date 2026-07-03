@@ -4,25 +4,22 @@ import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { getProductBySlug } from '@/data/products';
-import { useCart } from '@/contexts/CartContext';
-import { useCustomer } from '@/contexts/CustomerContext';
 import { useTranslations } from 'next-intl';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { Button } from '@/components/ui/button';
+import BuyNowButton from '@/components/BuyNowButton';
 import { VariantSelector } from '@/components/products/VariantSelector';
 import { QuantitySelector } from '@/components/products/QuantitySelector';
-import { Heart, Star, ShoppingCart, Package, Truck, Shield, ArrowLeft } from 'lucide-react';
+import { Star, Package, Truck, Shield, ArrowLeft } from 'lucide-react';
 import { notFound } from 'next/navigation';
 
 export default function ProductDetailPage() {
   const params = useParams();
   const slug = params.slug as string;
+  const locale = (params.locale as string) || 'en';
   const router = useRouter();
 
   const t = useTranslations('ProductDetail');
-  const { addItem } = useCart();
-  const { isInWishlist, addToWishlist, removeFromWishlist } = useCustomer();
 
   const product = getProductBySlug(slug);
 
@@ -33,26 +30,6 @@ export default function ProductDetailPage() {
   const [selectedVariant, setSelectedVariant] = useState(product.variants[0]);
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
-  const [isAddingToCart, setIsAddingToCart] = useState(false);
-
-  const inWishlist = isInWishlist(product.id);
-
-  const handleAddToCart = () => {
-    setIsAddingToCart(true);
-    addItem(product, selectedVariant, quantity);
-    setTimeout(() => {
-      setIsAddingToCart(false);
-      setQuantity(1);
-    }, 1500);
-  };
-
-  const handleWishlistToggle = () => {
-    if (inWishlist) {
-      removeFromWishlist(product.id);
-    } else {
-      addToWishlist(product.id);
-    }
-  };
 
   const displayPrice = selectedVariant.promotionalPrice || selectedVariant.price;
   const hasDiscount = !!selectedVariant.promotionalPrice;
@@ -118,24 +95,11 @@ export default function ProductDetailPage() {
 
             {/* Product Info */}
             <div className="space-y-6">
-              {/* Category & Rating */}
+              {/* Category */}
               <div className="flex items-center justify-between">
                 <span className="text-sm text-brand-purple font-bold uppercase tracking-wide">
                   {product.category}
                 </span>
-                <button
-                  onClick={handleWishlistToggle}
-                  className="flex items-center gap-2 text-gray-600 hover:text-brand-purple transition-colors"
-                >
-                  <Heart
-                    className={`w-6 h-6 ${
-                      inWishlist ? 'fill-red-500 text-red-500' : ''
-                    }`}
-                  />
-                  <span className="text-sm font-medium">
-                    {inWishlist ? t('inWishlist') : t('addToWishlist')}
-                  </span>
-                </button>
               </div>
 
               {/* Title */}
@@ -203,23 +167,16 @@ export default function ProductDetailPage() {
                 </p>
               </div>
 
-              {/* Add to Cart */}
-              <Button
-                onClick={handleAddToCart}
-                disabled={selectedVariant.stock === 0 || isAddingToCart}
-                variant="purple"
-                size="lg"
-                className="w-full flex items-center justify-center gap-3 text-lg py-6"
-              >
-                {isAddingToCart ? (
-                  t('addedToCart')
-                ) : (
-                  <>
-                    <ShoppingCart className="w-6 h-6" />
-                    {t('addToCart')}
-                  </>
-                )}
-              </Button>
+              {/* Buy Now — real Stripe checkout */}
+              <BuyNowButton
+                label="Buy now"
+                quantity={quantity}
+                locale={locale}
+                productId={product.id}
+                productName={product.name}
+                productPrice={displayPrice}
+                className="w-full"
+              />
 
               {/* Features */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6 border-t border-gray-200">
