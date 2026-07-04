@@ -4,8 +4,16 @@ import { getPurchasableDipsProduct } from '@/lib/shopify-product';
 import { getLocalizedPricing, isSupportedLocale } from '@/lib/pricing';
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-const shippingRateId = process.env.STRIPE_SHIPPING_RATE_ID;
+const siteUrl         = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+const shippingRateId  = process.env.STRIPE_SHIPPING_RATE_ID;
+
+const bundle1xPriceId = process.env.STRIPE_PRICE_1X;
+const bundle2xPriceId = process.env.STRIPE_PRICE_2X;
+const bundle3xPriceId = process.env.STRIPE_PRICE_3X;
+
+const VALID_BUNDLE_PRICE_IDS = new Set(
+  [bundle1xPriceId, bundle2xPriceId, bundle3xPriceId].filter(Boolean)
+);
 
 if (!stripeSecretKey) {
   throw new Error('Missing STRIPE_SECRET_KEY');
@@ -30,8 +38,16 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const body = await request.json().catch(() => ({}));
+    const body     = await request.json().catch(() => ({}));
     const quantity = Math.max(1, Math.min(Number(body.quantity) || 1, 10));
+    const priceId  = typeof body.priceId === 'string' ? body.priceId.trim() : null;
+
+    if (priceId && !VALID_BUNDLE_PRICE_IDS.has(priceId)) {
+      return NextResponse.json(
+        { ok: false, error: 'Invalid price ID.' },
+        { status: 400 }
+      );
+    }
 
     const normalizedLocale =
       typeof body.locale === 'string' && isSupportedLocale(body.locale)
@@ -78,16 +94,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const isFreeShippingBundle = priceId === bundle3xPriceId;
+
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       ...(clientReferenceId ? { client_reference_id: clientReferenceId } : {}),
       success_url: `${siteUrl}/${normalizedLocale}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${siteUrl}/${normalizedLocale}/product/dips-chocolate`,
-      shipping_options: shippingRateId
-        ? [{ shipping_rate: shippingRateId }]
-        : [],
-      // Collect shipping address — required for order fulfillment.
-      // Adjust allowed_countries to match where you actually ship.
+      cancel_url:  `${siteUrl}/${normalizedLocale}/product/dips-chocolate`,
+      shipping_options: isFreeShippingBundle
+        ? []
+        : shippingRateId
+          ? [{ shipping_rate: shippingRateId }]
+          : [],
       shipping_address_collection: {
         allowed_countries: [
           'US', 'CA',
@@ -98,33 +116,36 @@ export async function POST(request: NextRequest) {
         ],
       },
       phone_number_collection: { enabled: false }, // TODO post-launch: enable after adding phone column to Order schema and persisting in webhook
-      line_items: [
-        {
-          quantity,
-          price_data: {
-            currency: localizedPricing.currency.toLowerCase(),
-            unit_amount: Math.round(localizedPricing.price * 100),
-            product_data: {
-              name: product.title,
-              description: product.description,
-              images: product.imageUrl ? [product.imageUrl] : [],
-              metadata: {
-                shopify_product_id: product.productId,
-                shopify_variant_id: product.variantId,
-                shopify_handle: product.handle,
+      line_items: priceId
+        ? [{ price: priceId, quantity: 1 }]
+        : [
+            {
+              quantity,
+              price_data: {
+                currency:    localizedPricing.currency.toLowerCase(),
+                unit_amount: Math.round(localizedPricing.price * 100),
+                product_data: {
+                  name:        product.title,
+                  description: product.description,
+                  images:      product.imageUrl ? [product.imageUrl] : [],
+                  metadata: {
+                    shopify_product_id: product.productId,
+                    shopify_variant_id: product.variantId,
+                    shopify_handle:     product.handle,
+                  },
+                },
               },
             },
-          },
-        },
-      ],
+          ],
       metadata: {
-        shopify_product_id: product.productId,
-        shopify_variant_id: product.variantId,
-        shopify_handle: product.handle,
-        locale: normalizedLocale,
-        localized_currency: localizedPricing.currency,
+        shopify_product_id:   product.productId,
+        shopify_variant_id:   product.variantId,
+        shopify_handle:       product.handle,
+        locale:               normalizedLocale,
+        localized_currency:   localizedPricing.currency,
         localized_unit_price: String(localizedPricing.price),
         ...attributionMetadata,
+        ...(priceId ? { bundle_price_id: priceId } : {}),
       },
     });
 

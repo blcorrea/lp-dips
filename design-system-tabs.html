@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Dips — Design System (Tabs-forward Direction)</title>
+
+<!-- =================================================================
+     DIPS DESIGN SYSTEM — "TABS-FORWARD" DIRECTION  (OPTION B)
+     -----------------------------------------------------------------
+     A bolder alternative, leaning into the tabs.co aesthetic:
+       · Oversized UPPERCASE display type, line-height < 1, centered.
+       · Flat, high-contrast surfaces — big chapped color blocks.
+       · Mono-style micro-labels (tracked uppercase).
+       · Sharper, smaller radii (4–10px) — graphic, not pillowy.
+       · Tokenized buttons (--btn-bg / --btn-fg) with arrow icons.
+       · Per-"benefit" color surfaces (the Dips analogue of tabs'
+         play / groove / chill / boost / dream mood colors).
+       · Bold marquee energy.
+
+     BUT every color and font stays strictly on the Dips brand:
+       · Palette — Purple #57126E, Orange #F27521, Brown #542B28,
+                   Beige #E4D6CF, Cream, White.  No off-brand hues.
+       · Type   — AllRoundGothic Bold (display) + FilsonPro (body).
+
+     No product photos with baked-in black backgrounds are used —
+     ingredient / product surfaces are bold brand-color blocks instead.
+     Nothing here is applied to the app. Sibling file design-system.html
+     holds the softer "Option A" for side-by-side comparison.
+     ================================================================= -->
+
+<style>
+/* ===========================================================
+   0 · FONTS (real project files)
+   =========================================================== */
+@font-face{font-family:'AllRoundGothic';src:url('public/fonts/all-round-gothic-bold.otf') format('opentype');font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:'FilsonPro';src:url('public/fonts/FilsonProRegular.otf') format('opentype');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'FilsonPro';src:url('public/fonts/FilsonProMedium.otf') format('opentype');font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:'FilsonPro';src:url('public/fonts/FilsonProBold.otf') format('opentype');font-weight:700;font-style:normal;font-display:swap}
+
+/* ===========================================================
+   1 · TOKENS  (→ map to Tailwind @theme)
+   =========================================================== */
+:root{
+  /* brand core (authoritative) */
+  --purple:#57126e;
+  --orange:#f27521;
+  --brown:#542b28;
+  --beige:#e4d6cf;
+  --cream:#f3e9e3;
+  --white:#fff;
+
+  /* the tabs-style high-contrast "black" — a deep brand plum, not pure black */
+  --ink:#25062f;
+  --ink-2:#3a0b4a;
+  --on-ink:#f3e9e3;
+
+  /* working neutrals */
+  --text:#2c1f2a;
+  --text-soft:#6b5d65;
+  --line:rgba(37,6,47,.14);
+  --line-soft:rgba(37,6,47,.09);
+
+  /* derived steps used sparingly */
+  --purple-light:#7e3d96;
+  --orange-dark:#d85f12;
+  --success:#2e7d5b;
+
+  /* benefit / mood surfaces (Dips analogue of tabs mood colors) */
+  --desire:#57126e;   --desire-on:#f3e9e3;   /* purple  */
+  --energy:#f27521;   --energy-on:#3a0b4a;   /* orange  */
+  --indulge:#542b28;  --indulge-on:#f3e9e3;  /* brown   */
+  --calm:#e4d6cf;     --calm-on:#542b28;     /* beige   */
+  --plush:#7e3d96;    --plush-on:#f3e9e3;    /* plum    */
+
+  /* radius — sharp/graphic */
+  --r-xs:4px;
+  --r:8px;
+  --r-md:10px;
+  --r-pill:999px;
+
+  --font-display:'AllRoundGothic','Trebuchet MS',sans-serif;
+  --font-body:'FilsonPro',ui-sans-serif,system-ui,sans-serif;
+  --font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+
+  --ease:cubic-bezier(.075,.82,.165,1);
+}
+
+/* ===========================================================
+   2 · RESET + BASE
+   =========================================================== */
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;font-family:var(--font-body);background:var(--cream);color:var(--text);line-height:1.45;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4,h5,h6{margin:0;font-family:var(--font-display);font-weight:700}
+p{margin:0}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+code{font-family:var(--font-mono);font-size:.82em;background:rgba(37,6,47,.07);color:var(--purple);padding:2px 6px;border-radius:4px}
+
+/* ===========================================================
+   3 · DOC CHROME  (dark, tabs-style)
+   =========================================================== */
+.ds-nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:22px;flex-wrap:wrap;
+  padding:13px 26px;background:var(--ink);color:var(--on-ink);border-bottom:1px solid rgba(243,233,227,.16)}
+.ds-nav__brand{font-family:var(--font-display);text-transform:uppercase;font-size:18px;line-height:1;
+  margin-right:auto;letter-spacing:.02em;display:flex;align-items:center;gap:9px}
+.ds-nav__dot{width:9px;height:9px;border-radius:50%;background:var(--orange)}
+.ds-nav a{font-family:var(--font-body);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(243,233,227,.62);transition:color .18s var(--ease)}
+.ds-nav a:hover{color:var(--orange)}
+
+.ds-section{max-width:1320px;margin:0 auto;padding:96px 26px;border-bottom:1px solid var(--line-soft)}
+.ds-section--flush{max-width:none;padding:0;border-bottom:1px solid var(--line-soft)}
+.ds-head{margin-bottom:48px}
+.ds-eyebrow{font-family:var(--font-mono);font-size:12px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--orange-dark);margin:0 0 14px}
+.ds-title{font-family:var(--font-display);text-transform:uppercase;color:var(--ink);
+  font-size:clamp(40px,7vw,92px);line-height:.86;letter-spacing:-.01em}
+.ds-lead{font-size:17px;line-height:1.55;color:var(--text-soft);margin-top:20px;max-width:62ch}
+.ds-subhead{font-family:var(--font-display);text-transform:uppercase;color:var(--ink);font-size:clamp(20px,2.4vw,30px);
+  line-height:1;letter-spacing:0;margin:56px 0 22px;display:flex;align-items:center;gap:14px}
+.ds-subhead::after{content:"";flex:1;height:1px;background:var(--line)}
+.ds-note{font-family:var(--font-body);font-size:13.5px;line-height:1.6;color:var(--text-soft);margin-top:16px}
+
+/* spec rows */
+.ds-typeRow{display:grid;grid-template-columns:210px 1fr 150px;gap:30px;align-items:baseline;padding:28px 0;border-top:1px solid var(--line-soft)}
+.ds-typeRow:last-child{border-bottom:1px solid var(--line-soft)}
+.ds-typeName{font-size:14px;font-weight:700;color:var(--ink)}
+.ds-typeMeta code{display:inline-block;margin-top:7px;font-size:11.5px}
+.ds-typeSpec{font-family:var(--font-mono);font-size:12.5px;text-align:right;white-space:nowrap;color:var(--text-soft);align-self:center}
+
+/* swatches */
+.ds-swatchGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(176px,1fr));gap:14px}
+.ds-swatch{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--white)}
+.ds-swatch__chip{height:104px;display:flex;align-items:flex-end;padding:11px;font-family:var(--font-display);text-transform:uppercase;font-size:13px}
+.ds-swatch__meta{padding:12px 14px}
+.ds-swatch__name{font-size:13px;font-weight:700;color:var(--ink)}
+.ds-swatch__token{display:block;margin-top:4px;font-family:var(--font-mono);font-size:11px;color:var(--text-soft)}
+
+.ds-grid{display:grid;gap:18px}
+.ds-grid--2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.ds-grid--3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.ds-grid--5{grid-template-columns:repeat(5,minmax(0,1fr))}
+.ds-specimen{border:1px solid var(--line);border-radius:var(--r);padding:30px;background:var(--white)}
+.ds-specimen--cream{background:var(--cream)}
+.ds-specimen--ink{background:var(--ink);border-color:transparent}
+.ds-row{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+.ds-stateLabel{display:block;margin-bottom:14px;font-family:var(--font-mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-soft)}
+.ds-layoutFrame{background:rgba(37,6,47,.04);border:1px dashed rgba(37,6,47,.28);border-radius:var(--r);padding:16px}
+.ds-box{background:var(--ink);color:var(--on-ink);border-radius:var(--r-xs);min-height:84px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+.ds-box--orange{background:var(--orange);color:var(--ink)}
+
+/* ===========================================================
+   4 · BRAND TYPE SCALE (proposed product styles, tabs-forward)
+   =========================================================== */
+.display{font-family:var(--font-display);text-transform:uppercase;color:var(--ink);font-size:clamp(80px,15vw,220px);line-height:.8;letter-spacing:-.01em}
+.h1{font-family:var(--font-display);text-transform:uppercase;color:var(--ink);font-size:clamp(48px,8vw,110px);line-height:.84;letter-spacing:-.01em}
+.h2{font-family:var(--font-display);text-transform:uppercase;color:var(--ink);font-size:clamp(36px,5vw,72px);line-height:.88;letter-spacing:0}
+.h3{font-family:var(--font-display);text-transform:uppercase;color:var(--ink);font-size:clamp(26px,3vw,44px);line-height:.92}
+.h4{font-family:var(--font-display);text-transform:uppercase;color:var(--ink);font-size:22px;line-height:1}
+.kicker{font-family:var(--font-mono);font-weight:500;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--orange-dark)}
+.lead{font-family:var(--font-body);font-size:clamp(17px,1.4vw,21px);line-height:1.5;color:var(--text)}
+.body{font-family:var(--font-body);font-size:16px;line-height:1.55;color:var(--text)}
+.body-sm{font-family:var(--font-body);font-size:14px;line-height:1.5;color:var(--text-soft)}
+.caption{font-family:var(--font-body);font-weight:500;font-size:12.5px;line-height:1.45;color:var(--text-soft)}
+.price{font-family:var(--font-display);color:var(--ink);font-size:clamp(40px,5vw,64px);line-height:.9;letter-spacing:-.01em}
+
+/* ===========================================================
+   5 · COMPONENTS (proposed product components, tabs-forward)
+   =========================================================== */
+
+/* Buttons — tokenized fill, square-ish pill, arrow, hover→orange */
+.btn{--btn-bg:var(--ink);--btn-fg:var(--on-ink);
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  font-family:var(--font-body);font-weight:600;font-size:15px;line-height:1;letter-spacing:.01em;
+  padding:15px 24px;min-height:52px;border:none;border-radius:var(--r-pill);cursor:pointer;
+  background:var(--btn-bg);color:var(--btn-fg);
+  transition:background-color .18s var(--ease),color .18s var(--ease),transform .12s var(--ease),box-shadow .18s var(--ease)}
+.btn svg{width:14px;height:12px}
+.btn:hover{background:var(--orange);color:var(--ink)}
+.btn:hover svg path{stroke:var(--ink)}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible{outline:2px solid var(--orange);outline-offset:3px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn[disabled]:hover{background:var(--btn-bg);color:var(--btn-fg)}
+.btn--accent{--btn-bg:var(--orange);--btn-fg:var(--ink)}
+.btn--accent:hover{background:var(--ink);color:var(--on-ink)}
+.btn--accent:hover svg path{stroke:var(--on-ink)}
+.btn--blank{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)}
+.btn--blank:hover{background:var(--ink);color:var(--on-ink);box-shadow:inset 0 0 0 1.5px var(--ink)}
+.btn--blank:hover svg path{stroke:var(--on-ink)}
+.btn--on-ink{--btn-bg:rgba(243,233,227,.08);--btn-fg:var(--on-ink);box-shadow:inset 0 0 0 1px rgba(243,233,227,.4)}
+.btn--on-ink:hover{background:var(--orange);color:var(--ink);box-shadow:inset 0 0 0 1px var(--orange)}
+.btn--lg{font-size:17px;padding:18px 32px;min-height:58px}
+.btn--block{width:100%}
+.btn .dots{display:inline-flex;gap:4px}
+.btn .dots i{width:6px;height:6px;border-radius:50%;background:currentColor;animation:btnPulse 1s var(--ease) infinite}
+.btn .dots i:nth-child(2){animation-delay:.15s}
+.btn .dots i:nth-child(3){animation-delay:.3s}
+@keyframes btnPulse{0%,100%{opacity:.3}50%{opacity:1}}
+
+/* Badges */
+.badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-weight:500;font-size:11px;
+  letter-spacing:.06em;text-transform:uppercase;padding:5px 10px;border-radius:var(--r-xs)}
+.badge--orange{background:var(--orange);color:var(--ink)}
+.badge--ink{background:var(--ink);color:var(--on-ink)}
+.badge--outline{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)}
+.badge--success{background:var(--success);color:#fff}
+
+/* Inputs — flat, square, thick underline focus */
+.field{display:flex;flex-direction:column;gap:7px}
+.field label{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink)}
+.input{font-family:var(--font-body);font-size:15px;color:var(--text);background:var(--white);
+  border:1.5px solid var(--ink);border-radius:var(--r-xs);padding:13px 14px;
+  transition:box-shadow .15s var(--ease),border-color .15s var(--ease)}
+.input::placeholder{color:var(--text-soft)}
+.input:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 3px rgba(242,117,33,.25)}
+.input--error{border-color:#c0392b;box-shadow:0 0 0 3px rgba(192,57,43,.18)}
+.input--prefix{position:relative}
+.input--prefix span{position:absolute;left:14px;bottom:14px;color:var(--text-soft);font-size:15px}
+.input--prefix input{padding-left:28px}
+
+/* Benefit / mood surface block (the tabs mood-card analogue) */
+.mood{position:relative;border-radius:var(--r);overflow:hidden;min-height:300px;
+  display:flex;flex-direction:column;transition:transform .4s var(--ease)}
+.mood:hover{transform:translateY(-5px)}
+.mood__num{position:absolute;top:14px;right:18px;font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;opacity:.55;z-index:2}
+.mood__media{flex:1;display:flex;align-items:center;justify-content:center;padding:18px 10px 0}
+.mood__media img{height:128px;width:auto;object-fit:contain;
+  filter:drop-shadow(0 10px 20px rgba(0,0,0,.22));transition:transform .5s var(--ease)}
+.mood:hover .mood__media img{transform:scale(1.06) rotate(-2deg)}
+.mood__text{padding:0 22px 24px}
+.mood .kicker{color:inherit;opacity:.72}
+.mood h3{color:inherit;margin:10px 0 7px}
+.mood p{color:inherit;opacity:.86;font-size:13.5px;line-height:1.5}
+.mood--desire{background:var(--desire);color:var(--desire-on)}
+.mood--energy{background:var(--energy);color:var(--energy-on)}
+.mood--indulge{background:var(--indulge);color:var(--indulge-on)}
+.mood--calm{background:var(--calm);color:var(--calm-on)}
+.mood--plush{background:var(--plush);color:var(--plush-on)}
+
+/* Product card — flat, color field, no photo */
+.product{background:var(--white);border:1.5px solid var(--ink);border-radius:var(--r);overflow:hidden;
+  display:flex;flex-direction:column;transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
+.product:hover{transform:translateY(-4px);box-shadow:8px 8px 0 var(--ink)}
+.product__field{height:170px;display:flex;align-items:center;justify-content:center;position:relative}
+.product__field .mark{font-family:var(--font-display);text-transform:uppercase;font-size:54px;color:var(--ink);opacity:.9}
+.product__body{padding:20px;border-top:1.5px solid var(--ink)}
+.product__row{display:flex;align-items:center;justify-content:space-between;margin-top:14px}
+.product__price{font-family:var(--font-display);font-size:26px;color:var(--ink)}
+
+/* Bundle selector — flat, hard border, ink highlight */
+.bundle{display:flex;flex-direction:column;gap:10px;max-width:460px}
+.bundle__opt{position:relative;width:100%;text-align:left;cursor:pointer;background:var(--white);
+  border:1.5px solid var(--ink);border-radius:var(--r);padding:16px 18px;
+  transition:background-color .15s var(--ease),box-shadow .15s var(--ease)}
+.bundle__opt:hover{box-shadow:4px 4px 0 rgba(37,6,47,.18)}
+.bundle__opt[aria-checked="true"]{background:var(--ink);box-shadow:4px 4px 0 var(--orange)}
+.bundle__opt[aria-checked="true"] .bundle__name,
+.bundle__opt[aria-checked="true"] .bundle__total{color:var(--on-ink)}
+.bundle__opt[aria-checked="true"] .bundle__unit{color:rgba(243,233,227,.6)}
+.bundle__opt[data-popular]::before{content:"Most popular";position:absolute;top:-9px;left:16px;
+  font-family:var(--font-mono);font-weight:500;font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink);background:var(--orange);padding:2px 8px;border-radius:var(--r-xs)}
+.bundle__row{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.bundle__left{display:flex;align-items:center;gap:13px}
+.bundle__radio{width:18px;height:18px;border-radius:var(--r-xs);border:2px solid var(--ink);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.bundle__opt[aria-checked="true"] .bundle__radio{border-color:var(--orange)}
+.bundle__radio i{width:8px;height:8px;border-radius:1px;background:var(--orange);transform:scale(0);transition:transform .15s var(--ease)}
+.bundle__opt[aria-checked="true"] .bundle__radio i{transform:scale(1)}
+.bundle__name{font-family:var(--font-display);text-transform:uppercase;font-size:17px;color:var(--ink)}
+.bundle__unit{font-family:var(--font-mono);font-size:11.5px;color:var(--text-soft);margin-top:3px}
+.bundle__right{text-align:right;flex-shrink:0}
+.bundle__total{font-family:var(--font-display);font-size:18px;color:var(--ink)}
+
+/* Summary */
+.summary{background:var(--white);border:1.5px solid var(--ink);border-radius:var(--r);padding:18px;max-width:460px}
+.summary__line{display:flex;justify-content:space-between;font-size:14px;color:var(--text-soft);padding:5px 0}
+.summary__line span:last-child{color:var(--text);font-weight:600}
+.summary__total{display:flex;justify-content:space-between;align-items:center;border-top:1.5px solid var(--ink);margin-top:8px;padding-top:12px}
+.summary__total b{font-family:var(--font-display);font-size:28px;color:var(--ink)}
+
+/* Trust strip */
+.trust{display:flex;flex-wrap:wrap;gap:0;border:1.5px solid var(--ink);border-radius:var(--r);overflow:hidden}
+.trust__item{flex:1 1 180px;display:inline-flex;align-items:center;gap:9px;font-family:var(--font-mono);font-size:11.5px;
+  font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--ink);padding:14px 16px;border-right:1.5px solid var(--ink)}
+.trust__item:last-child{border-right:none}
+.trust__item svg{width:17px;height:17px;color:var(--orange-dark);flex-shrink:0}
+
+/* Review (glass on ink) */
+.review{border-radius:var(--r);background:rgba(243,233,227,.07);border:1px solid rgba(243,233,227,.14);padding:22px;
+  display:flex;flex-direction:column;gap:13px;transition:background-color .3s var(--ease)}
+.review:hover{background:rgba(243,233,227,.12)}
+.review__stars{display:flex;gap:2px;color:var(--orange)}
+.review__stars svg{width:15px;height:15px}
+.review__text{color:rgba(243,233,227,.92);font-size:15px;line-height:1.5}
+.review__who{display:flex;align-items:center;gap:11px;padding-top:13px;border-top:1px solid rgba(243,233,227,.12)}
+.review__avatar{width:38px;height:38px;border-radius:var(--r-xs);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:14px;color:#fff;background:var(--orange)}
+.review__avatar{color:var(--ink)}
+.review__name{color:#fff;font-family:var(--font-display);text-transform:uppercase;font-size:14px}
+.review__handle{font-family:var(--font-mono);color:rgba(243,233,227,.5);font-size:11px}
+
+/* FAQ */
+.faq{max-width:820px;border-top:1.5px solid var(--ink)}
+.faq__item{border-bottom:1.5px solid var(--ink)}
+.faq__q{width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;background:none;border:none;
+  cursor:pointer;padding:22px 2px;text-align:left;font-family:var(--font-display);text-transform:uppercase;font-size:19px;color:var(--ink)}
+.faq__q svg{width:20px;height:20px;color:var(--orange-dark);flex-shrink:0;transition:transform .3s var(--ease)}
+.faq__item[open] .faq__q svg{transform:rotate(180deg)}
+.faq__a{padding:0 2px 24px;color:var(--text-soft);font-size:15px;line-height:1.6;max-width:64ch}
+.faq__item:not([open]) .faq__a{display:none}
+summary::-webkit-details-marker{display:none}
+
+/* Marquee */
+.marquee{overflow:hidden;background:var(--ink);color:var(--on-ink);padding:16px 0;border-block:1.5px solid var(--ink)}
+.marquee__track{display:flex;gap:46px;width:max-content;align-items:center;animation:marquee 30s linear infinite}
+.marquee:hover .marquee__track{animation-play-state:paused}
+.marquee__item{display:inline-flex;align-items:center;gap:13px;font-family:var(--font-display);text-transform:uppercase;
+  font-size:clamp(22px,2.6vw,34px);line-height:1;white-space:nowrap}
+.marquee__dot{width:8px;height:8px;border-radius:50%;background:var(--orange);flex-shrink:0}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* icons doc */
+.ds-iconRow{display:flex;align-items:flex-end;gap:30px;flex-wrap:wrap}
+.ds-iconCell{display:flex;flex-direction:column;align-items:center;gap:9px;color:var(--ink)}
+.ds-iconCell span{font-family:var(--font-mono);font-size:11px;color:var(--text-soft)}
+
+/* ===========================================================
+   6 · HERO (tabs-style: dark content bar, oversized uppercase)
+   =========================================================== */
+.hero{background:var(--cream)}
+.hero__media{position:relative;height:clamp(360px,46vw,540px);overflow:hidden}
+.hero__media img{width:100%;height:100%;object-fit:cover;object-position:center 40%}
+.hero__bar{background:var(--ink);color:var(--on-ink);padding:30px 0 40px}
+.hero__title{font-family:var(--font-display);text-transform:uppercase;text-align:center;color:var(--on-ink);
+  font-size:clamp(64px,14vw,210px);line-height:.78;letter-spacing:-.01em}
+.hero__items{display:flex;align-items:flex-end;justify-content:space-between;gap:40px;max-width:1240px;
+  margin:26px auto 0;padding:0 26px;flex-wrap:wrap}
+.hero__hook{max-width:520px}
+.hero__hook p:first-child{font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:rgba(243,233,227,.6)}
+.hero__hook strong{display:block;margin-top:8px;font-family:var(--font-display);text-transform:uppercase;font-size:clamp(22px,2.4vw,30px);line-height:1}
+.hero__btns{display:flex;gap:14px;flex-wrap:wrap}
+
+/* ===========================================================
+   7 · RESPONSIVE
+   =========================================================== */
+@media (max-width:760px){
+  .ds-typeRow{grid-template-columns:1fr;gap:12px}
+  .ds-typeSpec{text-align:left}
+  .ds-grid--2,.ds-grid--3,.ds-grid--5{grid-template-columns:1fr}
+  .trust__item{border-right:none;border-bottom:1.5px solid var(--ink)}
+  .trust__item:last-child{border-bottom:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important}.marquee__track{animation:none}}
+</style>
+</head>
+
+<body>
+
+<!-- ============================ TOP NAV ============================ -->
+<nav class="ds-nav">
+  <span class="ds-nav__brand"><span class="ds-nav__dot"></span>Dips · DS Tabs-forward</span>
+  <a href="#hero">Hero</a>
+  <a href="#type">Type</a>
+  <a href="#color">Color</a>
+  <a href="#moods">Surfaces</a>
+  <a href="#components">Components</a>
+  <a href="#commerce">Commerce</a>
+  <a href="#layout">Layout</a>
+  <a href="#motion">Motion</a>
+  <a href="#icons">Icons</a>
+</nav>
+
+<!-- ============================ 0 · HERO ============================ -->
+<section class="hero" id="hero">
+  <div class="hero__media"><img src="public/images/banner_casal_dips.jpg" alt="Dips" onerror="this.closest('.hero__media').style.display='none'"/></div>
+  <div class="hero__bar">
+    <h1 class="hero__title">The design system</h1>
+    <div class="hero__items">
+      <div class="hero__hook">
+        <p>The living pattern library — tokens, type &amp; components, dialed in.</p>
+        <strong>One source of truth.</strong>
+      </div>
+      <div class="hero__btns">
+        <a class="btn btn--accent" href="#components">Browse components
+          <svg viewBox="0 0 14 12" fill="none"><path d="M0 4.86h12M12 4.86 7.8 1M12 4.86 7.8 9" stroke="currentColor" stroke-width="1.6"/></svg>
+        </a>
+        <a class="btn btn--on-ink" href="#color">View tokens
+          <svg viewBox="0 0 14 12" fill="none"><path d="M0 4.86h12M12 4.86 7.8 1M12 4.86 7.8 9" stroke="currentColor" stroke-width="1.6"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 1 · TYPOGRAPHY ============================ -->
+<section class="ds-section" id="type">
+  <div class="ds-head">
+    <p class="ds-eyebrow">01 — Typography</p>
+    <h2 class="ds-title">Type scale</h2>
+    <p class="ds-lead">This direction sets headings in <strong>uppercase AllRoundGothic</strong> at sub-1 line
+      heights for a bold, graphic, tabs-style voice. Body stays FilsonPro; micro-labels borrow a mono treatment
+      (<code>--font-mono</code>) for the technical, confident tone — same family rule as the brand, pushed harder.</p>
+  </div>
+
+  <div class="ds-typeRow"><div class="ds-typeMeta"><span class="ds-typeName">Display</span><br/><code>.display</code></div><div><p class="display">Aa</p></div><div class="ds-typeSpec">80–220px / .80</div></div>
+  <div class="ds-typeRow"><div class="ds-typeMeta"><span class="ds-typeName">Heading 1</span><br/><code>.h1</code></div><div><p class="h1">Awaken desire</p></div><div class="ds-typeSpec">48–110px / .84</div></div>
+  <div class="ds-typeRow"><div class="ds-typeMeta"><span class="ds-typeName">Heading 2</span><br/><code>.h2</code></div><div><p class="h2">Bring it home</p></div><div class="ds-typeSpec">36–72px / .88</div></div>
+  <div class="ds-typeRow"><div class="ds-typeMeta"><span class="ds-typeName">Heading 3</span><br/><code>.h3</code></div><div><p class="h3">Arriba cocoa nibs</p></div><div class="ds-typeSpec">26–44px / .92</div></div>
+  <div class="ds-typeRow"><div class="ds-typeMeta"><span class="ds-typeName">Heading 4</span><br/><code>.h4</code></div><div><p class="h4">Origins &amp; curiosities</p></div><div class="ds-typeSpec">22px / 1.0</div></div>
+  <div class="ds-typeRow"><div class="ds-typeMeta"><span class="ds-typeName">Kicker / label</span><br/><code>.kicker</code></div><div><p class="kicker">The Dips experience</p></div><div class="ds-typeSpec">12px / .14em mono</div></div>
+  <div class="ds-typeRow"><div class="ds-typeMeta"><span class="ds-typeName">Lead</span><br/><code>.lead</code></div><div><p class="lead">Crafted with pure Arriba cocoa and a proprietary blend of botanicals for a refined, sensory experience.</p></div><div class="ds-typeSpec">17–21px / 1.5</div></div>
+  <div class="ds-typeRow"><div class="ds-typeMeta"><span class="ds-typeName">Body</span><br/><code>.body</code></div><div><p class="body">Rich, intense flavor from single-origin Arriba cocoa — the ultimate gourmet base for a night made for two.</p></div><div class="ds-typeSpec">16px / 1.55</div></div>
+  <div class="ds-typeRow"><div class="ds-typeMeta"><span class="ds-typeName">Body S / caption</span><br/><code>.body-sm</code></div><div><p class="body-sm">Natural aphrodisiac ingredients — maca, ginger, L-theanine, fenugreek and a botanical blend.</p></div><div class="ds-typeSpec">14px / 1.5</div></div>
+  <div class="ds-typeRow"><div class="ds-typeMeta"><span class="ds-typeName">Price numeral</span><br/><code>.price</code></div><div><p class="price">$55.78</p></div><div class="ds-typeSpec">40–64px / .90</div></div>
+</section>
+
+<!-- ============================ 2 · COLOR ============================ -->
+<section class="ds-section" id="color">
+  <div class="ds-head">
+    <p class="ds-eyebrow">02 — Color &amp; Surfaces</p>
+    <h2 class="ds-title">Palette</h2>
+    <p class="ds-lead">Same brand colors — used flatter and louder. The high-contrast dark surface (<code>--ink</code>)
+      is a deep brand plum rather than black, so nav, hero bar and selected states feel tabs-bold while staying
+      unmistakably Dips.</p>
+  </div>
+
+  <p class="ds-subhead">Brand core</p>
+  <div class="ds-swatchGrid">
+    <div class="ds-swatch"><div class="ds-swatch__chip" style="background:#57126e;color:#f3e9e3">primary</div><div class="ds-swatch__meta"><span class="ds-swatch__name">Purple</span><span class="ds-swatch__token">--purple · #57126E</span></div></div>
+    <div class="ds-swatch"><div class="ds-swatch__chip" style="background:#f27521;color:#25062f">accent</div><div class="ds-swatch__meta"><span class="ds-swatch__name">Orange</span><span class="ds-swatch__token">--orange · #F27521</span></div></div>
+    <div class="ds-swatch"><div class="ds-swatch__chip" style="background:#542b28;color:#f3e9e3">deep</div><div class="ds-swatch__meta"><span class="ds-swatch__name">Brown</span><span class="ds-swatch__token">--brown · #542B28</span></div></div>
+    <div class="ds-swatch"><div class="ds-swatch__chip" style="background:#e4d6cf;color:#542b28;box-shadow:inset 0 0 0 1px rgba(37,6,47,.12)">beige</div><div class="ds-swatch__meta"><span class="ds-swatch__name">Beige</span><span class="ds-swatch__token">--beige · #E4D6CF</span></div></div>
+    <div class="ds-swatch"><div class="ds-swatch__chip" style="background:#f3e9e3;color:#542b28;box-shadow:inset 0 0 0 1px rgba(37,6,47,.12)">page</div><div class="ds-swatch__meta"><span class="ds-swatch__name">Cream</span><span class="ds-swatch__token">--cream · #F3E9E3</span></div></div>
+    <div class="ds-swatch"><div class="ds-swatch__chip" style="background:#25062f;color:#f3e9e3">ink/dark</div><div class="ds-swatch__meta"><span class="ds-swatch__name">Ink (deep plum)</span><span class="ds-swatch__token">--ink · #25062F</span></div></div>
+  </div>
+
+  <p class="ds-subhead">Derived &amp; semantic</p>
+  <div class="ds-swatchGrid">
+    <div class="ds-swatch"><div class="ds-swatch__chip" style="background:#7e3d96;color:#f3e9e3">plum</div><div class="ds-swatch__meta"><span class="ds-swatch__name">Purple light</span><span class="ds-swatch__token">--purple-light · #7E3D96</span></div></div>
+    <div class="ds-swatch"><div class="ds-swatch__chip" style="background:#d85f12;color:#fff">hover</div><div class="ds-swatch__meta"><span class="ds-swatch__name">Orange dark</span><span class="ds-swatch__token">--orange-dark · #D85F12</span></div></div>
+    <div class="ds-swatch"><div class="ds-swatch__chip" style="background:#2e7d5b;color:#fff">free ship</div><div class="ds-swatch__meta"><span class="ds-swatch__name">Success</span><span class="ds-swatch__token">--success · #2E7D5B</span></div></div>
+    <div class="ds-swatch"><div class="ds-swatch__chip" style="background:#fff;color:#542b28;box-shadow:inset 0 0 0 1.5px #25062f">cards</div><div class="ds-swatch__meta"><span class="ds-swatch__name">White + ink border</span><span class="ds-swatch__token">#FFF / 1.5px ink</span></div></div>
+  </div>
+</section>
+
+<!-- ============================ 3 · MOOD / BENEFIT SURFACES ============================ -->
+<section class="ds-section" id="moods">
+  <div class="ds-head">
+    <p class="ds-eyebrow">03 — Benefit Surfaces</p>
+    <h2 class="ds-title">Color blocks</h2>
+    <p class="ds-lead">The Dips answer to tabs' mood colors: each benefit gets a full brand-color field with a paired
+      text token. The real transparent-PNG ingredient cut-outs sit straight on the vivid surface — a bold,
+      tabs-style product presentation that the live site's assets already support.</p>
+  </div>
+
+  <div class="ds-grid ds-grid--5">
+    <div class="mood mood--desire"><span class="mood__num">01</span><div class="mood__media"><img src="public/images/maca.png" alt="Maca"/></div><div class="mood__text"><p class="kicker">Desire</p><h3 class="h3">Maca</h3><p>Andean root for vitality &amp; libido.</p></div></div>
+    <div class="mood mood--energy"><span class="mood__num">02</span><div class="mood__media"><img src="public/images/ginger.png" alt="Ginger"/></div><div class="mood__text"><p class="kicker">Energy</p><h3 class="h3">Ginger</h3><p>Warming spark, circulation &amp; heat.</p></div></div>
+    <div class="mood mood--indulge"><span class="mood__num">03</span><div class="mood__media"><img src="public/images/cocoa.png" alt="Cocoa"/></div><div class="mood__text"><p class="kicker">Indulge</p><h3 class="h3">Cocoa</h3><p>Single-origin Arriba, pure pleasure.</p></div></div>
+    <div class="mood mood--calm"><span class="mood__num">04</span><div class="mood__media"><img src="public/images/theanine.png" alt="L-Theanine"/></div><div class="mood__text"><p class="kicker">Calm</p><h3 class="h3">L-Theanine</h3><p>Relaxed focus, no crash.</p></div></div>
+    <div class="mood mood--plush"><span class="mood__num">05</span><div class="mood__media"><img src="public/images/fenugreek.png" alt="Fenugreek"/></div><div class="mood__text"><p class="kicker">Connect</p><h3 class="h3">Fenugreek</h3><p>Botanical blend for closeness.</p></div></div>
+  </div>
+</section>
+
+<!-- ============================ 4 · COMPONENTS ============================ -->
+<section class="ds-section" id="components">
+  <div class="ds-head">
+    <p class="ds-eyebrow">04 — Components</p>
+    <h2 class="ds-title">Components</h2>
+    <p class="ds-lead">Flat fills, hard 1.5px ink borders, offset "hard shadows" on hover, and tokenized buttons
+      (<code>--btn-bg / --btn-fg</code>) that flip to orange on hover. Interact to see states.</p>
+  </div>
+
+  <p class="ds-subhead">Buttons</p>
+  <div class="ds-specimen ds-specimen--cream">
+    <div class="ds-row">
+      <button class="btn">Default <svg viewBox="0 0 14 12" fill="none"><path d="M0 4.86h12M12 4.86 7.8 1M12 4.86 7.8 9" stroke="currentColor" stroke-width="1.6"/></svg></button>
+      <button class="btn btn--accent">Accent <svg viewBox="0 0 14 12" fill="none"><path d="M0 4.86h12M12 4.86 7.8 1M12 4.86 7.8 9" stroke="currentColor" stroke-width="1.6"/></svg></button>
+      <button class="btn btn--blank">Outline</button>
+      <button class="btn" disabled>Disabled</button>
+      <button class="btn" style="min-width:140px"><span class="dots"><i></i><i></i><i></i></span></button>
+    </div>
+    <p class="ds-note">Hover flips any button to the orange accent (label → ink). <code>:active</code> nudges 1px;
+      focus draws a 2px orange outline.</p>
+  </div>
+
+  <p class="ds-subhead">Buttons on ink</p>
+  <div class="ds-specimen ds-specimen--ink">
+    <div class="ds-row">
+      <button class="btn btn--accent">Buy now <svg viewBox="0 0 14 12" fill="none"><path d="M0 4.86h12M12 4.86 7.8 1M12 4.86 7.8 9" stroke="currentColor" stroke-width="1.6"/></svg></button>
+      <button class="btn btn--on-ink">Learn more <svg viewBox="0 0 14 12" fill="none"><path d="M0 4.86h12M12 4.86 7.8 1M12 4.86 7.8 9" stroke="currentColor" stroke-width="1.6"/></svg></button>
+    </div>
+  </div>
+
+  <p class="ds-subhead">Badges</p>
+  <div class="ds-specimen ds-specimen--cream">
+    <div class="ds-row">
+      <span class="badge badge--orange">Save 7%</span>
+      <span class="badge badge--success">Free shipping</span>
+      <span class="badge badge--ink">Bestseller</span>
+      <span class="badge badge--outline">New</span>
+    </div>
+  </div>
+
+  <p class="ds-subhead">Form fields (affiliate sign-up)</p>
+  <div class="ds-specimen ds-specimen--cream">
+    <div class="ds-grid ds-grid--2" style="max-width:640px">
+      <div class="field"><label>Full name</label><input class="input" placeholder="Jane Doe"/></div>
+      <div class="field"><label>Email</label><input class="input" type="email" placeholder="jane@email.com"/></div>
+      <div class="field input--prefix"><label>Instagram handle</label><span>@</span><input class="input" placeholder="dipswellness"/></div>
+      <div class="field"><label>Referral code</label><input class="input input--error" value="INVALID-99"/><span class="caption" style="color:#c0392b">This code doesn't exist.</span></div>
+    </div>
+  </div>
+
+  <p class="ds-subhead">Product card (color field, no photo)</p>
+  <div class="ds-grid ds-grid--3">
+    <div class="product">
+      <div class="product__field" style="background:var(--desire)"><span class="mark" style="color:var(--desire-on)">Dips</span></div>
+      <div class="product__body"><p class="kicker">Original</p><div class="product__row"><span class="h4">The Box</span><span class="product__price">$29.99</span></div><button class="btn btn--block" style="margin-top:14px">Add to cart</button></div>
+    </div>
+    <div class="product">
+      <div class="product__field" style="background:var(--energy)"><span class="mark">2×</span></div>
+      <div class="product__body"><p class="kicker">Best value</p><div class="product__row"><span class="h4">Duo</span><span class="product__price">$55.78</span></div><button class="btn btn--block" style="margin-top:14px">Add to cart</button></div>
+    </div>
+    <div class="product">
+      <div class="product__field" style="background:var(--indulge)"><span class="mark" style="color:var(--indulge-on)">3×</span></div>
+      <div class="product__body"><p class="kicker">Free shipping</p><div class="product__row"><span class="h4">Trio</span><span class="product__price">$75.57</span></div><button class="btn btn--block" style="margin-top:14px">Add to cart</button></div>
+    </div>
+  </div>
+
+  <p class="ds-subhead">Review (glass on ink)</p>
+  <div class="ds-specimen ds-specimen--ink">
+    <div class="ds-grid ds-grid--3">
+      <div class="review">
+        <div class="review__stars">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.07 3.29a1 1 0 0 0 .95.69h3.46c.97 0 1.37 1.24.59 1.81l-2.8 2.03a1 1 0 0 0-.36 1.12l1.07 3.29c.3.92-.76 1.69-1.54 1.12l-2.8-2.03a1 1 0 0 0-1.18 0l-2.8 2.03c-.78.57-1.84-.2-1.54-1.12l1.07-3.29a1 1 0 0 0-.36-1.12l-2.8-2.03c-.78-.57-.38-1.81.59-1.81h3.46a1 1 0 0 0 .95-.69z"/></svg>
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.07 3.29a1 1 0 0 0 .95.69h3.46c.97 0 1.37 1.24.59 1.81l-2.8 2.03a1 1 0 0 0-.36 1.12l1.07 3.29c.3.92-.76 1.69-1.54 1.12l-2.8-2.03a1 1 0 0 0-1.18 0l-2.8 2.03c-.78.57-1.84-.2-1.54-1.12l1.07-3.29a1 1 0 0 0-.36-1.12l-2.8-2.03c-.78-.57-.38-1.81.59-1.81h3.46a1 1 0 0 0 .95-.69z"/></svg>
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.07 3.29a1 1 0 0 0 .95.69h3.46c.97 0 1.37 1.24.59 1.81l-2.8 2.03a1 1 0 0 0-.36 1.12l1.07 3.29c.3.92-.76 1.69-1.54 1.12l-2.8-2.03a1 1 0 0 0-1.18 0l-2.8 2.03c-.78.57-1.84-.2-1.54-1.12l1.07-3.29a1 1 0 0 0-.36-1.12l-2.8-2.03c-.78-.57-.38-1.81.59-1.81h3.46a1 1 0 0 0 .95-.69z"/></svg>
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.07 3.29a1 1 0 0 0 .95.69h3.46c.97 0 1.37 1.24.59 1.81l-2.8 2.03a1 1 0 0 0-.36 1.12l1.07 3.29c.3.92-.76 1.69-1.54 1.12l-2.8-2.03a1 1 0 0 0-1.18 0l-2.8 2.03c-.78.57-1.84-.2-1.54-1.12l1.07-3.29a1 1 0 0 0-.36-1.12l-2.8-2.03c-.78-.57-.38-1.81.59-1.81h3.46a1 1 0 0 0 .95-.69z"/></svg>
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.07 3.29a1 1 0 0 0 .95.69h3.46c.97 0 1.37 1.24.59 1.81l-2.8 2.03a1 1 0 0 0-.36 1.12l1.07 3.29c.3.92-.76 1.69-1.54 1.12l-2.8-2.03a1 1 0 0 0-1.18 0l-2.8 2.03c-.78.57-1.84-.2-1.54-1.12l1.07-3.29a1 1 0 0 0-.36-1.12l-2.8-2.03c-.78-.57-.38-1.81.59-1.81h3.46a1 1 0 0 0 .95-.69z"/></svg>
+        </div>
+        <p class="review__text">"I gave this to my partner as a surprise and it completely changed our night."</p>
+        <div class="review__who"><div class="review__avatar">SR</div><div><p class="review__name">Sophia R.</p><p class="review__handle">@sophiar</p></div></div>
+      </div>
+      <div class="review">
+        <div class="review__stars">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.07 3.29a1 1 0 0 0 .95.69h3.46c.97 0 1.37 1.24.59 1.81l-2.8 2.03a1 1 0 0 0-.36 1.12l1.07 3.29c.3.92-.76 1.69-1.54 1.12l-2.8-2.03a1 1 0 0 0-1.18 0l-2.8 2.03c-.78.57-1.84-.2-1.54-1.12l1.07-3.29a1 1 0 0 0-.36-1.12l-2.8-2.03c-.78-.57-.38-1.81.59-1.81h3.46a1 1 0 0 0 .95-.69z"/></svg>
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.07 3.29a1 1 0 0 0 .95.69h3.46c.97 0 1.37 1.24.59 1.81l-2.8 2.03a1 1 0 0 0-.36 1.12l1.07 3.29c.3.92-.76 1.69-1.54 1.12l-2.8-2.03a1 1 0 0 0-1.18 0l-2.8 2.03c-.78.57-1.84-.2-1.54-1.12l1.07-3.29a1 1 0 0 0-.36-1.12l-2.8-2.03c-.78-.57-.38-1.81.59-1.81h3.46a1 1 0 0 0 .95-.69z"/></svg>
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.07 3.29a1 1 0 0 0 .95.69h3.46c.97 0 1.37 1.24.59 1.81l-2.8 2.03a1 1 0 0 0-.36 1.12l1.07 3.29c.3.92-.76 1.69-1.54 1.12l-2.8-2.03a1 1 0 0 0-1.18 0l-2.8 2.03c-.78.57-1.84-.2-1.54-1.12l1.07-3.29a1 1 0 0 0-.36-1.12l-2.8-2.03c-.78-.57-.38-1.81.59-1.81h3.46a1 1 0 0 0 .95-.69z"/></svg>
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.07 3.29a1 1 0 0 0 .95.69h3.46c.97 0 1.37 1.24.59 1.81l-2.8 2.03a1 1 0 0 0-.36 1.12l1.07 3.29c.3.92-.76 1.69-1.54 1.12l-2.8-2.03a1 1 0 0 0-1.18 0l-2.8 2.03c-.78.57-1.84-.2-1.54-1.12l1.07-3.29a1 1 0 0 0-.36-1.12l-2.8-2.03c-.78-.57-.38-1.81.59-1.81h3.46a1 1 0 0 0 .95-.69z"/></svg>
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.07 3.29a1 1 0 0 0 .95.69h3.46c.97 0 1.37 1.24.59 1.81l-2.8 2.03a1 1 0 0 0-.36 1.12l1.07 3.29c.3.92-.76 1.69-1.54 1.12l-2.8-2.03a1 1 0 0 0-1.18 0l-2.8 2.03c-.78.57-1.84-.2-1.54-1.12l1.07-3.29a1 1 0 0 0-.36-1.12l-2.8-2.03c-.78-.57-.38-1.81.59-1.81h3.46a1 1 0 0 0 .95-.69z"/></svg>
+        </div>
+        <p class="review__text">"Sophisticated, fun, and it actually works. Our new date-night ritual."</p>
+        <div class="review__who"><div class="review__avatar">MJ</div><div><p class="review__name">Marcus J.</p><p class="review__handle">@marcusj</p></div></div>
+      </div>
+      <div class="review">
+        <div class="review__stars">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.07 3.29a1 1 0 0 0 .95.69h3.46c.97 0 1.37 1.24.59 1.81l-2.8 2.03a1 1 0 0 0-.36 1.12l1.07 3.29c.3.92-.76 1.69-1.54 1.12l-2.8-2.03a1 1 0 0 0-1.18 0l-2.8 2.03c-.78.57-1.84-.2-1.54-1.12l1.07-3.29a1 1 0 0 0-.36-1.12l-2.8-2.03c-.78-.57-.38-1.81.59-1.81h3.46a1 1 0 0 0 .95-.69z"/></svg>
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.07 3.29a1 1 0 0 0 .95.69h3.46c.97 0 1.37 1.24.59 1.81l-2.8 2.03a1 1 0 0 0-.36 1.12l1.07 3.29c.3.92-.76 1.69-1.54 1.12l-2.8-2.03a1 1 0 0 0-1.18 0l-2.8 2.03c-.78.57-1.84-.2-1.54-1.12l1.07-3.29a1 1 0 0 0-.36-1.12l-2.8-2.03c-.78-.57-.38-1.81.59-1.81h3.46a1 1 0 0 0 .95-.69z"/></svg>
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.07 3.29a1 1 0 0 0 .95.69h3.46c.97 0 1.37 1.24.59 1.81l-2.8 2.03a1 1 0 0 0-.36 1.12l1.07 3.29c.3.92-.76 1.69-1.54 1.12l-2.8-2.03a1 1 0 0 0-1.18 0l-2.8 2.03c-.78.57-1.84-.2-1.54-1.12l1.07-3.29a1 1 0 0 0-.36-1.12l-2.8-2.03c-.78-.57-.38-1.81.59-1.81h3.46a1 1 0 0 0 .95-.69z"/></svg>
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.07 3.29a1 1 0 0 0 .95.69h3.46c.97 0 1.37 1.24.59 1.81l-2.8 2.03a1 1 0 0 0-.36 1.12l1.07 3.29c.3.92-.76 1.69-1.54 1.12l-2.8-2.03a1 1 0 0 0-1.18 0l-2.8 2.03c-.78.57-1.84-.2-1.54-1.12l1.07-3.29a1 1 0 0 0-.36-1.12l-2.8-2.03c-.78-.57-.38-1.81.59-1.81h3.46a1 1 0 0 0 .95-.69z"/></svg>
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.07 3.29a1 1 0 0 0 .95.69h3.46c.97 0 1.37 1.24.59 1.81l-2.8 2.03a1 1 0 0 0-.36 1.12l1.07 3.29c.3.92-.76 1.69-1.54 1.12l-2.8-2.03a1 1 0 0 0-1.18 0l-2.8 2.03c-.78.57-1.84-.2-1.54-1.12l1.07-3.29a1 1 0 0 0-.36-1.12l-2.8-2.03c-.78-.57-.38-1.81.59-1.81h3.46a1 1 0 0 0 .95-.69z"/></svg>
+        </div>
+        <p class="review__text">"Premium feel from the box to the last bite. Worth every penny."</p>
+        <div class="review__who"><div class="review__avatar">AL</div><div><p class="review__name">Amara L.</p><p class="review__handle">@amaral</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="ds-subhead">FAQ accordion</p>
+  <div class="ds-specimen ds-specimen--cream">
+    <div class="faq">
+      <details class="faq__item" open>
+        <summary class="faq__q">How does Dips work?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <p class="faq__a">Our proprietary blend of natural aphrodisiac botanicals — maca, ginger, L-theanine and fenugreek — is folded into premium Arriba cocoa for a gradual, sensory effect designed to be shared.</p>
+      </details>
+      <details class="faq__item">
+        <summary class="faq__q">Is it safe and natural?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <p class="faq__a">Yes — Dips is made in the USA from natural ingredients and is FDA-compliant. Every box ships with a satisfaction guarantee.</p>
+      </details>
+      <details class="faq__item">
+        <summary class="faq__q">How is it shipped?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <p class="faq__a">Discreetly and securely. The 3-box bundle ships free; smaller orders use flat-rate shipping shown at checkout.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 5 · COMMERCE ============================ -->
+<section class="ds-section" id="commerce">
+  <div class="ds-head">
+    <p class="ds-eyebrow">05 — Commerce &amp; CRO</p>
+    <h2 class="ds-title">Conversion</h2>
+    <p class="ds-lead">The revenue-critical patterns in the bolder language: the selected bundle inverts to the ink
+      surface with an orange hard-shadow, totals update live, and trust signals sit in a single bordered ledger.
+      Click the bundles.</p>
+  </div>
+
+  <div class="ds-grid ds-grid--2" style="align-items:start">
+    <div>
+      <p class="ds-subhead" style="margin-top:0">Bundle selector — default 2×</p>
+      <div class="bundle" id="bundle">
+        <button class="bundle__opt" role="radio" aria-checked="false">
+          <div class="bundle__row"><div class="bundle__left"><span class="bundle__radio"><i></i></span><div><p class="bundle__name">1 Box</p><p class="bundle__unit">$29.99 / box</p></div></div><div class="bundle__right"><p class="bundle__total">$29.99</p></div></div>
+        </button>
+        <button class="bundle__opt" role="radio" aria-checked="true" data-popular>
+          <div class="bundle__row"><div class="bundle__left"><span class="bundle__radio"><i></i></span><div><p class="bundle__name">2 Boxes</p><p class="bundle__unit">$27.89 / box</p></div></div><div class="bundle__right"><span class="badge badge--orange" style="margin-bottom:4px">Save 7%</span><p class="bundle__total">$55.78</p></div></div>
+        </button>
+        <button class="bundle__opt" role="radio" aria-checked="false">
+          <div class="bundle__row"><div class="bundle__left"><span class="bundle__radio"><i></i></span><div><p class="bundle__name">3 Boxes</p><p class="bundle__unit">$25.19 / box</p></div></div><div class="bundle__right"><span class="badge badge--success" style="margin-bottom:4px">Save 16% + Free ship</span><p class="bundle__total">$75.57</p></div></div>
+        </button>
+      </div>
+    </div>
+    <div>
+      <p class="ds-subhead" style="margin-top:0">Order summary (live)</p>
+      <div class="summary">
+        <div class="summary__line"><span>Subtotal</span><span id="sum-sub">$55.78</span></div>
+        <div class="summary__line"><span>Shipping</span><span id="sum-ship">$6.97</span></div>
+        <div class="summary__total"><span class="h4">Total</span><b id="sum-total">$62.75</b></div>
+      </div>
+      <button class="btn btn--accent btn--lg btn--block" style="margin-top:14px">Buy now — secure checkout <svg viewBox="0 0 14 12" fill="none"><path d="M0 4.86h12M12 4.86 7.8 1M12 4.86 7.8 9" stroke="currentColor" stroke-width="1.6"/></svg></button>
+      <p class="caption" style="text-align:center;margin-top:10px">Discreet billing · 30-day satisfaction guarantee</p>
+    </div>
+  </div>
+
+  <p class="ds-subhead">Trust ledger</p>
+  <div class="trust">
+    <span class="trust__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>FDA-compliant</span>
+    <span class="trust__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 8 11 8 11s8-6 8-11V5z"/><path d="m9 12 2 2 4-4"/></svg>Made in the USA</span>
+    <span class="trust__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6"/></svg>Natural ingredients</span>
+    <span class="trust__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>30-day guarantee</span>
+  </div>
+</section>
+
+<!-- ============================ 6 · LAYOUT ============================ -->
+<section class="ds-section" id="layout">
+  <div class="ds-head">
+    <p class="ds-eyebrow">06 — Layout</p>
+    <h2 class="ds-title">Grids</h2>
+    <p class="ds-lead">Full-bleed bands of flat color with a centered max-width inner (≈1320px). Three recurring
+      patterns.</p>
+  </div>
+
+  <p class="ds-subhead">A — Feature strip</p>
+  <div class="ds-layoutFrame"><div class="ds-grid" style="grid-template-columns:repeat(4,1fr)"><div class="ds-box">1</div><div class="ds-box">2</div><div class="ds-box">3</div><div class="ds-box">4</div></div></div>
+
+  <p class="ds-subhead">B — Asymmetric buy panel</p>
+  <div class="ds-layoutFrame"><div style="display:grid;grid-template-columns:1.3fr 1fr;gap:18px"><div class="ds-box" style="min-height:120px">media · 1.3fr</div><div class="ds-box ds-box--orange" style="min-height:120px">purchase · 1fr</div></div></div>
+
+  <p class="ds-subhead">C — Full-bleed color band</p>
+  <div class="ds-layoutFrame" style="padding:0;background:var(--energy);border-color:transparent"><div style="max-width:760px;margin:0 auto;padding:26px 24px"><div class="ds-box">centered inner · max 760</div></div></div>
+</section>
+
+<!-- ============================ 7 · MOTION ============================ -->
+<section class="ds-section ds-section--flush" id="motion" style="padding-top:96px">
+  <div class="ds-head" style="max-width:1320px;margin:0 auto;padding:0 26px">
+    <p class="ds-eyebrow">07 — Motion</p>
+    <h2 class="ds-title">Motion</h2>
+    <p class="ds-lead">Snappy, graphic motion: instant color flips on hover, offset hard-shadows, and a bold
+      marquee. Built on one easing — <code>--ease</code>. Respects <code>prefers-reduced-motion</code>.</p>
+  </div>
+
+  <div class="marquee" style="margin-top:40px">
+    <div class="marquee__track">
+      <span class="marquee__item"><span class="marquee__dot"></span>Date night</span>
+      <span class="marquee__item"><span class="marquee__dot"></span>Made in the USA</span>
+      <span class="marquee__item"><span class="marquee__dot"></span>Natural aphrodisiacs</span>
+      <span class="marquee__item"><span class="marquee__dot"></span>Discreet shipping</span>
+      <span class="marquee__item"><span class="marquee__dot"></span>Date night</span>
+      <span class="marquee__item"><span class="marquee__dot"></span>Made in the USA</span>
+      <span class="marquee__item"><span class="marquee__dot"></span>Natural aphrodisiacs</span>
+      <span class="marquee__item"><span class="marquee__dot"></span>Discreet shipping</span>
+    </div>
+  </div>
+
+  <div style="max-width:1320px;margin:44px auto 0;padding:0 26px">
+    <div class="ds-grid ds-grid--3">
+      <div class="ds-specimen ds-specimen--cream"><span class="ds-stateLabel">Button flip · 180ms</span><button class="btn">Hover me <svg viewBox="0 0 14 12" fill="none"><path d="M0 4.86h12M12 4.86 7.8 1M12 4.86 7.8 9" stroke="currentColor" stroke-width="1.6"/></svg></button><p class="ds-note">Background snaps to orange, label to ink.</p></div>
+      <div class="ds-specimen ds-specimen--cream"><span class="ds-stateLabel">Card hard-shadow · 300ms</span><div class="product" style="max-width:200px"><div class="product__field" style="background:var(--plush);height:90px"><span class="mark" style="color:var(--plush-on);font-size:32px">Dips</span></div><div class="product__body" style="padding:14px"><span class="caption">Hover to offset</span></div></div></div>
+      <div class="ds-specimen ds-specimen--ink"><span class="ds-stateLabel" style="color:rgba(243,233,227,.5)">Glass brighten · 300ms</span><div class="review"><p class="review__text">Hover to brighten.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 8 · ICONS ============================ -->
+<section class="ds-section" id="icons">
+  <div class="ds-head">
+    <p class="ds-eyebrow">08 — Icons</p>
+    <h2 class="ds-title">Icons</h2>
+    <p class="ds-lead"><strong>Lucide</strong> line icons (the project ships <code>lucide-react</code>): 2px stroke,
+      round caps, <code>currentColor</code>. The rating star is a filled brand glyph. Same markup, scales via
+      width/height.</p>
+  </div>
+
+  <p class="ds-subhead">Lucide line set</p>
+  <div class="ds-specimen ds-specimen--cream">
+    <div class="ds-iconRow">
+      <div class="ds-iconCell"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg><span>cart</span></div>
+      <div class="ds-iconCell"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg><span>menu</span></div>
+      <div class="ds-iconCell"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>shield</span></div>
+      <div class="ds-iconCell"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg><span>chevron</span></div>
+      <div class="ds-iconCell" style="color:var(--orange-dark)"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg><span>inherits</span></div>
+    </div>
+  </div>
+
+  <p class="ds-subhead">Rating star</p>
+  <div class="ds-specimen ds-specimen--cream">
+    <div class="ds-iconRow" style="color:var(--orange)">
+      <div class="ds-iconCell" style="flex-direction:row;gap:3px;color:var(--orange)">
+        <svg width="22" height="22" viewBox="0 0 20 20" fill="currentColor"><path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.07 3.29a1 1 0 0 0 .95.69h3.46c.97 0 1.37 1.24.59 1.81l-2.8 2.03a1 1 0 0 0-.36 1.12l1.07 3.29c.3.92-.76 1.69-1.54 1.12l-2.8-2.03a1 1 0 0 0-1.18 0l-2.8 2.03c-.78.57-1.84-.2-1.54-1.12l1.07-3.29a1 1 0 0 0-.36-1.12l-2.8-2.03c-.78-.57-.38-1.81.59-1.81h3.46a1 1 0 0 0 .95-.69z"/></svg>
+        <svg width="22" height="22" viewBox="0 0 20 20" fill="currentColor"><path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.07 3.29a1 1 0 0 0 .95.69h3.46c.97 0 1.37 1.24.59 1.81l-2.8 2.03a1 1 0 0 0-.36 1.12l1.07 3.29c.3.92-.76 1.69-1.54 1.12l-2.8-2.03a1 1 0 0 0-1.18 0l-2.8 2.03c-.78.57-1.84-.2-1.54-1.12l1.07-3.29a1 1 0 0 0-.36-1.12l-2.8-2.03c-.78-.57-.38-1.81.59-1.81h3.46a1 1 0 0 0 .95-.69z"/></svg>
+        <svg width="22" height="22" viewBox="0 0 20 20" fill="currentColor"><path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.07 3.29a1 1 0 0 0 .95.69h3.46c.97 0 1.37 1.24.59 1.81l-2.8 2.03a1 1 0 0 0-.36 1.12l1.07 3.29c.3.92-.76 1.69-1.54 1.12l-2.8-2.03a1 1 0 0 0-1.18 0l-2.8 2.03c-.78.57-1.84-.2-1.54-1.12l1.07-3.29a1 1 0 0 0-.36-1.12l-2.8-2.03c-.78-.57-.38-1.81.59-1.81h3.46a1 1 0 0 0 .95-.69z"/></svg>
+        <svg width="22" height="22" viewBox="0 0 20 20" fill="currentColor"><path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.07 3.29a1 1 0 0 0 .95.69h3.46c.97 0 1.37 1.24.59 1.81l-2.8 2.03a1 1 0 0 0-.36 1.12l1.07 3.29c.3.92-.76 1.69-1.54 1.12l-2.8-2.03a1 1 0 0 0-1.18 0l-2.8 2.03c-.78.57-1.84-.2-1.54-1.12l1.07-3.29a1 1 0 0 0-.36-1.12l-2.8-2.03c-.78-.57-.38-1.81.59-1.81h3.46a1 1 0 0 0 .95-.69z"/></svg>
+        <svg width="22" height="22" viewBox="0 0 20 20" fill="currentColor"><path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.07 3.29a1 1 0 0 0 .95.69h3.46c.97 0 1.37 1.24.59 1.81l-2.8 2.03a1 1 0 0 0-.36 1.12l1.07 3.29c.3.92-.76 1.69-1.54 1.12l-2.8-2.03a1 1 0 0 0-1.18 0l-2.8 2.03c-.78.57-1.84-.2-1.54-1.12l1.07-3.29a1 1 0 0 0-.36-1.12l-2.8-2.03c-.78-.57-.38-1.81.59-1.81h3.46a1 1 0 0 0 .95-.69z"/></svg>
+        <span style="margin-left:8px">4.9 · rating</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer style="background:var(--ink);color:var(--on-ink);text-align:center;padding:50px 24px">
+  <p class="kicker" style="color:var(--orange);margin-bottom:10px">Dips · Design System — Tabs-forward (Option B)</p>
+  <p class="body-sm" style="color:rgba(243,233,227,.72);max-width:60ch;margin:0 auto">Bolder, flatter, louder — brand palette &amp; fonts held intact. Compare with design-system.html (Option A). Nothing applied to the live build yet.</p>
+</footer>
+
+<script>
+  (function(){
+    var opts=document.querySelectorAll('#bundle .bundle__opt');
+    var subEl=document.getElementById('sum-sub'),shipEl=document.getElementById('sum-ship'),totalEl=document.getElementById('sum-total');
+    var SHIP=6.97;
+    function money(n){return '$'+n.toFixed(2)}
+    function select(opt){
+      opts.forEach(function(o){o.setAttribute('aria-checked',o===opt?'true':'false')});
+      var sub=parseFloat(opt.querySelector('.bundle__total').textContent.replace('$',''));
+      var free=opt.querySelector('.badge--success')!==null;
+      subEl.textContent=money(sub);
+      shipEl.textContent=free?'Free':money(SHIP);
+      totalEl.textContent=money(sub+(free?0:SHIP));
+    }
+    opts.forEach(function(o){o.addEventListener('click',function(){select(o)})});
+  })();
+</script>
+
+</body>
+</html>

@@ -57,6 +57,12 @@ export default async function AdminLayout({
               >
                 Commissions
               </Link>
+              <Link
+                href="/admin/creatives"
+                className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                Creatives
+              </Link>
               {session.role === 'SUPER_ADMIN' && (
                 <Link
                   href="/admin/users"

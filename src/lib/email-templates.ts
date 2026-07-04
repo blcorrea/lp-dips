@@ -555,3 +555,160 @@ export async function sendWarehouseNotificationEmail(
     html:    buildWarehouseHtml({ ...data, sheetUrl, adminUrl }),
   });
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Affiliate magic-link login email
+// ─────────────────────────────────────────────────────────────────────────────
+
+function buildAffiliateMagicLinkHtml(firstName: string, magicUrl: string): string {
+  const body = `
+    <p style="margin:0 0 8px;font-size:14px;color:#888;text-transform:uppercase;
+               letter-spacing:1px;font-family:Arial,Helvetica,sans-serif;">
+      Affiliate Portal
+    </p>
+    <h1 style="margin:0 0 20px;font-size:28px;color:${PURPLE};line-height:1.15;">
+      Your login link, ${escapeHtml(firstName)}
+    </h1>
+    <p style="margin:0 0 28px;font-size:16px;color:${CHARCOAL};line-height:1.6;">
+      Click the button below to access your affiliate dashboard.
+      This link expires in <strong>15 minutes</strong> and can only be used once.
+    </p>
+
+    <!-- CTA button -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
+      <tr>
+        <td align="center">
+          <a href="${escapeAttr(magicUrl)}"
+             style="display:inline-block;background-color:${ORANGE};color:${PURPLE};
+                    font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:700;
+                    text-decoration:none;padding:16px 40px;border-radius:100px;
+                    letter-spacing:0.3px;">
+            Open my dashboard →
+          </a>
+        </td>
+      </tr>
+    </table>
+
+    <p style="margin:0 0 8px;font-size:13px;color:#888;font-family:Arial,Helvetica,sans-serif;">
+      If the button doesn't work, copy and paste this link into your browser:
+    </p>
+    <p style="margin:0 0 28px;font-size:12px;color:${PURPLE};font-family:monospace;
+               word-break:break-all;">
+      ${escapeHtml(magicUrl)}
+    </p>
+
+    <div style="border-top:1px solid ${BEIGE};padding-top:20px;">
+      <p style="margin:0;font-size:13px;color:#aaa;font-family:Arial,Helvetica,sans-serif;">
+        If you didn't request this link, you can safely ignore this email.
+        Someone may have entered your email address by mistake.
+      </p>
+    </div>
+  `;
+  return emailWrapper(body);
+}
+
+/**
+ * Sends the magic-link login email to an affiliate.
+ * The magic link hits /api/affiliates/verify?token=... which sets the session
+ * cookie and redirects to the dashboard.
+ */
+export async function sendAffiliateMagicLinkEmail(
+  to:        string,
+  firstName: string,
+  token:     string
+): Promise<void> {
+  const siteUrl  = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? 'https://www.dipschocolate.com';
+  const magicUrl = `${siteUrl}/api/affiliates/verify?token=${encodeURIComponent(token)}`;
+
+  await sendEmail({
+    to,
+    subject: 'Your Dips affiliate dashboard login link',
+    html:    buildAffiliateMagicLinkHtml(firstName, magicUrl),
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Affiliate welcome email (sent right after self-signup)
+// ─────────────────────────────────────────────────────────────────────────────
+
+function buildAffiliateWelcomeHtml(args: {
+  firstName: string;
+  ref:       string;
+  link:      string;
+  loginUrl:  string;
+}): string {
+  const body = `
+    <p style="margin:0 0 8px;font-size:14px;color:#888;text-transform:uppercase;
+               letter-spacing:1px;font-family:Arial,Helvetica,sans-serif;">
+      Affiliate Program
+    </p>
+    <h1 style="margin:0 0 20px;font-size:28px;color:${PURPLE};line-height:1.15;">
+      Welcome aboard, ${escapeHtml(args.firstName)}! 🎉
+    </h1>
+    <p style="margin:0 0 24px;font-size:16px;color:${CHARCOAL};line-height:1.6;">
+      Your Dips affiliate account is <strong>active</strong> — you can start
+      sharing right away and earn <strong>7% commission</strong> on every sale
+      you generate.
+    </p>
+
+    <!-- Referral link -->
+    <p style="margin:0 0 8px;font-size:13px;color:#888;text-transform:uppercase;
+               letter-spacing:1px;font-family:Arial,Helvetica,sans-serif;">
+      Your referral link
+    </p>
+    <p style="margin:0 0 6px;font-size:14px;color:${PURPLE};font-family:monospace;
+               word-break:break-all;background-color:${CREAM};border-radius:8px;
+               padding:14px 16px;">
+      ${escapeHtml(args.link)}
+    </p>
+    <p style="margin:0 0 28px;font-size:13px;color:#888;
+               font-family:Arial,Helvetica,sans-serif;">
+      Referral code: <strong style="color:${CHARCOAL};">${escapeHtml(args.ref)}</strong>
+    </p>
+
+    <!-- CTA button -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
+      <tr>
+        <td align="center">
+          <a href="${escapeAttr(args.loginUrl)}"
+             style="display:inline-block;background-color:${ORANGE};color:${PURPLE};
+                    font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:700;
+                    text-decoration:none;padding:16px 40px;border-radius:100px;
+                    letter-spacing:0.3px;">
+            Open my dashboard →
+          </a>
+        </td>
+      </tr>
+    </table>
+
+    <div style="border-top:1px solid ${BEIGE};padding-top:20px;">
+      <p style="margin:0;font-size:14px;color:${CHARCOAL};line-height:1.6;">
+        <strong>How to log in:</strong> we use passwordless login. Go to the
+        dashboard, enter this email address, and we'll send you a secure link —
+        no password to remember. Inside, you'll find your live stats, commission
+        history, and this referral link ready to copy.
+      </p>
+    </div>
+  `;
+  return emailWrapper(body);
+}
+
+/**
+ * Sends the welcome email after a successful affiliate self-signup. Includes the
+ * affiliate's referral link so they can start sharing immediately, plus a button
+ * to the (passwordless) login page.
+ */
+export async function sendAffiliateWelcomeEmail(
+  to:        string,
+  firstName: string,
+  args:      { ref: string; link: string }
+): Promise<void> {
+  const siteUrl  = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? 'https://www.dipschocolate.com';
+  const loginUrl = `${siteUrl}/en/affiliates/login`;
+
+  await sendEmail({
+    to,
+    subject: 'Welcome to the Dips affiliate program 🎉',
+    html:    buildAffiliateWelcomeHtml({ firstName, ref: args.ref, link: args.link, loginUrl }),
+  });
+}

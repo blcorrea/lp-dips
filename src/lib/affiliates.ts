@@ -289,6 +289,138 @@ export async function getCommissionSummary(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Affiliate self-service dashboard
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type AffiliateDashboardCommission = {
+  id:          string;
+  createdAt:   string;
+  orderNumber: string;
+  baseAmount:  number;
+  rate:        number;
+  amount:      number;
+  status:      CommissionStatus;
+  paidAt:      string | null;
+};
+
+export type AffiliateDashboardData = {
+  affiliate: {
+    id:             string;
+    name:           string;
+    ref:            string;
+    email:          string | null;
+    instagram:      string | null;
+    type:           AffiliateType;
+    commissionRate: number;
+    link:           string;
+  };
+  stats: {
+    ordersCount:            number;
+    attributedRevenueCents: number;
+    pendingCents:           number;
+    approvedCents:          number;
+    paidCents:              number;
+  };
+  recentCommissions: AffiliateDashboardCommission[];
+};
+
+/**
+ * Looks up an affiliate by email + ref for login verification.
+ * Returns null when no matching active affiliate is found.
+ */
+export async function getAffiliateByEmailAndRef(
+  email: string,
+  ref:   string
+): Promise<{ id: string; name: string } | null> {
+  const affiliate = await prisma.affiliate.findFirst({
+    where: {
+      email:  { equals: email, mode: 'insensitive' },
+      ref:    { equals: ref,   mode: 'insensitive' },
+      active: true,
+    },
+    select: { id: true, name: true },
+  });
+  return affiliate;
+}
+
+/**
+ * Returns all data needed to render the affiliate's self-service dashboard.
+ * Returns null when the affiliate ID does not exist or is inactive.
+ */
+export async function getAffiliateDashboardData(
+  affiliateId: string
+): Promise<AffiliateDashboardData | null> {
+  const affiliate = await prisma.affiliate.findUnique({
+    where: { id: affiliateId },
+  });
+  if (!affiliate || !affiliate.active) return null;
+
+  const [commissionGroups, orderGroup, recentRows] = await Promise.all([
+    prisma.commission.groupBy({
+      by:    ['status'],
+      where: { affiliateId },
+      _sum:  { amount: true },
+    }),
+    prisma.order.aggregate({
+      where: {
+        influencerRef: { equals: affiliate.ref, mode: 'insensitive' },
+        paymentStatus: 'PAID',
+      },
+      _sum:   { total: true },
+      _count: { _all: true },
+    }),
+    prisma.commission.findMany({
+      where:   { affiliateId },
+      orderBy: { createdAt: 'desc' },
+      take:    50,
+      include: { order: { select: { orderNumber: true } } },
+    }),
+  ]);
+
+  let pending = 0, approved = 0, paid = 0;
+  for (const g of commissionGroups) {
+    const sum = g._sum.amount ?? 0;
+    if      (g.status === 'PENDING')  pending  = sum;
+    else if (g.status === 'APPROVED') approved = sum;
+    else if (g.status === 'PAID')     paid     = sum;
+  }
+
+  return {
+    affiliate: {
+      id:             affiliate.id,
+      name:           affiliate.name,
+      ref:            affiliate.ref,
+      email:          affiliate.email,
+      instagram:      affiliate.instagram,
+      type:           affiliate.type,
+      commissionRate: Number(affiliate.commissionRate),
+      link:           buildAffiliateLink({
+        ref:       affiliate.ref,
+        type:      affiliate.type,
+        instagram: affiliate.instagram,
+      }),
+    },
+    stats: {
+      ordersCount:            orderGroup._count._all,
+      attributedRevenueCents: orderGroup._sum.total ?? 0,
+      pendingCents:           pending,
+      approvedCents:          approved,
+      paidCents:              paid,
+    },
+    recentCommissions: recentRows.map((c) => ({
+      id:          c.id,
+      createdAt:   c.createdAt.toISOString(),
+      orderNumber: c.order.orderNumber,
+      baseAmount:  c.baseAmount,
+      rate:        Number(c.rate),
+      amount:      c.amount,
+      status:      c.status,
+      paidAt:      c.paidAt ? c.paidAt.toISOString() : null,
+    })),
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Writes
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -301,6 +433,19 @@ export type CreateAffiliateInput = {
   commissionRate?: number;
   active?:        boolean;
 };
+
+/**
+ * Returns true when an affiliate already exists with this email
+ * (case-insensitive). Used by self-signup to reject duplicates with a clear
+ * message before hitting the DB unique constraint.
+ */
+export async function affiliateEmailExists(email: string): Promise<boolean> {
+  const existing = await prisma.affiliate.findFirst({
+    where:  { email: { equals: email, mode: 'insensitive' } },
+    select: { id: true },
+  });
+  return existing !== null;
+}
 
 export async function createAffiliate(input: CreateAffiliateInput) {
   return prisma.affiliate.create({

@@ -5,15 +5,26 @@ import { verifySessionToken } from './lib/session';
 
 const intlMiddleware = createMiddleware(routing);
 
-// Inline the cookie name here to avoid importing from admin-auth.ts,
-// which uses next/headers (not available in Edge middleware runtime).
-const ADMIN_COOKIE = 'admin_token';
+// Inline cookie names to avoid importing from auth libs that use next/headers
+// (not available in Edge middleware runtime).
+const ADMIN_COOKIE     = 'admin_token';
+const AFFILIATE_COOKIE = 'affiliate_session';
 
 function jsonError(message: string, status: number): NextResponse {
   return new NextResponse(JSON.stringify({ error: message }), {
     status,
     headers: { 'Content-Type': 'application/json' },
   });
+}
+
+function isAffiliateAuthed(request: NextRequest): boolean {
+  return !!request.cookies.get(AFFILIATE_COOKIE)?.value;
+}
+
+/** Verified admin session from the JWT cookie, or null. */
+async function adminSession(request: NextRequest) {
+  const token = request.cookies.get(ADMIN_COOKIE)?.value;
+  return token ? verifySessionToken(token) : null;
 }
 
 export default async function middleware(request: NextRequest) {
@@ -31,8 +42,7 @@ export default async function middleware(request: NextRequest) {
       return NextResponse.next();
     }
 
-    const token   = request.cookies.get(ADMIN_COOKIE)?.value;
-    const session = token ? await verifySessionToken(token) : null;
+    const session = await adminSession(request);
     const isApi   = pathname.startsWith('/api/');
 
     if (!session) {
@@ -56,6 +66,45 @@ export default async function middleware(request: NextRequest) {
 
     // Authenticated — skip intl middleware entirely.
     return NextResponse.next();
+  }
+
+  // ── Affiliate dashboard protection ────────────────────────────────────────
+  // Matches /{locale}/affiliates/dashboard for all supported locales.
+  const isAffiliateDashboard = routing.locales.some(
+    (locale) =>
+      pathname === `/${locale}/affiliates/dashboard` ||
+      pathname.startsWith(`/${locale}/affiliates/dashboard/`)
+  );
+
+  // Matches /{locale}/affiliates/login for all supported locales.
+  const isAffiliateLogin = routing.locales.some(
+    (locale) => pathname === `/${locale}/affiliates/login`
+  );
+
+  // A logged-in admin who lands on the affiliate login or dashboard (without an
+  // affiliate session of their own) shouldn't be asked for a separate affiliate
+  // login — admins manage affiliates, they don't have a personal dashboard.
+  // Send them to the admin affiliate management page instead.
+  if (
+    (isAffiliateDashboard || isAffiliateLogin) &&
+    !isAffiliateAuthed(request) &&
+    (await adminSession(request)) !== null
+  ) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/admin/affiliates';
+    url.search   = '';
+    return NextResponse.redirect(url);
+  }
+
+  if (isAffiliateDashboard && !isAffiliateAuthed(request)) {
+    // Determine locale from path so the redirect lands on the right login page
+    const locale = routing.locales.find(
+      (l) => pathname === `/${l}/affiliates/dashboard` || pathname.startsWith(`/${l}/affiliates/dashboard/`)
+    ) ?? 'en';
+    const loginUrl = request.nextUrl.clone();
+    loginUrl.pathname = `/${locale}/affiliates/login`;
+    loginUrl.search   = '';
+    return NextResponse.redirect(loginUrl);
   }
 
   // ── i18n (unchanged) ──────────────────────────────────────────────────────

@@ -60,6 +60,13 @@ export default function Header() {
             >
               Shop
             </Link>
+
+            <Link
+              href={`/${locale}/affiliates/join`}
+              className={desktopNavLinkClass}
+            >
+              {t("affiliates")}
+            </Link>
           </nav>
 
           {/* Language selector */}
@@ -141,6 +148,14 @@ export default function Header() {
             onClick={() => setMobileOpen(false)}
           >
             Shop
+          </Link>
+
+          <Link
+            href={`/${locale}/affiliates/join`}
+            className="block text-brand-purple font-semibold text-base hover:text-brand-orange transition-colors"
+            onClick={() => setMobileOpen(false)}
+          >
+            {t("affiliates")}
           </Link>
 
           <div className="flex items-center gap-3 pt-2 text-brand-purple font-semibold text-base border-t border-brand-purple/10">

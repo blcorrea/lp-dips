@@ -59,6 +59,11 @@ enum AdminRole {
   OPERATOR
 }
 
+enum CreativeType {
+  IMAGE
+  VIDEO
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Order
 // ─────────────────────────────────────────────────────────────────────────────
@@ -181,7 +186,10 @@ model Affiliate {
   /// Referral code stamped onto Order.influencerRef (e.g. "ana"). Lowercased
   /// by convention; uniqueness is enforced.
   ref       String        @unique
-  email     String?
+  /// Unique when present (self-signup always stores a lowercased email).
+  /// NULL is allowed for admin-created affiliates without an email — Postgres
+  /// permits multiple NULLs under a UNIQUE index.
+  email     String?       @unique
   instagram String?
   type      AffiliateType @default(INFLUENCER)
   /// Default commission share (e.g. 0.15 = 15%). Snapshot is copied to each
@@ -189,10 +197,30 @@ model Affiliate {
   commissionRate Decimal  @default(0.15)
   active    Boolean       @default(true)
 
-  commissions Commission[]
+  commissions  Commission[]
+  loginTokens  AffiliateLoginToken[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AffiliateLoginToken — one-time magic link tokens (15-min TTL)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model AffiliateLoginToken {
+  id          String    @id @default(cuid())
+  affiliateId String
+  affiliate   Affiliate @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+  /// 64-char hex string (32 random bytes). Globally unique.
+  token       String    @unique
+  expiresAt   DateTime
+  usedAt      DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@index([affiliateId])
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -275,4 +303,33 @@ model StripeEvent {
   processedAt DateTime @default(now())
 
   @@index([type])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AffiliateCreative — marketing assets managed by admins, browsable by affiliates
+// ─────────────────────────────────────────────────────────────────────────────
+
+model AffiliateCreative {
+  id                String       @id @default(cuid())
+  title             String
+  description       String?
+  caption           String?
+  type              CreativeType
+  /// Public URL returned by Vercel Blob after upload
+  url               String
+  /// Pathname used with @vercel/blob del() on hard delete — follows creatives/<id>/<filename> scheme
+  blobPath          String
+  thumbnailUrl      String?
+  thumbnailBlobPath String?
+  fileName          String
+  /// File size in bytes
+  fileSize          Int
+  mimeType          String
+  sortOrder         Int          @default(0)
+  active            Boolean      @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([active, sortOrder])
 }
