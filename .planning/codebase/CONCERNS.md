@@ -1,235 +1,168 @@
 # Codebase Concerns
 
-**Analysis Date:** 2026-06-17
+**Analysis Date:** 2026-07-03
 
 ## Tech Debt
 
-**Stripe Webhook Phone Number Collection:**
-- Issue: Phone number collection is disabled at checkout with a TODO comment indicating it should be enabled post-launch after schema updates
-- Files: `src/app/api/stripe/create-checkout-session/route.ts` (line 118)
-- Impact: Order.schema lacks phone field; customers cannot be collected or contacted via SMS for fulfillment
-- Fix approach: (1) Add `phone?: string` column to Order model in `prisma/schema.prisma`, (2) Update webhook handler in `src/app/api/stripe/webhook/route.ts` to persist `shipping_details.phone` to the phone field, (3) Enable `phone_number_collection: { enabled: true }` in checkout session creation
+**Fake/legacy cart-checkout flow is dead code that mimics a real purchase (also see Known Bugs):**
+- Issue: `src/contexts/CartContext.tsx`, `src/app/[locale]/cart/page.tsx`, `src/app/[locale]/checkout/page.tsx`, and `src/components/checkout/CheckoutForm.tsx` implement a full "add to cart → checkout → success" flow that never talks to Stripe. `CheckoutForm.tsx` renders raw card number/expiry/CVV `<input>` fields pre-filled with the Stripe test card (`4242 4242 4242 4242`, `12/25`, `123`) and "processes" the order with a hardcoded `setTimeout(..., 2000)` before calling `onSubmit('card')`.
+- Files: `src/components/checkout/CheckoutForm.tsx`, `src/app/[locale]/checkout/page.tsx`, `src/contexts/CartContext.tsx`, `src/app/[locale]/cart/page.tsx`, `src/components/cart/CartDrawer.tsx`, `src/components/cart/CartItem.tsx`
+- Impact: This flow is reachable from production UI (`Header.tsx`, `ProductCard.tsx` both call `useCart()`/`addToCart`). A real customer who adds a product to the cart and checks out via this path sees a "success" page and has their cart cleared, but is never charged and no `Order` row is ever created (this bypasses `/api/stripe/create-checkout-session` and the webhook entirely). This is a broken purchase path sitting alongside the real one.
+- Fix approach: Either wire `CartContext`/`CheckoutForm` into the real Stripe Checkout flow (`/api/stripe/create-checkout-session`) or remove the cart/checkout pages and drawer entirely and keep only the working `BuyNowButton.tsx` → Stripe Checkout path used on the product page.
 
-**Affiliate Query Performance — No Date Filtering:**
-- Issue: `getAffiliatesWithStats()` in `src/lib/affiliates.ts` aggregates ALL commissions and orders since inception with no date-scoping option; monthly/yearly reports or high-volume deployments will degrade
-- Files: `src/lib/affiliates.ts` (lines 125–200), `src/app/admin/affiliates/page.tsx`
-- Impact: As order volume grows, dashboard response time increases linearly; aggregation queries with `groupBy` across full history become slow
-- Fix approach: Add optional `createdAfter`, `createdBefore` parameters to `getAffiliatesWithStats()` with sensible defaults (e.g., last 12 months); update UI to offer period presets
+**Customer-facing account pages run entirely on mock/localStorage data, disconnected from real orders:**
+- Issue: `src/contexts/CustomerContext.tsx` persists a fake `Customer` object (`src/data/customers.ts` → `mockCustomer`) to `localStorage` to "simulate a session." `/orders`, `/orders/[id]`, `/profile`, and `/wishlist` all read from `src/data/orders.ts` (a static in-memory mock order list keyed by `mockCustomer.id`), not from the real `Order`/`OrderItem` Prisma models used by the Stripe webhook.
+- Files: `src/contexts/CustomerContext.tsx`, `src/data/customers.ts`, `src/data/orders.ts`, `src/app/[locale]/orders/page.tsx`, `src/app/[locale]/orders/[id]/page.tsx`, `src/app/[locale]/profile/page.tsx`, `src/app/[locale]/wishlist/page.tsx`
+- Impact: A real customer who completes a real Stripe purchase (via `BuyNowButton.tsx`) will never see that order under `/orders` — the pages only ever show the hardcoded mock orders. There is no real customer authentication system at all (login/logout just toggles a `localStorage` flag).
+- Fix approach: Either scope these pages out of the current release (gate/hide the nav links) or build a real customer-facing order lookup backed by `Order`/`OrderItem` (e.g. email + order number lookup, matching the pattern already used in `src/lib/orders.ts` for admin).
 
-**Commission Rate Snapshot Design — Non-Atomic Update Risk:**
-- Issue: Commission snapshot is created in webhook but affiliate.commissionRate can be updated independently by admin; a race between commission creation and rate change could cause stale reads
-- Files: `src/app/api/stripe/webhook/route.ts` (lines 177–236), `src/lib/affiliates.ts` (affiliate update endpoints)
-- Impact: Rare but possible: admin updates affiliate rate → order arrives → commission uses stale rate from DB read
-- Fix approach: Wrap commission creation in a defensive SELECT ... FOR UPDATE pattern, or redesign to always snapshot the rate at order time (currently done correctly in webhook, but admin updates to affiliate.commissionRate should be flagged as recalc triggers)
+**Static "reviews" presented as real customer testimonials:**
+- Issue: `src/data/reviews.ts` is explicitly commented `// Reviews — static data. Replace placeholder content with real reviews.` yet is rendered on the homepage via `src/components/ReviewsSection.tsx` with names, handles, star ratings, and platform badges (Instagram/TikTok/Google) styled as real social proof.
+- Files: `src/data/reviews.ts`, `src/components/ReviewsSection.tsx`
+- Impact: Presenting fabricated testimonials as genuine customer reviews (with fake handles/platforms) is a legal/compliance risk (FTC endorsement guidelines) if shipped to production as-is.
+- Fix approach: Replace with real collected reviews before launch, or clearly label the section as illustrative/remove platform badges until real reviews exist.
 
-**Logging Strategy — Console.log in Production:**
-- Issue: Extensive use of `console.log()` and `console.error()` throughout webhook, emails, and order processing without structured logging framework
-- Files: `src/app/api/stripe/webhook/route.ts` (23 log statements), `src/lib/email.ts`, `src/app/api/admin/orders/[id]/route.ts`, `src/app/api/affiliates/join/route.ts`
-- Impact: Production logs are unstructured; difficult to filter, search, or aggregate errors; no context like request ID or trace correlation
-- Fix approach: Integrate a structured logger (e.g., Pino, Winston) with JSON output; wrap all log calls with request context metadata
+**Generated Prisma client checked into `src/` but excluded from types/lint scope inconsistently:**
+- Issue: `src/generated/prisma/client/**` (27k+ lines) is gitignored (`src/generated/` in `.gitignore`) but lives under `src/`, so tooling that globs `src/**/*.ts` (this analysis, potentially IDE-wide search/refactor) sweeps in thousands of generated lines including legitimate-looking `any` usage.
+- Files: `src/generated/prisma/client/` (entire tree), `.gitignore`
+- Impact: Noise in `any`/complexity scans; risk that a future contributor edits generated files directly since they're physically inside `src/`.
+- Fix approach: Consider generating to a top-level `generated/` or `node_modules/.prisma`-style location outside `src/` (Prisma 7 supports arbitrary `output` paths) to keep `src/` as "hand-written code only."
+
+**Stray design reference files committed at repo root:**
+- Issue: `design-system.html` (65KB) and `design-system-tabs.html` (59KB) sit untracked at the project root alongside real app code.
+- Files: `design-system.html`, `design-system-tabs.html`
+- Impact: Clutter; risk of accidental deployment/exposure if a future static-file serving rule is added; not part of the Next.js app itself.
+- Fix approach: Move to a `design/` or `.reference/` folder outside the deployable app root, or delete once no longer needed. Note `design_system.html` (underscore variant) is already gitignored — these hyphenated files are not.
+
+**`phone_number_collection` intentionally disabled with an open TODO:**
+- Issue: `phone_number_collection: { enabled: false }` in Stripe Checkout session creation, with an explicit TODO to enable post-launch once a `phone` column exists on `Order` and is persisted in the webhook.
+- Files: `src/app/api/stripe/create-checkout-session/route.ts:100`
+- Impact: No customer phone number is captured for shipping/support, which the Google Sheets warehouse export already has an empty placeholder column for (`ship-phone-number`).
+- Fix approach: Add `phone` to the `Order` schema, persist it from `session.customer_details.phone` in the webhook, and enable collection.
 
 ## Known Bugs
 
-**Admin Affiliate Redirect Loop Potential:**
-- Symptoms: A logged-in admin without an affiliate session landing on `/affiliates/login` or `/affiliates/dashboard` is redirected to `/admin/affiliates` by middleware, but if the admin's affiliate_session cookie is manually set by attacker, the redirect could fail
-- Files: `src/middleware.ts` (lines 59–73)
-- Trigger: Admin user with spoofed affiliate_session cookie + manual navigation to `/[locale]/affiliates/dashboard`
-- Workaround: Middleware checks both cookies before allowing access; the check is XORed (admin → redirect, no affiliate session + admin → redirect to admin), so the logic is sound. Low risk.
+**Legacy checkout completes without payment (functional bug, not just dead code):**
+- Symptoms: Adding an item to cart and completing checkout via `/[locale]/checkout` shows a success page and empties the cart, with zero payment charged and zero order persisted.
+- Files: `src/app/[locale]/checkout/page.tsx`, `src/components/checkout/CheckoutForm.tsx`
+- Trigger: Any "Add to Cart" action from `Header.tsx` / `ProductCard.tsx`, followed by visiting `/cart` → `/checkout` → "Place Order."
+- Workaround: None currently — the flow is fully reachable in the UI.
 
-**Email Send Failure Silent in Webhook:**
-- Symptoms: When `sendOrderConfirmationEmail()` throws in the webhook post-transaction, the error is caught and logged but the order status is not rolled back
-- Files: `src/app/api/stripe/webhook/route.ts` (lines 441–472)
-- Trigger: SMTP misconfiguration or transient network error during email send
-- Workaround: Current design catches errors and logs them; confirmationEmailSentAt is only set on success, so retries can be built later. Email failure is non-critical (order is persisted), but customer may not be notified.
+**Free-text `role` bypass check is fragile string comparison, not schema-validated at the API boundary:**
+- Symptoms: `POST /api/admin/users` accepts any `role` value and silently coerces anything other than the literal string `'SUPER_ADMIN'` to `'OPERATOR'` rather than rejecting invalid input.
+- Files: `src/app/api/admin/users/route.ts:64`
+- Trigger: Sending `role: "super_admin"` (wrong case) or `role: "ADMIN"` silently creates an `OPERATOR` account instead of erroring, which could surprise an admin expecting a validation error.
+- Workaround: None; low severity since it fails safe (defaults to lower privilege).
 
 ## Security Considerations
 
-**Setup Mode Plaintext Secret Comparison:**
-- Risk: First admin user creation compares plaintext password against ADMIN_SECRET env var; timing attack possible (though low impact for setup)
-- Files: `src/app/api/admin/login/route.ts` (lines 22–42)
-- Current mitigation: Node.js string comparison is fast enough that timing window is negligible; secure comparison not required for one-time setup
-- Recommendations: (1) Add rate limiting to POST /api/admin/login, (2) Consider using bcrypt.compare() even for setup mode for consistency
+**No rate limiting / brute-force protection on admin login:**
+- Risk: `POST /api/admin/login` has no attempt throttling, lockout, or CAPTCHA. An attacker can brute-force the `ADMIN_SECRET` master-key bootstrap path or a known admin email's password indefinitely.
+- Files: `src/app/api/admin/login/route.ts`, `src/middleware.ts`
+- Current mitigation: Passwords are hashed with scrypt + timing-safe comparison (`src/lib/password.ts`), which slows individual guesses, but nothing prevents unlimited attempts over time or from many IPs.
+- Recommendations: Add IP/email-based rate limiting (e.g. Redis/Upstash token bucket, or a simple DB-backed failed-attempt counter with exponential backoff) in front of `/api/admin/login`.
 
-**Admin Session Cookie — No CSRF Token:**
-- Risk: Admin state-changing operations (PATCH /api/admin/orders/[id], etc.) only validate httpOnly cookie; no CSRF token present
-- Files: `src/middleware.ts` (admin auth check), `src/app/api/admin/orders/[id]/route.ts` (PATCH), all admin API routes
-- Current mitigation: httpOnly cookie + SameSite=lax prevents most CSRF; Next.js middleware validates on every request
-- Recommendations: Add CSRF token validation to sensitive mutations; consider SameSite=strict for admin routes only
+**`ADMIN_SECRET` doubles as both JWT signing key and bootstrap master password:**
+- Risk: `src/lib/session.ts` uses `process.env.ADMIN_SECRET` to sign/verify session JWTs, and `src/app/api/admin/login/route.ts` uses the *same* value as the one-time bootstrap password when `AdminUser` count is 0. If this secret ever leaks (e.g. via logs, error messages, or a misconfigured env in a lower environment), an attacker can both forge admin session tokens and (if no admin exists yet) create a new SUPER_ADMIN account.
+- Files: `src/lib/session.ts:29-32`, `src/app/api/admin/login/route.ts:46-81`
+- Current mitigation: Bootstrap path only works while `adminUser` table is empty, and email-verification is not required.
+- Recommendations: Use two distinct secrets — one for JWT signing (`SESSION_SECRET`) and a separate one-time `ADMIN_BOOTSTRAP_KEY` that can be rotated/removed from the environment after the first SUPER_ADMIN is created.
 
-**Affiliate Login Token Storage — No Rate Limiting:**
-- Risk: No rate limit on `/api/affiliates/verify` endpoint; attacker can brute-force 64-char hex tokens
-- Files: `src/app/api/affiliates/verify/route.ts`
-- Current mitigation: Token entropy is high (32 random bytes = 2^256 space), but brute-force is theoretically possible over months
-- Recommendations: (1) Add rate limiting per IP (e.g., 5 attempts per minute), (2) Implement exponential backoff after N failures, (3) Log failed attempts for monitoring
+**Admin session cookie is a long-lived (8h) JWT with no server-side revocation:**
+- Risk: `ADMIN_COOKIE_MAX_AGE = 60 * 60 * 8` (`src/lib/admin-auth.ts:5`) issues stateless JWTs with no session store, so a stolen cookie remains valid for up to 8 hours and there is no way to force-revoke a session (e.g. after deactivating an `AdminUser` via `active: false`, any already-issued token for that user still verifies successfully until it naturally expires, since `verifySessionToken` never re-checks the DB).
+- Files: `src/lib/session.ts`, `src/lib/admin-auth.ts`, `src/middleware.ts`
+- Current mitigation: Tokens are signed and tamper-evident (`jose` HS256); `active` is checked only at login time, not on every request.
+- Recommendations: Either check `AdminUser.active` on each authenticated request (adds a DB round trip to every admin page/route) or maintain a short revocation list / shorter token TTL with refresh.
 
-**Stripe Webhook Secret Management:**
-- Risk: STRIPE_WEBHOOK_SECRET stored as environment variable; if .env is leaked, webhook validation is compromised
-- Files: `src/app/api/stripe/webhook/route.ts` (line 15)
-- Current mitigation: .env is in .gitignore; production uses secure env var management
-- Recommendations: Rotate webhook secret quarterly; monitor for unauthorized webhook delivery in Stripe dashboard; add webhook signature validation logging
+**Google Sheets service-account private key handled via env var string replace:**
+- Risk: `normalisePrivateKey()` does a blind `.replace(/\\n/g, '\n')` on `GOOGLE_SHEETS_PRIVATE_KEY`; if the env var is misconfigured (e.g. missing quoting in the hosting platform's env UI), `buildClient()` will throw only at call time (inside the webhook's best-effort try/catch), silently degrading Sheets sync rather than failing loudly at boot.
+- Files: `src/lib/google-sheets.ts:90-92`, `src/app/api/stripe/webhook/route.ts:498-506`
+- Current mitigation: Webhook explicitly treats Sheets sync as non-critical and only logs on failure — this is intentional and reasonable for the checkout path, but means misconfiguration can go unnoticed for a long time.
+- Recommendations: Add a startup/health-check script (or admin-only diagnostic endpoint) that validates Google Sheets credentials independent of live order traffic.
 
-**Metadata Injection in Stripe Checkout:**
-- Risk: Attribution metadata (utm_source, utm_campaign, etc.) are user-provided and written to Stripe metadata; XSS/injection possible if rendered client-side
-- Files: `src/app/api/stripe/create-checkout-session/route.ts` (lines 60–79)
-- Current mitigation: Values are trimmed and capped at 500 chars; no HTML/script injection possible in metadata itself
-- Recommendations: Audit frontend rendering of metadata in email templates and admin dashboard for XSS; sanitize all user input
+**No CSRF protection beyond `sameSite=lax` cookies on admin mutating routes:**
+- Risk: Admin POST/PATCH/DELETE routes (`/api/admin/users`, `/api/admin/orders/bulk`, `/api/admin/account/password`, etc.) rely solely on the `admin_token` cookie's `sameSite: 'lax'` attribute for CSRF protection; there is no CSRF token.
+- Files: `src/app/api/admin/login/route.ts:7-15`, all `src/app/api/admin/**/route.ts`
+- Current mitigation: `sameSite: 'lax'` blocks most cross-site POST forgery for modern browsers.
+- Recommendations: Acceptable for an internal admin tool at current scale; consider a CSRF token if the admin surface grows or supports third-party integrations.
 
 ## Performance Bottlenecks
 
-**Stripe Webhook — Full Session Expansion:**
-- Problem: Webhook retrieves full checkout session with expand=['line_items'] even if only session.id is needed
-- Files: `src/app/api/stripe/webhook/route.ts` (lines 76–78)
-- Cause: Simplifies data extraction; avoids second API call for line_items
-- Improvement path: Cache line_items in Stripe metadata at checkout time; webhook can parse from event payload without expansion
+**Google Sheets `updateOrderInSheet` fetches the entire order-id column on every fulfillment update:**
+- Problem: `sheets.spreadsheets.values.get({ range: '${tab}!A:A' })` reads the full column A (unbounded row count) to linearly scan for matching `orderNumber` rows, on every single fulfillment status update from the admin UI.
+- Files: `src/lib/google-sheets.ts:243-267`
+- Cause: No indexed lookup structure in Google Sheets; full-column scan is the simplest implementation.
+- Improvement path: Acceptable while order volume is low (hundreds–low thousands of rows); if volume grows significantly, consider caching a `orderNumber → row` map or switching the operational/logistics fields to be admin/DB-driven only (Sheets export becomes append-only, no update-in-place).
 
-**Dashboard Chart Query — 2000-Row Hard Limit:**
-- Problem: `getDashboardData()` queries orders with `take: 2_000` hard limit; if order volume exceeds this, chart is incomplete
-- Files: `src/lib/orders.ts` (lines 451–464)
-- Cause: Safety measure to prevent unbounded queries; comment notes "sufficient for typical small-brand volumes"
-- Improvement path: (1) Implement date range filtering by default (last 90 days), (2) Add pagination to chart data, (3) Move to aggregation query (groupBy day + _sum) instead of full fetch
-
-**Google Sheets Sync — Linear Search for Order Rows:**
-- Problem: `updateOrderInSheet()` fetches entire column A and iterates to find matching orderNumber; O(n) scan with network latency
-- Files: `src/lib/google-sheets.ts` (lines 243–287)
-- Cause: Google Sheets API has no native row lookup; linear scan is only option without secondary index
-- Improvement path: (1) Maintain a separate index sheet mapping orderNumber → row number, (2) Use batchGet with multiple ranges, or (3) migrate to a real database for warehouse sync
-
-**Affiliate Commission Calculation — Decimal → Number Conversion on Every Read:**
-- Problem: `commissionRate` is Decimal in database but converted to number in every `AffiliateRow` response
-- Files: `src/lib/affiliates.ts` (line 181)
-- Cause: Prisma Decimal type requires explicit conversion; no SQL-level type coercion
-- Improvement path: Use BigInt or store as basis points (integer) in schema to avoid conversion overhead
+**Admin orders export caps at 2,000 rows with no pagination/streaming:**
+- Problem: `prisma.order.findMany({ take: 2_000, ... })` in the export path loads up to 2,000 full orders (with items) into memory to build a CSV/export in one request.
+- Files: `src/lib/orders.ts:454-463`
+- Cause: Simple `take` cap rather than cursor-based streaming export.
+- Improvement path: Fine at current scale; if order volume approaches the 2,000 cap, silently-truncated exports become a real risk — add an explicit warning in the UI when the cap is hit, or switch to streamed CSV generation.
 
 ## Fragile Areas
 
-**Webhook Idempotency Logic — Multiple Fallback Guards:**
-- Files: `src/app/api/stripe/webhook/route.ts` (lines 81–432)
-- Why fragile: Webhook relies on three layers of deduplication: StripeEvent.create claim, Order.stripeSessionId uniqueness, and commission check. If any layer fails or is removed, duplicates possible.
-- Safe modification: (1) Never remove the StripeEvent claim check (it's the primary guard), (2) Keep P2002 error handling for all insert operations, (3) Add integration tests that replay webhook payloads
-- Test coverage: Webhook idempotency is untested; no test fixtures for duplicate event replay
+**Stripe webhook handler is a single 553-line function covering 5 event types:**
+- Files: `src/app/api/stripe/webhook/route.ts`
+- Why fragile: All Stripe event handling (`checkout.session.completed`, `payment_intent.succeeded`, `payment_intent.payment_failed`, `charge.refunded`, commission creation, email dispatch, Sheets sync, warehouse notification) lives in one `POST` handler with a large `switch`. The idempotency design (StripeEvent as first tx op) is solid, but any change to one event type risks breaking unrelated logic due to shared scope (`confirmationEmailData`, `capturedOrderId` captured via `let` across the whole function).
+- Safe modification: Keep all writes inside the `$transaction` block; keep all network calls (email, Sheets, warehouse notification) strictly after the transaction commits, following the existing pattern. Add new event types as new `case` blocks rather than modifying existing ones.
+- Test coverage: None (no test suite exists in this repo — see Test Coverage Gaps).
 
-**Email Template Generation — Inline HTML String Concatenation:**
-- Files: `src/lib/email-templates.ts` (714 lines of HTML strings)
-- Why fragile: HTML is built by string concatenation; no template engine validation; easy to introduce XSS or unclosed tags
-- Safe modification: (1) Never interpolate unsanitized user input directly into HTML, (2) Use htmlspecialchars or a template engine (e.g., Handlebars, ETA), (3) Test HTML output with validator before sending
-- Test coverage: Email templates have no unit tests; only manual verification
+**Dual "Order" concepts in the codebase (real Prisma `Order` vs. mock `data/orders.ts` `Order`):**
+- Files: `prisma/schema.prisma` (`model Order`), `src/data/orders.ts` (`interface Order`), `src/lib/orders.ts` (real admin-facing queries), `src/data/orders.ts` (mock customer-facing queries)
+- Why fragile: Two entirely separate type systems named `Order`/`OrderStatus`/`PaymentStatus` exist with different field casing conventions (`SCREAMING_SNAKE` enums in Prisma vs. `snake_case` string literals in `src/data/orders.ts`), increasing the chance a future contributor wires the wrong one into a new feature.
+- Safe modification: When adding customer-facing order features, always use `src/lib/orders.ts` (Prisma-backed) semantics, not `src/data/orders.ts`.
+- Test coverage: None.
 
-**Order Number Generation — Race Condition on Collision:**
-- Files: `src/lib/orders.ts` (lines 194–198)
-- Why fragile: `generateOrderNumber()` uses `Math.random()` with 6-char suffix; collision probability is low but not zero (birthday paradox)
-- Safe modification: (1) Increase suffix length to 8+ chars, (2) Use cryptographically secure random (crypto.getRandomValues), or (3) Rely entirely on DB unique constraint and retry on P2002
-- Test coverage: No test for collision behavior; assumes DB constraint is sufficient
-
-**Admin Authentication — Cookie-Only, No Refresh Logic:**
-- Files: `src/lib/admin-auth.ts`, `src/app/api/admin/login/route.ts`
-- Why fragile: 8-hour session without refresh token; if token is compromised, attacker has 8-hour window. No logout revocation (cookie deletion alone).
-- Safe modification: (1) Implement refresh token rotation, (2) Add explicit session revocation table, (3) Reduce max-age to 1–2 hours, (4) Implement device tracking
-- Test coverage: No tests for session expiration or logout behavior
+**Admin session role changes require re-login to take effect:**
+- Files: `src/lib/session.ts`, `src/middleware.ts` (role gate at `isUserMgmt` check)
+- Why fragile: `SessionPayload.role` is baked into the JWT at login time. If a SUPER_ADMIN downgrades another admin to `OPERATOR` (or deactivates them) via `PATCH /api/admin/users/[id]`, that admin's existing session cookie still carries the old role/active claims until it expires (up to 8h) or they log out.
+- Safe modification: Any future authorization change should re-verify against the DB for high-privilege actions rather than trusting the JWT claims alone.
+- Test coverage: None.
 
 ## Scaling Limits
 
-**Database Connection Pool — Single Prisma Instance:**
-- Current capacity: Prisma default pool is 10 connections; suitable for small brand but hits limits under concurrent webhook load
-- Limit: If >10 concurrent Stripe webhooks arrive, queue depth grows and response time degrades
-- Scaling path: (1) Increase `connection_limit` in Prisma schema, (2) Implement webhook queue (SQS, Bull, etc.), (3) Split read/write replicas if DB is PostgreSQL
-
-**Affiliate Email Uniqueness Check — Race Window:**
-- Current capacity: Single pre-check before INSERT works for single-region deployments
-- Limit: Multi-region or high-concurrency signup can cause race condition between check and insert
-- Scaling path: Rely entirely on DB unique constraint; remove app-level check and return P2002 on duplicate email (already done with fallback)
-
-**Google Sheets Sync — Rate Limits:**
-- Current capacity: Google Sheets API has per-project quotas (100 queries/100 sec default)
-- Limit: If order volume reaches >50/sec, Sheets sync will 429 (rate limited)
-- Scaling path: (1) Batch appends into single request (currently does this), (2) Increase quota in Google Cloud Console, (3) Migrate to real data warehouse (BigQuery)
-
-**Stripe Webhook Processing — Single Region Edge Runtime:**
-- Current capacity: Next.js serverless runs in single region; edge middleware replicates globally but processing is regional
-- Limit: If Stripe sends >20 webhooks/sec, regional latency + cold starts cause queueing
-- Scaling path: (1) Implement webhook queue (Inngest, Bull), (2) Process in background job, (3) Geo-distribute webhook listeners
+**No test suite at any level:**
+- Current capacity: 0 automated tests (no `*.test.*`/`*.spec.*` files found in the repo, no test runner configured in `package.json`).
+- Limit: Every change to checkout, webhook idempotency, commission calculation, or admin auth is verified manually only. Regression risk grows with each new feature (reviews, affiliates, admin users were all added without accompanying tests).
+- Scaling path: See Test Coverage Gaps below.
 
 ## Dependencies at Risk
 
-**@prisma/client v7.5.0 — Breaking Schema Changes:**
-- Risk: Prisma 7.x is actively developed; schema changes between minor versions can require migration
-- Impact: `prisma generate` may fail; generated types become stale
-- Migration plan: (1) Pin minor version and test upgrades in staging, (2) Keep schema.prisma versioned and reviewed, (3) Run `prisma generate` as part of build script (already done)
+**Prisma 7.x (`@prisma/client` / `prisma` `^7.5.0`) is a very recent major version:**
+- Risk: Pinned to `^7.5.0` with a non-standard `output` path (`src/generated/prisma/client`) and the driver-adapter pattern (`@prisma/adapter-pg`). This is a newer Prisma API surface (client generation config, adapters) with less community/Stack Overflow precedent than Prisma 5/6.
+- Impact: Upgrades within `^7.x` should be low-risk (semver), but any Prisma-side breaking change to the driver-adapter API or generator output shape would require regenerating and re-verifying `src/generated/prisma/client`.
+- Migration plan: Pin exact versions in CI before upgrading; re-run `prisma generate` and smoke-test the webhook + admin order queries after any Prisma version bump.
 
-**nodemailer v8.0.4 — SMTP Dependency:**
-- Risk: Nodemailer is stable but SMTP protocol is fragile; transient network errors can cause email loss
-- Impact: Order confirmation emails may not send during SMTP outages
-- Migration plan: Switch to AWS SES, SendGrid, or Resend (already integrated as option); remove nodemailer once email service chosen
-
-**googleapis v171.4.0 — Deprecated Sheets API Version:**
-- Risk: v4 is current; v3 is deprecated but still supported. Google can deprecate v4 with short notice.
-- Impact: Google Sheets sync will fail if API is disabled
-- Migration plan: Monitor Google Cloud deprecation notices; test v4 API health quarterly; maintain fallback (local order archive)
-
-**stripe v20.0.0 — Breaking Changes Expected:**
-- Risk: Stripe SDK v21+ may change webhook event structure or validation
-- Impact: Webhook parsing could fail; orders may not be created
-- Migration plan: Test Stripe SDK upgrades in staging before production; pin major version in package.json; subscribe to Stripe API changelog
+**`stripe` npm package pinned to `^20.0.0` while `@stripe/stripe-js` is `^8.5.3`:**
+- Risk: Server SDK (`stripe`) and client SDK (`@stripe/stripe-js`) are versioned independently per Stripe's normal practice; no code currently imports `@stripe/stripe-js` directly (checkout is fully redirect-based via `session.url`), so this dependency may be unused.
+- Impact: Low — dead dependency increases install size slightly.
+- Migration plan: Confirm `@stripe/stripe-js` is unused (`grep -r "@stripe/stripe-js" src/`) and remove from `package.json` if so.
 
 ## Missing Critical Features
 
-**Order Refund UI — Admin Cannot Refund:**
-- Problem: No admin interface to issue refunds through Stripe; refunds must be done manually in Stripe dashboard
-- Blocks: Customers cannot get refunds through the app; admin experience is fragmented
-- Impact: High; affects customer satisfaction and chargebacks
+**No real customer authentication or order-lookup system:**
+- Problem: There is no email/password or magic-link login for customers — only the mock `CustomerContext` described above. Customers who purchase via Stripe Checkout have no way to look up their real order status by logging in; `checkout/success` and `orders/[id]` pages are the only places order data could surface, and only `checkout/success` reads real data (session-based), not `/orders/[id]`.
+- Blocks: Self-service order tracking, order history, and repeat-customer wishlist/profile features cannot function against real data until this is built.
 
-**Commission Dispute/Appeal Process:**
-- Problem: No mechanism for affiliates to appeal approved/paid commissions or report discrepancies
-- Blocks: Affiliates have no recourse if they believe commission calculation is wrong
-- Impact: Medium; increases support load
-
-**Bulk Order Export Without Google Sheets:**
-- Problem: CSV export exists but is manual; no scheduled/automated exports to warehouse
-- Blocks: Warehouse team must manually request exports daily
-- Impact: Medium; reduces operational efficiency
-
-**Webhook Delivery Monitoring Dashboard:**
-- Problem: No visibility into failed webhook deliveries; relies on Stripe dashboard manually
-- Blocks: Cannot detect/retry failed orders automatically
-- Impact: Medium-High; critical orders may be silently lost
+**No automated tests block any form of safe refactoring:**
+- Problem: Zero test coverage across unit, integration, or e2e layers.
+- Blocks: Confident refactors of the webhook, commission math, or admin auth; regression prevention for future phases.
 
 ## Test Coverage Gaps
 
-**Stripe Webhook Idempotency:**
-- What's not tested: Duplicate event delivery, out-of-order events (payment_intent.succeeded arrives before checkout.session.completed)
-- Files: `src/app/api/stripe/webhook/route.ts`
-- Risk: Race conditions in webhook handling could cause duplicate orders or commissions
-- Priority: High
+**Entire codebase — no test runner configured:**
+- What's not tested: Everything. No Jest/Vitest/Playwright config, no `*.test.*`/`*.spec.*` files anywhere in `src/`, `scripts/`, or root.
+- Files: N/A (absence is repo-wide)
+- Risk: Stripe webhook idempotency logic, commission calculation (`Math.round(baseAmount * Number(rate))` in `src/app/api/stripe/webhook/route.ts:189`), scrypt password hashing/verification, and admin role-gating in `src/middleware.ts` are all financial/security-critical and currently rely entirely on manual QA.
+- Priority: High — recommend starting with unit tests for `src/lib/orders.ts`, `src/lib/affiliates.ts` commission math, and `src/lib/password.ts`/`src/lib/session.ts`, plus an integration test that replays a sample Stripe webhook payload against a test DB to verify idempotency (duplicate `event.id` handling).
 
-**Email Template Rendering:**
-- What's not tested: HTML validity, special character escaping, locale-specific formatting
-- Files: `src/lib/email-templates.ts` (714 lines)
-- Risk: Malformed emails sent to customers; phishing vector if templates are not validated
-- Priority: High
-
-**Affiliate Link Generation Across Locales:**
-- What's not tested: URL parameter encoding, locale validation in buildAffiliateLink()
-- Files: `src/lib/affiliates.ts` (lines 101–114)
-- Risk: Affiliate links could be malformed for non-ASCII names or missing locales
-- Priority: Medium
-
-**Order Payment Status Transitions:**
-- What's not tested: Payment state machine (PENDING → PAID, PENDING → FAILED, PAID → REFUNDED)
-- Files: `src/app/api/stripe/webhook/route.ts` (webhook state machine)
-- Risk: Invalid state transitions could corrupt order status
-- Priority: High
-
-**Admin Auth Session Expiration:**
-- What's not tested: Session cookie expiration after 8 hours, logout behavior, re-login after expiration
-- Files: `src/lib/admin-auth.ts`, `src/app/api/admin/login/route.ts`
-- Risk: Admin sessions could persist indefinitely or fail to revoke
-- Priority: Medium
-
-**Commission Calculation Edge Cases:**
-- What's not tested: Orders with zero subtotal, negative discounts, rounding behavior
-- Files: `src/app/api/stripe/webhook/route.ts` (lines 184–189)
-- Risk: Commission amounts could be negative or incorrect due to rounding errors
-- Priority: Medium
+**Stripe webhook signature verification and duplicate-event handling:**
+- What's not tested: The P2002-based idempotency claim (`StripeEvent.create` as first tx operation), and the distinction between "duplicate event" vs. "duplicate stripeSessionId" in the catch block.
+- Files: `src/app/api/stripe/webhook/route.ts:92-433`
+- Risk: A regression here could silently create duplicate orders/commissions or drop legitimate events, directly affecting revenue and fulfillment.
+- Priority: High.
 
 ---
 
-*Concerns audit: 2026-06-17*
+*Concerns audit: 2026-07-03*

@@ -54,6 +54,11 @@ enum CommissionStatus {
   CANCELLED
 }
 
+enum AdminRole {
+  SUPER_ADMIN
+  OPERATOR
+}
+
 enum CreativeType {
   IMAGE
   VIDEO
@@ -250,6 +255,44 @@ model Commission {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// AdminUser — dashboard operators. Authentication is email + password (scrypt).
+// ─────────────────────────────────────────────────────────────────────────────
+
+model AdminUser {
+  id           String    @id @default(cuid())
+  /// Stored lowercased; uniqueness is enforced.
+  email        String    @unique
+  name         String
+  /// scrypt hash in the form `scrypt$<salt>$<hash>` — never the plaintext.
+  passwordHash String
+  role         AdminRole @default(OPERATOR)
+  /// Deactivated users keep their history but cannot log in.
+  active       Boolean   @default(true)
+  lastLoginAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AdminLoginAttempt — DB-backed login throttling (per email and per IP)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model AdminLoginAttempt {
+  id          String    @id @default(cuid())
+  /// Throttle key: "email:<lowercased email>" or "ip:<ip>".
+  key         String    @unique
+  /// Consecutive failures since the last success/decay for this key.
+  failedCount Int       @default(0)
+  /// While set and in the future, login attempts for this key are rejected.
+  lockedUntil DateTime?
+  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime  @default(now())
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // StripeEvent — idempotency log
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -260,22 +303,6 @@ model StripeEvent {
   processedAt DateTime @default(now())
 
   @@index([type])
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// AdminUser — multi-user admin authentication
-// ─────────────────────────────────────────────────────────────────────────────
-
-model AdminUser {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  passwordHash String
-  name         String?
-  active       Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  @@index([email])
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

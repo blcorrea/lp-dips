@@ -1,6 +1,7 @@
 import createMiddleware from 'next-intl/middleware';
 import { routing } from './i18n/routing';
 import { NextRequest, NextResponse } from 'next/server';
+import { verifySessionToken } from './lib/session';
 
 const intlMiddleware = createMiddleware(routing);
 
@@ -9,37 +10,61 @@ const intlMiddleware = createMiddleware(routing);
 const ADMIN_COOKIE     = 'admin_token';
 const AFFILIATE_COOKIE = 'affiliate_session';
 
-// Middleware runs in Edge Runtime — no Prisma available. We only check that
-// the cookie is present here; isAdminAuthenticated() in admin-auth.ts performs
-// the full DB verification inside Server Components and API routes.
-function isAdminAuthed(request: NextRequest): boolean {
-  return !!request.cookies.get(ADMIN_COOKIE)?.value;
+function jsonError(message: string, status: number): NextResponse {
+  return new NextResponse(JSON.stringify({ error: message }), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
+  });
 }
 
 function isAffiliateAuthed(request: NextRequest): boolean {
   return !!request.cookies.get(AFFILIATE_COOKIE)?.value;
 }
 
-export default function middleware(request: NextRequest) {
+/** Verified admin session from the JWT cookie, or null. */
+async function adminSession(request: NextRequest) {
+  const token = request.cookies.get(ADMIN_COOKIE)?.value;
+  return token ? verifySessionToken(token) : null;
+}
+
+export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // ── Admin auth protection ──────────────────────────────────────────────────
+  // All /admin/* and /api/admin/* routes are handled here so they never fall
+  // through to intlMiddleware (which would 404 them as non-locale routes).
   const isAdminRoute    = pathname.startsWith('/admin') || pathname.startsWith('/api/admin');
   const isAdminLoginUrl = pathname === '/admin/login' || pathname.startsWith('/api/admin/login');
 
   if (isAdminRoute) {
-    if (!isAdminLoginUrl && !isAdminAuthed(request)) {
-      if (pathname.startsWith('/api/')) {
-        return new NextResponse(
-          JSON.stringify({ error: 'Unauthorized' }),
-          { status: 401, headers: { 'Content-Type': 'application/json' } }
-        );
-      }
+    if (isAdminLoginUrl) {
+      // Login endpoints are always public — skip intl middleware entirely.
+      return NextResponse.next();
+    }
+
+    const session = await adminSession(request);
+    const isApi   = pathname.startsWith('/api/');
+
+    if (!session) {
+      if (isApi) return jsonError('Unauthorized', 401);
       const loginUrl = request.nextUrl.clone();
       loginUrl.pathname = '/admin/login';
       loginUrl.search   = '';
       return NextResponse.redirect(loginUrl);
     }
+
+    // ── Role gate: user management is SUPER_ADMIN-only ────────────────────────
+    const isUserMgmt =
+      pathname.startsWith('/admin/users') || pathname.startsWith('/api/admin/users');
+    if (isUserMgmt && session.role !== 'SUPER_ADMIN') {
+      if (isApi) return jsonError('Forbidden', 403);
+      const url = request.nextUrl.clone();
+      url.pathname = '/admin/orders';
+      url.search   = '';
+      return NextResponse.redirect(url);
+    }
+
+    // Authenticated — skip intl middleware entirely.
     return NextResponse.next();
   }
 
@@ -59,12 +84,11 @@ export default function middleware(request: NextRequest) {
   // A logged-in admin who lands on the affiliate login or dashboard (without an
   // affiliate session of their own) shouldn't be asked for a separate affiliate
   // login — admins manage affiliates, they don't have a personal dashboard.
-  // Send them to the admin affiliate management page instead. The /admin route
-  // performs the full DB-backed admin check on its own.
+  // Send them to the admin affiliate management page instead.
   if (
     (isAffiliateDashboard || isAffiliateLogin) &&
     !isAffiliateAuthed(request) &&
-    isAdminAuthed(request)
+    (await adminSession(request)) !== null
   ) {
     const url = request.nextUrl.clone();
     url.pathname = '/admin/affiliates';
@@ -83,7 +107,7 @@ export default function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // ── i18n ──────────────────────────────────────────────────────────────────
+  // ── i18n (unchanged) ──────────────────────────────────────────────────────
   const pathnameHasLocale = routing.locales.some(
     (locale) => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`)
   );

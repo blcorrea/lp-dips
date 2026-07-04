@@ -5,8 +5,7 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import Image from "next/image";
-import { ShoppingCart, Menu, X } from "lucide-react";
-import { useCart } from "@/contexts/CartContext";
+import { Menu, X } from "lucide-react";
 import SocialMediaButtons from "@/components/SocialMediaButtons";
 
 export default function Header() {
@@ -14,7 +13,6 @@ export default function Header() {
   const params = useParams();
   const locale = (params.locale as string) || "en";
 
-  const { itemCount } = useCart();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const desktopNavLinkClass =
@@ -90,37 +88,10 @@ export default function Header() {
           <div className="hidden lg:flex items-center">
             <SocialMediaButtons compact />
           </div>
-
-          {/* Cart */}
-          <Link
-            href={`/${locale}/product/dips-chocolate`}
-            className="relative flex items-center text-brand-purple hover:text-brand-orange transition-colors"
-            aria-label="Cart"
-          >
-            <ShoppingCart className="w-[18px] h-[18px]" />
-            {itemCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-brand-orange text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
-                {itemCount}
-              </span>
-            )}
-          </Link>
         </div>
 
         {/* Mobile actions */}
         <div className="flex md:hidden items-center gap-3">
-          <Link
-            href={`/${locale}/product/dips-chocolate`}
-            className="relative text-brand-purple hover:text-brand-orange transition-colors"
-            aria-label="Cart"
-          >
-            <ShoppingCart className="w-[18px] h-[18px]" />
-            {itemCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-brand-orange text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
-                {itemCount}
-              </span>
-            )}
-          </Link>
-
           <button
             className="text-brand-purple"
             onClick={() => setMobileOpen(!mobileOpen)}

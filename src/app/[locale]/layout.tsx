@@ -4,7 +4,6 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { routing } from '@/i18n/routing';
 
-import { CartProvider } from '@/contexts/CartContext';
 import { CustomerProvider } from '@/contexts/CustomerContext';
 import TrackingProvider from '@/components/TrackingProvider';
 
@@ -79,10 +78,8 @@ export default async function LocaleLayout({
       <body className="antialiased bg-background text-foreground">
         <NextIntlClientProvider messages={messages} locale={locale}>
           <CustomerProvider>
-            <CartProvider>
-              <TrackingProvider />
-              {children}
-            </CartProvider>
+            <TrackingProvider />
+            {children}
           </CustomerProvider>
         </NextIntlClientProvider>
       </body>
