@@ -140,6 +140,30 @@
         "registeredIn": "Registrada em",
         "ageRestriction": "Este produto é destinado a adultos com 18 anos ou mais."
     },
+    "LandingFooter": {
+        "neverSatisfied": "Nunca Satisfeito?",
+        "ordersTitle": "Pedidos",
+        "quickLinksTitle": "Links Rápidos",
+        "customerCareTitle": "Atendimento",
+        "contactUsTitle": "Fale Conosco",
+        "shippingInfo": "Informações de Envio",
+        "refunds": "Reembolsos e Devoluções",
+        "ingredients": "Ingredientes",
+        "whereToBuy": "Onde Comprar",
+        "terms": "Termos e Condições",
+        "privacy": "Política de Privacidade",
+        "affiliates": "Afiliados",
+        "rightsReserved": "Todos os direitos reservados.",
+        "madeWith": "Feito com cacau Arriba puro e ingredientes afrodisíacos naturais.",
+        "productDesigned": "Este produto foi desenvolvido para despertar os sentidos e o desejo.",
+        "letYourNights": "Deixe suas noites (e dias) mais doces com nossas atualizações tentadoras e surpresas.",
+        "yourEmail": "Seu Email...",
+        "signUp": "Inscreva-se",
+        "successMsg": "Obrigado! Você está na lista.",
+        "supportHours": "Suporte: resposta em 24-48 horas",
+        "registeredIn": "Registrada em",
+        "ageRestriction": "Este produto é destinado a adultos com 18 anos ou mais."
+    },
     "PdfPage": {
         "back": "Voltar ao site",
         "download": "Baixar PDF"

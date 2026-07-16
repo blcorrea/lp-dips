@@ -141,6 +141,30 @@
         "registeredIn": "Registrada en",
         "ageRestriction": "Este producto está destinado a adultos de 18 años o más."
     },
+    "LandingFooter": {
+        "neverSatisfied": "¿Nunca Satisfecho?",
+        "ordersTitle": "Pedidos",
+        "quickLinksTitle": "Enlaces Rápidos",
+        "customerCareTitle": "Atención al Cliente",
+        "contactUsTitle": "Contáctenos",
+        "shippingInfo": "Info de Envío",
+        "refunds": "Reembolsos y Devoluciones",
+        "ingredients": "Ingredientes",
+        "whereToBuy": "Dónde Comprar",
+        "terms": "Términos y Condiciones",
+        "privacy": "Política de Privacidad",
+        "affiliates": "Afiliados",
+        "rightsReserved": "Todos los derechos reservados.",
+        "madeWith": "Hecho con cacao Arriba puro e ingredientes afrodisíacos naturales.",
+        "productDesigned": "Este producto está diseñado para despertar los sentidos y el deseo.",
+        "letYourNights": "Deja que tus noches (y días) sean más dulces con nuestras tentadoras actualizaciones y sorpresas.",
+        "yourEmail": "Tu Email...",
+        "signUp": "Regístrate",
+        "successMsg": "¡Gracias! Estás en la lista.",
+        "supportHours": "Soporte: tiempo de respuesta 24-48 horas",
+        "registeredIn": "Registrada en",
+        "ageRestriction": "Este producto está destinado a adultos de 18 años o más."
+    },
     "PdfPage": {
         "back": "Volver al sitio",
         "download": "Descargar PDF"

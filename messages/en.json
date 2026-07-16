@@ -140,6 +140,30 @@
         "registeredIn": "Registered in",
         "ageRestriction": "This product is intended for adults 18 years and older."
     },
+    "LandingFooter": {
+        "neverSatisfied": "Never Satisfied?",
+        "ordersTitle": "Orders",
+        "quickLinksTitle": "Quick Links",
+        "customerCareTitle": "Customer Care",
+        "contactUsTitle": "Contact Us",
+        "shippingInfo": "Shipping Info",
+        "refunds": "Refunds & Returns",
+        "ingredients": "Ingredients",
+        "whereToBuy": "Where to Buy",
+        "terms": "Terms & Conditions",
+        "privacy": "Privacy Policy",
+        "affiliates": "Affiliates",
+        "rightsReserved": "All rights reserved.",
+        "madeWith": "Made with pure Arriba cocoa and natural aphrodisiac ingredients.",
+        "productDesigned": "This product is designed to awaken the senses and desire.",
+        "letYourNights": "Let your nights (and days) get sweeter with our tempting updates and surprises.",
+        "yourEmail": "Your Email...",
+        "signUp": "Sign Up",
+        "successMsg": "Thank you! You're on the list.",
+        "supportHours": "Support: 24-48 hour response time",
+        "registeredIn": "Registered in",
+        "ageRestriction": "This product is intended for adults 18 years and older."
+    },
     "PdfPage": {
         "back": "Back to site",
         "download": "Download PDF"
