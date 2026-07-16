@@ -74,13 +74,31 @@ Quais fases cobrem quais requirements. Atualizado na criação do roadmap.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (preenchido pelo roadmap) | | |
+| DSGN-01 | Phase 4 | Pending |
+| DSGN-02 | Phase 4 | Pending |
+| DSGN-03 | Phase 4 | Pending |
+| SECT-01 | Phase 5 | Pending |
+| SECT-02 | Phase 5 | Pending |
+| SECT-03 | Phase 5 | Pending |
+| SECT-04 | Phase 5 | Pending |
+| SECT-05 | Phase 5 | Pending |
+| SECT-06 | Phase 5 | Pending |
+| SECT-07 | Phase 5 | Pending |
+| SECT-08 | Phase 5 | Pending |
+| FUNC-01 | Phase 5 | Pending |
+| FUNC-04 | Phase 5 | Pending |
+| RESP-01 | Phase 6 | Pending |
+| RESP-02 | Phase 6 | Pending |
+| I18N-01 | Phase 6 | Pending |
+| I18N-02 | Phase 6 | Pending |
+| FUNC-02 | Phase 6 | Pending |
+| FUNC-03 | Phase 6 | Pending |
 
 **Coverage:**
-- v1.1 requirements: 18 total
-- Mapped to phases: 0
-- Unmapped: 18 ⚠️
+- v1.1 requirements: 19 total <!-- corrected from initial "18 total" — the section lists DSGN-01..03 (3) + SECT-01..08 (8) + RESP-01..02 (2) + I18N-01..02 (2) + FUNC-01..04 (4) = 19 -->
+- Mapped to phases: 19
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-07-16*
-*Last updated: 2026-07-16 after initial definition*
+*Last updated: 2026-07-16 after roadmap creation (Phases 4-6)*

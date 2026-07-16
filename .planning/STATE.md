@@ -3,31 +3,33 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Landing Page Redesign
 status: planning
-last_updated: "2026-07-16T20:00:52.927Z"
+last_updated: "2026-07-16T21:20:00.000Z"
 last_activity: 2026-07-16
 progress:
-  total_phases: 0
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  total_phases: 6
+  completed_phases: 3
+  total_plans: 4
+  completed_plans: 4
+  percent: 50
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-06-18)
+See: .planning/PROJECT.md (updated 2026-07-16)
 
 **Core value:** Affiliates can grab ready-to-post, on-brand creative assets (with a copy-paste caption) in one place, and admins can manage that library without touching code.
-**Current focus:** Milestone v1.0 complete — all 3 phases shipped
+**Current focus:** Milestone v1.1 (Landing Page Redesign) — ROADMAP.md defined (Phases 4-6), Phase 4 (Design System Foundation) ready to plan
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-07-16 — Milestone v1.1 started
+Phase: 4 of 6 (Design System Foundation) — not started
+Plan: — (not yet planned)
+Status: Roadmap defined — ready to plan Phase 4
+Last activity: 2026-07-16 — ROADMAP.md created for v1.1 (Phases 4, 5, 6); REQUIREMENTS.md traceability updated (19/19 requirements mapped)
+
+Progress: [█████░░░░░] 50% (3 of 6 phases complete)
 
 ## Performance Metrics
 
@@ -41,20 +43,19 @@ Last activity: 2026-07-16 — Milestone v1.1 started
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01 | 1 | - | - |
-| 2 | 2 | - | - |
-| 3 | 1 | - | - |
+| 1. Foundation | 1 | 20m | 20m |
+| 2. Admin Creatives | 2 | 6m | 3m |
+| 3. Affiliate Gallery & i18n | 1 | 4m | 4m |
+| 4. Design System Foundation | - | - | - |
+| 5. Landing Page Sections | - | - | - |
+| 6. Responsive, i18n & Regression Verification | - | - | - |
 
 **Recent Trend:**
 
-- Last 5 plans: -
-- Trend: -
+- Last 5 plans: 20m, 3m, 3m, 4m
+- Trend: Stable
 
 *Updated after each plan completion*
-| Phase 01-foundation P01 | 20m | 3 tasks | 7 files |
-| Phase 02-admin-creatives P01 | 3m | 3 tasks | 3 files |
-| Phase 02-admin-creatives P02 | 3m | 2 tasks | 3 files |
-| Phase 03 P01 | 4m | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -63,14 +64,12 @@ Last activity: 2026-07-16 — Milestone v1.1 started
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- Milestone init: Single shared creative library (no segmentation) — simplest model
-- Milestone init: Vercel Blob + client upload — handles video > 4.5MB serverless body limit
-- Milestone init: Up/down reordering (sortOrder int) over drag-drop — lower complexity
-- Milestone init: Affiliate view reads via server component — matches existing server-first pattern
-- [Phase ?]: Shadow-DB workaround: applied add_affiliate_creatives migration via prisma db execute + migrate resolve (Neon managed Postgres has schema drift blocking prisma migrate dev)
+- Milestone init (v1.1): Continue phase numbering from Phase 3 — v1.1 starts at Phase 4
+- Roadmap (v1.1): 3 phases derived from 19 requirements — Design System Foundation (4) → Landing Page Sections (5) → Responsive/i18n/Regression Verification (6); FUNC-01/FUNC-04 folded into Phase 5 (build-time correctness for the sections they affect), FUNC-02/FUNC-03 folded into Phase 6 (regression checks that don't change during section build)
 - [Phase 02-01]: onUploadCompleted intentional no-op — DB row created via follow-up POST (avoids localhost webhook limitation)
 - [Phase 02-01]: mimeType re-validated server-side in POST handler; CreativeType derived server-side (T-02-05)
-- [Phase ?]: Single copiedId atom tracks copy-confirmation across all gallery cards
+- [Phase 03]: Single copiedId atom tracks copy-confirmation across all gallery cards
+- [Quick task 260618-gjn]: Affiliate gallery uses auto-fill dense thumbnail grid (dashboard capped at max-w-4xl, so viewport breakpoints never fired); dropped admin video poster upload in favor of first-frame default
 
 ### Pending Todos
 
@@ -78,7 +77,9 @@ None yet.
 
 ### Blockers/Concerns
 
-- None. BLOB_READ_WRITE_TOKEN was provisioned and Phase 2 admin uploads (image + video > 4.5MB) verified end-to-end in UAT.
+- FIGMA-EXTRACTION.md and the 27 downloaded Figma assets currently live only in the session scratchpad (`scratchpad/figma/`) — must be copied into the repo during Phase 4 execution before section work (Phase 5) can reference them.
+- Three near-identical Figma oranges (#fb6c04/#ff6b01/#f15a22) need normalization to one CTA token (DSGN-03) — pick the value during Phase 4, not per-section during Phase 5.
+- Figma has no mobile frame — RESP-01 mobile layout decisions in Phase 6 are original (not "faithful to Figma") and should be documented as they're made.
 
 ### Quick Tasks Completed
 
@@ -90,15 +91,15 @@ None yet.
 
 | Category | Item | Status | Deferred At |
 |----------|------|--------|-------------|
-| Analytics | Download/usage analytics per affiliate (ANLY-01, ANLY-02) | v2 | Milestone init |
-| Organization | Categories/tags/folders; drag-and-drop reorder (ORG-01, ORG-02) | v2 | Milestone init |
+| Analytics | Download/usage analytics per affiliate (ANLY-01, ANLY-02) | v2 | Milestone v1.0 close |
+| Organization | Categories/tags/folders; drag-and-drop reorder (ORG-01, ORG-02) | v2 | Milestone v1.0 close |
 
 ## Session Continuity
 
-Last session: 2026-06-18
-Stopped at: Phase 3 complete — milestone v1.0 100% (all 3 phases shipped)
+Last session: 2026-07-16
+Stopped at: v1.1 ROADMAP.md created (Phases 4-6); REQUIREMENTS.md traceability updated — ready to run /gsd-plan-phase 4
 Resume file: None
 
 ## Operator Next Steps
 
-- Start the next milestone with /gsd-new-milestone
+- Run `/gsd-plan-phase 4` to plan Design System Foundation.
