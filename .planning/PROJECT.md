@@ -119,6 +119,7 @@ Affiliates can grab ready-to-post, on-brand creative assets (with a copy-paste c
 | Affiliate view reads via server component (no affiliate API) | Matches existing server-first pattern | ✓ Good (shipped in Phase 3) |
 | Affiliate gallery uses auto-fill dense thumbnail grid (not fixed breakpoints) | Dashboard is capped at max-w-4xl, so viewport breakpoints never fired; auto-fill packs small previews regardless of container width | ✓ Good (quick task 260618-gjn, UAT-confirmed) |
 | Drop admin video poster upload; default to first frame (#t=0.001) | Choosing a cover was unnecessary friction; first frame is a good-enough poster | ✓ Good (quick task 260618-gjn) |
+| Redesign headings/body reuse existing licensed AllRoundGothic/FilsonPro OTFs instead of Google Fonts substitutes | Same typefaces the Figma calls for (Figma's own copies are unlicensed "FONTSPRING DEMO" files) — visually identical, avoids re-licensing risk and a sitewide typography rewrite outside phase scope. User-confirmed 2026-07-16. Only Satoshi (no existing asset) got a Google Fonts substitute (Plus Jakarta Sans); DM Sans applied as in Figma. | ✓ Good (Phase 4, verified — build clean, tokens byte-matched to UI-SPEC) |
 
 **Phase 1 (Foundation) complete (2026-06-17):** `AffiliateCreative` model + `CreativeType` enum migrated; `@vercel/blob` wired; `src/lib/creatives.ts` data-access shipped. DATA-01/02/03 validated.
 

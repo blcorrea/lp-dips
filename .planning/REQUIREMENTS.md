@@ -10,7 +10,7 @@ Requirements deste milestone. Cada um mapeia para fases do roadmap.
 ### Design System
 
 - [ ] **DSGN-01**: Tokens do Figma (cores, raios, espaçamentos) centralizados no tema Tailwind — sem hexes soltos repetidos pelos componentes
-- [ ] **DSGN-02**: Fontes substitutas licenciáveis (Google Fonts) definidas e aplicadas para All Round Gothic Bold (títulos), Filson Pro (body/italic) e Satoshi/DM Sans (cards/CTAs)
+- [x] **DSGN-02**: Fontes licenciáveis definidas e aplicadas para títulos, body/italic e cards/CTAs — All Round Gothic Bold e Filson Pro reutilizam os arquivos .otf já licenciados do site (visualmente idênticos ao Figma, mesma tipografia); Satoshi (sem licença existente) substituído por Plus Jakarta Sans via Google Fonts; DM Sans aplicado como no Figma. Decisão registrada em PROJECT.md e 04-VERIFICATION.md (override aceito 2026-07-16).
 - [ ] **DSGN-03**: Laranja de CTA normalizado em um único token (Figma usa #fb6c04, #ff6b01 e #f15a22)
 
 ### Seções da Landing
