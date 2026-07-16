@@ -73,6 +73,44 @@
   --color-brand-dark: #1A1A1A;
 
   --color-brand-gray-light: #f5f0ed;
+
+  /* ============================= */
+  /* DIPS REDESIGN COLORS (landing-only, additive) */
+  /* ============================= */
+  /* CTA orange stays --color-brand-orange above (DSGN-03) -- no new orange token added here. */
+
+  --color-dips-purple-hero-start: #18012d;
+  --color-dips-purple-hero-mid: #200635;
+  --color-dips-purple-hero-end: #250246;
+  --color-dips-purple-deepest: #0a0519;
+  --color-dips-purple-section: #1a0a2e;
+  --color-dips-purple-reviews: #2d1a69;
+  --color-dips-cream: #fff8f0;
+  --color-dips-card-tint: rgba(49,34,89,0.25);
+  --color-dips-card-tint-border: #392a61;
+  --color-dips-card-tint-2: rgba(38,23,77,0.15);
+  --color-dips-card-tint-2-border: rgba(82,64,130,0.5);
+  --color-dips-card-lavender: rgba(166,145,221,0.15);
+  --color-dips-card-lavender-border: rgba(212,201,244,0.25);
+  --color-dips-card-ingredient: #231435;
+  --color-dips-card-ingredient-border: #39294c;
+  --color-dips-card-ingredient-hl: #371629;
+  --color-dips-card-ingredient-hl-border: #5b2f2d;
+  --color-dips-card-review: rgba(35,20,53,0.4);
+  --color-dips-card-review-border: rgba(57,41,76,0.4);
+  --color-dips-bundle-light: #ffffff;
+  --color-dips-bundle-light-border: #eee6df;
+  --color-dips-bundle-summary: #f6efe9;
+  --color-dips-text-lavender: #ebd9fe;
+  --color-dips-text-lavender-muted: #ae9bda;
+  --color-dips-text-mauve: #96838f;
+  --color-dips-text-gray-review: #9499a9;
+  --color-dips-text-footer: #706c7b;
+  --color-dips-text-footer-secondary: #656170;
+  --color-dips-text-footer-tertiary: #74707f;
+  --color-dips-text-footer-fine: #464253;
+  --color-dips-text-purple-deep: #39165e;
+  --color-dips-text-headline-lilac: #cfa9f6;
 }
 
 /* ============================= */
