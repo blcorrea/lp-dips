@@ -106,3 +106,12 @@ None - no external service configuration required.
 ---
 *Phase: 05-landing-page-sections*
 *Completed: 2026-07-16*
+
+## Self-Check: PASSED
+
+- FOUND: src/components/IngredientsSection.tsx
+- FOUND: src/components/FAQSection.tsx
+- FOUND: .planning/phases/05-landing-page-sections/05-03-SUMMARY.md
+- FOUND commit: 92fcb6b (Task 1)
+- FOUND commit: 585002e (Task 2)
+- FOUND commit: 92b5089 (SUMMARY.md)
