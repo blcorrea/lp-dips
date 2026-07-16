@@ -16,8 +16,8 @@ Requirements deste milestone. Cada um mapeia para fases do roadmap.
 ### Seções da Landing
 
 - [ ] **SECT-01**: Trust bar + header novos (nav mínima Menu/Our Story/Order/Contact como âncoras, CTA "Shop Now")
-- [ ] **SECT-02**: Hero completo (H1 bicolor, subtítulo, badge social proof, 2 CTAs, imagem do produto, blobs decorativos, 4 feature cards)
-- [ ] **SECT-03**: Seção Story split (foto lifestyle + "Made to be Savoured by Two" / painel "Our Story")
+- [x] **SECT-02**: Hero completo (H1 bicolor, subtítulo, badge social proof, 2 CTAs, imagem do produto, blobs decorativos, 4 feature cards)
+- [x] **SECT-03**: Seção Story split (foto lifestyle + "Made to be Savoured by Two" / painel "Our Story")
 - [x] **SECT-04**: Seção Ingredients split (6 cards com badges RITUAL/STAMINA/SPARK/PRESENCE/UNION/BALANCE, card cocoa expandido com "Origins & Curiosities")
 - [ ] **SECT-05**: Bundle selector novo visual (3 cards 1x/2x/3x, 2x default com "Most Popular", resumo unit price/shipping, CTA com total) — plugado no fluxo de checkout existente
 - [ ] **SECT-06**: Seção Reviews novo visual (bg #2d1a69, cards masonry 3 colunas) usando os dados reais existentes do site (não os placeholders do Figma)
@@ -78,8 +78,8 @@ Quais fases cobrem quais requirements. Atualizado na criação do roadmap.
 | DSGN-02 | Phase 4 | Pending |
 | DSGN-03 | Phase 4 | Pending |
 | SECT-01 | Phase 5 | Pending |
-| SECT-02 | Phase 5 | Pending |
-| SECT-03 | Phase 5 | Pending |
+| SECT-02 | Phase 5 | Complete |
+| SECT-03 | Phase 5 | Complete |
 | SECT-04 | Phase 5 | Complete |
 | SECT-05 | Phase 5 | Pending |
 | SECT-06 | Phase 5 | Pending |

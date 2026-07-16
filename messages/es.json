@@ -30,7 +30,24 @@
         "description": "Elaborado con Nibs de Cacao Arriba puro e ingredientes afrodisíacos naturales - Polvo de Raíz de Maca, L-Teanina, Polvo de Jengibre y Polvo de Fenogreco - Dips despierta los sentidos, enciende el deseo y convierte el placer compartido en una experiencia intensa e irresistible.",
         "shortDescription": "Elaborado con ingredientes afrodisíacos naturales para despertar los sentidos.",
         "trustLine": "Ingredientes naturales - Checkout seguro",
-        "cta": "Añadir al carrito"
+        "cta": "Añadir al carrito",
+        "h1": "El <hl>chocolate</hl> que cambia la noche.",
+        "socialProof": "Más de 10,000 Parejas Felices",
+        "trust1": "100% Ingredientes Naturales",
+        "trust2": "Hecho en EE. UU.",
+        "trust3": "Pago Seguro",
+        "ctaPrimary": "Comprar Ahora",
+        "ctaSecondary": "¿Cómo Funciona?"
+    },
+    "Story": {
+        "ourStoryTitle": "Nuestra Historia",
+        "sideTitle": "Hecho para Saborearse en Pareja",
+        "p1": "Desde las antiguas civilizaciones, el chocolate ha sido celebrado como el “alimento de los dioses” – un símbolo de placer, energía y euforia.",
+        "p2": "Dips nació de ese mismo instinto: unir la riqueza del chocolate premium con la emoción de la conexión íntima.",
+        "p3": "Combinamos precisión técnica, creatividad e ingredientes ancestrales para crear una experiencia sensorial única – afrodisíaca, 100% natural y ecológica. Cada pieza es una invitación a sentir, a explorar, a conectar, con el sabor, con tu cuerpo y con quien comparte el momento a tu lado – el resultado es un chocolate sofisticado que ofrece placer sin culpa, y tentación sin excesos.",
+        "badge1": "100% Natural",
+        "badge2": "Hecho en EE. UU.",
+        "badge3": "Mezcla Afrodisíaca"
     },
     "About": {
         "sectionTitle": "Hecho para saborearse en pareja.",
