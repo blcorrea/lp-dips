@@ -18,10 +18,10 @@ Requirements deste milestone. Cada um mapeia para fases do roadmap.
 - [ ] **SECT-01**: Trust bar + header novos (nav mínima Menu/Our Story/Order/Contact como âncoras, CTA "Shop Now")
 - [ ] **SECT-02**: Hero completo (H1 bicolor, subtítulo, badge social proof, 2 CTAs, imagem do produto, blobs decorativos, 4 feature cards)
 - [ ] **SECT-03**: Seção Story split (foto lifestyle + "Made to be Savoured by Two" / painel "Our Story")
-- [ ] **SECT-04**: Seção Ingredients split (6 cards com badges RITUAL/STAMINA/SPARK/PRESENCE/UNION/BALANCE, card cocoa expandido com "Origins & Curiosities")
+- [x] **SECT-04**: Seção Ingredients split (6 cards com badges RITUAL/STAMINA/SPARK/PRESENCE/UNION/BALANCE, card cocoa expandido com "Origins & Curiosities")
 - [ ] **SECT-05**: Bundle selector novo visual (3 cards 1x/2x/3x, 2x default com "Most Popular", resumo unit price/shipping, CTA com total) — plugado no fluxo de checkout existente
 - [ ] **SECT-06**: Seção Reviews novo visual (bg #2d1a69, cards masonry 3 colunas) usando os dados reais existentes do site (não os placeholders do Figma)
-- [ ] **SECT-07**: FAQs accordion (item aberto com borda laranja, chevron)
+- [x] **SECT-07**: FAQs accordion (item aberto com borda laranja, chevron)
 - [ ] **SECT-08**: Footer novo (newsletter "Never Satisfied?", colunas com links reais do site — incluindo Affiliates —, contato e disclaimer FDA)
 
 ### Responsivo
@@ -39,7 +39,7 @@ Requirements deste milestone. Cada um mapeia para fases do roadmap.
 - [ ] **FUNC-01**: Compra continua funcionando — bundle selector dispara o checkout Stripe existente com preços vindos do Shopify/Stripe (design NÃO é fonte de preço)
 - [ ] **FUNC-02**: Atribuição de afiliado (ref code) intacta no fluxo de compra
 - [ ] **FUNC-03**: Páginas fora do escopo intocadas: admin, afiliados (dashboard/join), order confirmation
-- [ ] **FUNC-04**: Correções sobre o Figma aplicadas — typos ("Gaurantee"→"Guarantee", "Igredients"→"Ingredients", "Aphrodiasiac"→"Aphrodisiac"), mailto real (não "help@tabs.co")
+- [x] **FUNC-04**: Correções sobre o Figma aplicadas — typos ("Gaurantee"→"Guarantee", "Igredients"→"Ingredients", "Aphrodiasiac"→"Aphrodisiac"), mailto real (não "help@tabs.co")
 
 ## v2 Requirements
 
@@ -80,13 +80,13 @@ Quais fases cobrem quais requirements. Atualizado na criação do roadmap.
 | SECT-01 | Phase 5 | Pending |
 | SECT-02 | Phase 5 | Pending |
 | SECT-03 | Phase 5 | Pending |
-| SECT-04 | Phase 5 | Pending |
+| SECT-04 | Phase 5 | Complete |
 | SECT-05 | Phase 5 | Pending |
 | SECT-06 | Phase 5 | Pending |
-| SECT-07 | Phase 5 | Pending |
+| SECT-07 | Phase 5 | Complete |
 | SECT-08 | Phase 5 | Pending |
 | FUNC-01 | Phase 5 | Pending |
-| FUNC-04 | Phase 5 | Pending |
+| FUNC-04 | Phase 5 | Complete |
 | RESP-01 | Phase 6 | Pending |
 | RESP-02 | Phase 6 | Pending |
 | I18N-01 | Phase 6 | Pending |
@@ -95,6 +95,7 @@ Quais fases cobrem quais requirements. Atualizado na criação do roadmap.
 | FUNC-03 | Phase 6 | Pending |
 
 **Coverage:**
+
 - v1.1 requirements: 19 total <!-- corrected from initial "18 total" — the section lists DSGN-01..03 (3) + SECT-01..08 (8) + RESP-01..02 (2) + I18N-01..02 (2) + FUNC-01..04 (4) = 19 -->
 - Mapped to phases: 19
 - Unmapped: 0 ✓
