@@ -105,3 +105,7 @@ None - no external service configuration required. (The dummy env vars above wer
 ---
 *Phase: 05-landing-page-sections*
 *Completed: 2026-07-16*
+
+## Self-Check: PASSED
+
+All created/modified files confirmed present on disk; all 3 task/summary commit hashes (`2e9fad7`, `c66d974`, `96b6126`) confirmed present in git log.
