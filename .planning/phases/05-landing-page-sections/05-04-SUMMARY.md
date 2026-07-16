@@ -91,6 +91,16 @@ None — plan executed exactly as written. The `BuyImageGallery`/price-teaser re
 - `#bundle` is now the canonical anchor id other sections' CTAs (Header "Order"/"Shop Now", Hero "Buy Now") must target — this is already documented in `05-UI-SPEC.md` and consistent with the other in-flight plans in this wave.
 - No blockers. FUNC-01 (checkout intact) is proven by `git diff --quiet src/components/BuyNowButton.tsx` passing and all 3 Stripe `priceId`s remaining in `ProductPurchaseBox.tsx`; final manual Stripe test-mode click-through remains scheduled for Plan 05 per phase plan.
 
+## Self-Check: PASSED
+
+- FOUND: src/components/ReviewsSection.tsx
+- FOUND: src/components/BuySection.tsx
+- FOUND: src/components/ProductPurchaseBox.tsx
+- FOUND: .planning/phases/05-landing-page-sections/05-04-SUMMARY.md
+- FOUND commit: 483fb01 (Task 1)
+- FOUND commit: 9406fc1 (Task 2)
+- FOUND commit: e93b930 (SUMMARY.md)
+
 ---
 *Phase: 05-landing-page-sections*
 *Completed: 2026-07-16*
