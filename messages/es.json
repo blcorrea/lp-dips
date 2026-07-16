@@ -7,6 +7,20 @@
         "cart": "Carrito",
         "affiliates": "Afiliados"
     },
+    "LandingHeader": {
+        "tagline": "Chocolate Premium",
+        "menu": "Menú",
+        "ourStory": "Nuestra Historia",
+        "order": "Pedir",
+        "contact": "Contacto",
+        "shopNow": "Comprar Ahora",
+        "trustBar1": "100% Ingredientes Naturales",
+        "trustBar2": "Hecho en EE. UU.",
+        "trustBar3": "Pago Seguro",
+        "trustBar4": "Empaque Discreto",
+        "trustBar5": "Mezcla Afrodisíaca",
+        "trustBar6": "Más de 10,000 Parejas Felices"
+    },
     "Hero": {
         "headlinePart1": "Compártelo.",
         "headlinePart2": "Siéntelo.",

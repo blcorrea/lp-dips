@@ -7,6 +7,20 @@
         "cart": "Carrinho",
         "affiliates": "Afiliados"
     },
+    "LandingHeader": {
+        "tagline": "Chocolate Premium",
+        "menu": "Menu",
+        "ourStory": "Nossa História",
+        "order": "Pedir",
+        "contact": "Contato",
+        "shopNow": "Comprar Agora",
+        "trustBar1": "100% Ingredientes Naturais",
+        "trustBar2": "Feito nos EUA",
+        "trustBar3": "Checkout Seguro",
+        "trustBar4": "Embalagem Discreta",
+        "trustBar5": "Blend Afrodisíaco",
+        "trustBar6": "Mais de 10.000 Casais Felizes"
+    },
     "Hero": {
         "headlinePart1": "Divida.",
         "headlinePart2": "Sinta.",
