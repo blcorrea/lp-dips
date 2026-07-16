@@ -54,6 +54,8 @@
   --radius-xl: 1rem;
   --radius-2xl: 2rem;
   --radius-3xl: 3rem;
+  --radius-card: 0.9375rem;
+  --radius-card-lg: 1.125rem;
 
   /* ============================= */
   /* BRAND COLORS */
@@ -111,6 +113,19 @@
   --color-dips-text-footer-fine: #464253;
   --color-dips-text-purple-deep: #39165e;
   --color-dips-text-headline-lilac: #cfa9f6;
+
+  /* ============================= */
+  /* SPACING SCALE (named, additive) */
+  /* ============================= */
+
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --spacing-3xl: 64px;
+  --spacing-card-padding: 25px;
 }
 
 /* ============================= */
