@@ -55,7 +55,10 @@ Run `/gsd-new-milestone` to scope and plan the next milestone.
   2. Títulos, corpo/italic e cards/CTAs renderizam com fontes Google Fonts licenciáveis escolhidas como substitutas de All Round Gothic Bold, Filson Pro e Satoshi/DM Sans
   3. Todo CTA da landing usa um único token de laranja normalizado, em vez dos três laranjas do Figma (#fb6c04/#ff6b01/#f15a22)
 
-**Plans**: TBD
+**Plans**: 3 plans
+- [ ] 04-01-PLAN.md — Figma tokens in @theme (32 dips colors, radius, spacing, 16 type roles, --font-card/--font-cta)
+- [ ] 04-02-PLAN.md — Google font wiring (Plus Jakarta Sans + DM Sans via next/font, applied to storefront layout)
+- [ ] 04-03-PLAN.md — Migrate 27 Figma assets into public/images/redesign/
 **UI hint**: yes
 
 ### Phase 5: Landing Page Sections
@@ -100,6 +103,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 1. Foundation | v1.0 | 1/1 | Complete | 2026-06-17 |
 | 2. Admin Creatives | v1.0 | 2/2 | Complete | 2026-06-17 |
 | 3. Affiliate Gallery & i18n | v1.0 | 1/1 | Complete | 2026-06-18 |
-| 4. Design System Foundation | v1.1 | 0/TBD | Not started | - |
+| 4. Design System Foundation | v1.1 | 0/3 | Planned | - |
 | 5. Landing Page Sections | v1.1 | 0/TBD | Not started | - |
 | 6. Responsive, i18n & Regression Verification | v1.1 | 0/TBD | Not started | - |
