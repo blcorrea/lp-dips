@@ -1,5 +1,6 @@
 "use client";
 
+import Image from 'next/image';
 import { useState } from 'react';
 import BuyNowButton from './BuyNowButton';
 
@@ -64,12 +65,13 @@ export default function ProductPurchaseBox({
   const [selectedId, setSelectedId] = useState<'1x' | '2x' | '3x'>('2x');
 
   const selectedBundle = BUNDLES.find((b) => b.id === selectedId)!;
+  const total = selectedBundle.totalPrice + (selectedBundle.shipping === 'free' ? 0 : 6.97);
 
   return (
     <div className="space-y-4">
 
       {/* ── Bundle cards ──────────────────────────────────────────────────── */}
-      <div className="space-y-2">
+      <div className="space-y-3">
         {BUNDLES.map((bundle) => {
           const isSelected = bundle.id === selectedId;
           return (
@@ -77,32 +79,43 @@ export default function ProductPurchaseBox({
               key={bundle.id}
               type="button"
               onClick={() => setSelectedId(bundle.id)}
-              className={`w-full text-left rounded-2xl border px-4 py-3.5 transition-all duration-150
+              className={`relative w-full text-left rounded-card border-2 px-4 py-3.5 transition-all duration-150
                 ${isSelected
-                  ? 'border-brand-purple bg-brand-purple/5 shadow-sm'
-                  : 'border-brand-purple/15 bg-white hover:border-brand-purple/30'
+                  ? 'bg-dips-card-ingredient-hl border-brand-orange shadow-sm'
+                  : 'bg-dips-bundle-light border-dips-bundle-light-border hover:border-brand-orange/40'
                 }`}
             >
-              <div className="flex items-center justify-between gap-3">
-                {/* Left: radio + label */}
-                <div className="flex items-center gap-3">
-                  <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0
-                    ${isSelected ? 'border-brand-purple' : 'border-brand-purple/30'}`}>
-                    {isSelected && (
-                      <span className="w-2 h-2 rounded-full bg-brand-purple block" />
-                    )}
-                  </span>
-                  <div>
-                    <p className="font-semibold text-brand-charcoal text-[14px] leading-tight">
-                      {bundle.label}
-                    </p>
-                    <p className="text-brand-charcoal/50 text-[12px]">
-                      ${bundle.unitPrice.toFixed(2)} / box
-                    </p>
-                  </div>
+              {/* Floating "Most Popular" badge — selected (2x default) card only */}
+              {isSelected && (
+                <span className="absolute -top-2.5 right-4 rounded-full bg-brand-orange px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
+                  Most Popular
+                </span>
+              )}
+
+              <div className="flex items-center gap-3">
+                {/* Thumbnail */}
+                <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-white/90">
+                  <Image
+                    src="/images/redesign/product-box-small.png"
+                    alt=""
+                    fill
+                    className="object-contain"
+                    sizes="48px"
+                  />
                 </div>
 
-                {/* Right: badge + total */}
+                {/* Label + unit price */}
+                <div className="flex-1">
+                  <p className={`font-semibold text-[14px] leading-tight
+                    ${isSelected ? 'text-white' : 'text-dips-text-purple-deep'}`}>
+                    {bundle.label}
+                  </p>
+                  <p className={`text-[12px] ${isSelected ? 'text-white/70' : 'text-dips-text-purple-deep/60'}`}>
+                    ${bundle.unitPrice.toFixed(2)} / box
+                  </p>
+                </div>
+
+                {/* Right: discount badge + total */}
                 <div className="text-right shrink-0">
                   {bundle.badge && (
                     <span className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-bold mb-0.5
@@ -113,7 +126,7 @@ export default function ProductPurchaseBox({
                       {bundle.badge}
                     </span>
                   )}
-                  <p className="font-bold text-brand-purple text-[15px]">
+                  <p className={`font-bold text-[15px] ${isSelected ? 'text-white' : 'text-dips-text-purple-deep'}`}>
                     ${bundle.totalPrice.toFixed(2)}
                   </p>
                 </div>
@@ -124,41 +137,41 @@ export default function ProductPurchaseBox({
       </div>
 
       {/* ── Summary panel ─────────────────────────────────────────────────── */}
-      <div className="rounded-2xl border border-brand-purple/10 bg-white px-5 py-4 shadow-sm space-y-2">
-        <div className="flex items-center justify-between text-sm text-brand-charcoal/70">
-          <span>Unit price</span>
-          <span className="font-medium text-brand-charcoal">
+      <div className="rounded-card border border-dips-bundle-light-border bg-dips-bundle-summary px-5 py-4 space-y-2">
+        <div className="flex items-center justify-between text-sm text-dips-text-purple-deep/70">
+          <span>Unit Price</span>
+          <span className="font-medium text-dips-text-purple-deep">
             ${selectedBundle.unitPrice.toFixed(2)}
           </span>
         </div>
-        <div className="flex items-center justify-between text-sm text-brand-charcoal/70">
+        <div className="flex items-center justify-between text-sm text-dips-text-purple-deep/70">
           <span>Shipping</span>
           {selectedBundle.shipping === 'free' ? (
             <span className="font-semibold text-green-600">Free</span>
           ) : (
-            <span className="font-medium text-brand-charcoal">$6.97</span>
+            <span className="font-medium text-dips-text-purple-deep">$6.97</span>
           )}
-        </div>
-        <div className="flex items-center justify-between text-base pt-1 border-t border-brand-purple/10">
-          <span className="font-semibold text-brand-purple">Total</span>
-          <span className="text-xl font-bold text-brand-purple">
-            ${(selectedBundle.totalPrice + (selectedBundle.shipping === 'free' ? 0 : 6.97)).toFixed(2)}
-          </span>
         </div>
       </div>
 
-      {/* ── Buy button ────────────────────────────────────────────────────── */}
-      <BuyNowButton
-        priceId={selectedBundle.priceId}
-        quantity={selectedBundle.quantity}
-        label={buttonLabel}
-        className={`inline-flex items-center justify-center rounded-full bg-brand-orange px-10 py-4 text-base sm:text-lg font-bold text-brand-purple tracking-wide shadow-[0_10px_30px_rgba(242,117,33,0.28)] transition-all duration-300 hover:scale-[1.02] hover:bg-brand-orange/90 hover:shadow-[0_14px_34px_rgba(242,117,33,0.34)] disabled:opacity-60 ${buttonClassName}`}
-        productId={productId}
-        productName={productName}
-        productPrice={selectedBundle.totalPrice}
-        currency={currencyCode}
-        locale={locale}
-      />
+      {/* ── Buy button — total folded into the same pill (right-aligned overlay,
+            keeps BuyNowButton.tsx itself byte-for-byte untouched) ──────────── */}
+      <div className="relative">
+        <BuyNowButton
+          priceId={selectedBundle.priceId}
+          quantity={selectedBundle.quantity}
+          label={buttonLabel}
+          className={`w-full justify-between pl-10 pr-28 ${buttonClassName}`}
+          productId={productId}
+          productName={productName}
+          productPrice={selectedBundle.totalPrice}
+          currency={currencyCode}
+          locale={locale}
+        />
+        <span className="pointer-events-none absolute inset-y-0 right-10 flex items-center text-lg font-bold text-brand-purple">
+          ${total.toFixed(2)}
+        </span>
+      </div>
     </div>
   );
 }
