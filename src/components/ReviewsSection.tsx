@@ -73,8 +73,8 @@ function MediaBlock({ url, type }: { url: string; type: 'image' | 'video' }) {
 
 function ReviewCard({ review }: { review: Review }) {
   return (
-    <div className="break-inside-avoid mb-3 rounded-2xl bg-white/[0.07] border border-white/10
-      hover:bg-white/[0.11] transition-colors duration-300 p-5 flex flex-col gap-4">
+    <div className="break-inside-avoid mb-3 rounded-card-lg bg-dips-card-review border border-dips-card-review-border
+      hover:bg-white/[0.11] transition-colors duration-300 p-card-padding flex flex-col gap-4">
 
       {/* Product media (photo or video) */}
       {review.mediaUrl && review.mediaType && (
@@ -123,7 +123,7 @@ function ReviewCard({ review }: { review: Review }) {
 
 export default function ReviewsSection() {
   return (
-    <section className="bg-gradient-to-b from-[#3b1c5a] to-brand-purple px-6 py-20 sm:py-28">
+    <section id="reviews" className="scroll-mt-[72px] bg-dips-purple-reviews px-6 py-20 sm:py-28">
       <div className="mx-auto max-w-7xl">
 
         {/* Header */}
@@ -131,14 +131,13 @@ export default function ReviewsSection() {
           <p className="text-brand-orange text-[11px] font-bold tracking-[0.22em] uppercase mb-4">
             Real people. Real results.
           </p>
-          <h2 className="font-heading text-white text-[38px] sm:text-[52px] lg:text-[62px]
-            leading-[0.93] tracking-[-0.03em]">
+          <h2 className="font-heading text-heading-lg text-white leading-[1.15] tracking-[-0.03em]">
             What people are saying
           </h2>
         </div>
 
-        {/* Masonry grid — 2 cols on mobile, 3 on md, 4 on lg */}
-        <div className="columns-2 md:columns-3 lg:columns-4 gap-3">
+        {/* Masonry grid — 2 cols on mobile, 3 from md up */}
+        <div className="columns-2 md:columns-3 gap-3">
           {reviews.map((review) => (
             <ReviewCard key={review.id} review={review} />
           ))}
