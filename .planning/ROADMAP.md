@@ -29,7 +29,7 @@ Full phase details, goals, and success criteria: [milestones/v1.0-ROADMAP.md](mi
 
 **Milestone Goal:** Implementar o novo layout do Figma na landing page (home) — visual novo, funcionalidades intactas (checkout Stripe, atribuição de afiliado, i18n en/es/pt).
 
-- [ ] **Phase 4: Design System Foundation** - Tokens do Figma no tema Tailwind, fontes licenciáveis, laranja de CTA normalizado
+- [x] **Phase 4: Design System Foundation** - Tokens do Figma no tema Tailwind, fontes licenciáveis, laranja de CTA normalizado (completed 2026-07-16)
 - [ ] **Phase 5: Landing Page Sections** - As 8 seções da home redesenhadas, bundle selector plugado no checkout real, correções de copy do Figma
 - [ ] **Phase 6: Responsive, i18n & Regression Verification** - Layout mobile/tablet, tradução en/es/pt, e confirmação de que nada fora do escopo quebrou
 
@@ -55,10 +55,12 @@ Run `/gsd-new-milestone` to scope and plan the next milestone.
   2. Títulos, corpo/italic e cards/CTAs renderizam com fontes Google Fonts licenciáveis escolhidas como substitutas de All Round Gothic Bold, Filson Pro e Satoshi/DM Sans
   3. Todo CTA da landing usa um único token de laranja normalizado, em vez dos três laranjas do Figma (#fb6c04/#ff6b01/#f15a22)
 
-**Plans**: 3 plans
-- [ ] 04-01-PLAN.md — Figma tokens in @theme (32 dips colors, radius, spacing, 16 type roles, --font-card/--font-cta)
-- [ ] 04-02-PLAN.md — Google font wiring (Plus Jakarta Sans + DM Sans via next/font, applied to storefront layout)
-- [ ] 04-03-PLAN.md — Migrate 27 Figma assets into public/images/redesign/
+**Plans**: 3/3 plans complete
+
+- [x] 04-01-PLAN.md — Figma tokens in @theme (32 dips colors, radius, spacing, 16 type roles, --font-card/--font-cta)
+- [x] 04-02-PLAN.md — Google font wiring (Plus Jakarta Sans + DM Sans via next/font, applied to storefront layout)
+- [x] 04-03-PLAN.md — Migrate 27 Figma assets into public/images/redesign/
+
 **UI hint**: yes
 
 ### Phase 5: Landing Page Sections
@@ -103,6 +105,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 1. Foundation | v1.0 | 1/1 | Complete | 2026-06-17 |
 | 2. Admin Creatives | v1.0 | 2/2 | Complete | 2026-06-17 |
 | 3. Affiliate Gallery & i18n | v1.0 | 1/1 | Complete | 2026-06-18 |
-| 4. Design System Foundation | v1.1 | 0/3 | Planned | - |
+| 4. Design System Foundation | v1.1 | 3/3 | Complete   | 2026-07-16 |
 | 5. Landing Page Sections | v1.1 | 0/TBD | Not started | - |
 | 6. Responsive, i18n & Regression Verification | v1.1 | 0/TBD | Not started | - |
