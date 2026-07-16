@@ -1,20 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-current_phase: 0
-status: Awaiting next milestone
-stopped_at: Phase 3 complete — milestone v1.0 100% (all 3 phases shipped)
-last_updated: "2026-06-18T17:13:36.055Z"
-last_activity: 2026-06-18
-last_activity_desc: Milestone v1.0 completed and archived
+milestone: v1.1
+milestone_name: Landing Page Redesign
+status: planning
+last_updated: "2026-07-16T20:00:52.927Z"
+last_activity: 2026-07-16
 progress:
-  total_phases: 3
-  completed_phases: 3
-  total_plans: 4
-  completed_plans: 4
-  percent: 100
-current_phase_name: Affiliate Gallery & i18n
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -28,10 +24,10 @@ See: .planning/PROJECT.md (updated 2026-06-18)
 
 ## Current Position
 
-Phase: Milestone v1.0 complete
+Phase: Not started (defining requirements)
 Plan: —
-Status: Awaiting next milestone
-Last activity: 2026-06-18 — Milestone v1.0 completed and archived
+Status: Defining requirements
+Last activity: 2026-07-16 — Milestone v1.1 started
 
 ## Performance Metrics
 

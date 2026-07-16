@@ -14,7 +14,23 @@ The **Affiliate Creatives** section — a single shared library of marketing ass
 - Affiliates browse a dense, localized "Criativos" gallery on their dashboard — download + copy-caption, photos at natural aspect, videos with first-frame poster.
 - Fully localized en/es/pt. Security review SECURED (11/11 threats). UAT 8/8 on Phases 2 and 3.
 
-**Next milestone (v2.0, planned):** download/usage analytics (ANLY-01/02) and organization — categories/tags/folders + drag-and-drop reorder (ORG-01/02). Run `/gsd-new-milestone` to scope.
+**Backlog (planejado, não iniciado):** download/usage analytics (ANLY-01/02) e organização de creatives — categories/tags/folders + drag-and-drop reorder (ORG-01/02).
+
+## Current Milestone: v1.1 Landing Page Redesign
+
+**Goal:** Implementar o novo layout do Figma da DIPS na landing page (home) — visual novo, funcionalidades intactas.
+
+**Target features:**
+- Redesign das 7 seções da home (trust bar/header, hero, story, ingredients, bundle selector, reviews, FAQs, footer) fiel ao Figma (desktop 1440px)
+- Tema dark purple + design tokens extraídos (cores, tipografia com substitutos licenciáveis, raios, espaçamentos)
+- Responsivo mobile adaptado por decisão própria (Figma não tem versão mobile)
+- i18n en/es/pt para todo o copy novo (expansão ~30%)
+
+**Key context:**
+- Preços/checkout continuam vindo do Shopify/Stripe — design é referência visual, não fonte de preço
+- Fora do escopo: admin, páginas de afiliados (dashboard/join), order confirmation, mudanças de funcionalidade
+- Correções sobre o Figma: typos ("Gaurantee", "Igredients", "Aphrodiasiac"), mailto errado (help@tabs.co → email real), normalizar os 3 laranjas (#fb6c04/#ff6b01/#f15a22)
+- Design context extraído: `FIGMA-EXTRACTION.md` + 27 assets (scratchpad da sessão; copiar para o repo na fase de execução)
 
 ## Core Value
 
@@ -53,9 +69,13 @@ Affiliates can grab ready-to-post, on-brand creative assets (with a copy-paste c
 
 ### Active
 
-<!-- Milestone v1.0 (Affiliate Creatives) complete — no active requirements. -->
+<!-- Milestone v1.1 (Landing Page Redesign) — layout novo, funcionalidades intactas. -->
 
-_None — milestone v1.0 shipped. Next milestone's requirements go here._
+- [ ] Landing page (home) com o novo layout do Figma — todas as 7 seções, desktop 1440px fiel
+- [ ] Layout responsivo mobile adaptado do design desktop
+- [ ] Design tokens (cores/tipografia/raios) aplicados de forma consistente, com fontes licenciáveis
+- [ ] Copy novo localizado em en/es/pt
+- [ ] Funcionalidades preservadas: bundle selector → Stripe checkout, atribuição de afiliado, reviews reais, i18n
 
 ### Out of Scope
 
@@ -124,4 +144,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-18 after v1.0 milestone (Affiliate Creatives) — shipped, merged (PR #12), tagged v1.0*
+*Last updated: 2026-07-16 after starting milestone v1.1 (Landing Page Redesign)*
