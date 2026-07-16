@@ -76,7 +76,7 @@ Run `/gsd-new-milestone` to scope and plan the next milestone.
   4. O accordion de FAQs abre/fecha itens, e o item aberto mostra borda laranja e chevron rotacionado
   5. O copy corrigido aparece nas seções afetadas — "Guarantee" (não "Gaurantee"), "Ingredients" (não "Igredients"), "Aphrodisiac" (não "Aphrodiasiac") — e o link de contato no footer usa o email de suporte real (não "help@tabs.co")
 
-**Plans**: 3/5 plans executed
+**Plans**: 4/5 plans executed
 **Wave 1**
 
 - [x] 05-01-PLAN.md — LandingHeader (trust bar + nav) + LandingFooter + new i18n namespaces (SECT-01, SECT-08, FUNC-04)
@@ -85,7 +85,7 @@ Run `/gsd-new-milestone` to scope and plan the next milestone.
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 05-02-PLAN.md — Hero full rebuild (absorbs feature cards) + StorySection split + i18n (SECT-02, SECT-03)
+- [x] 05-02-PLAN.md — Hero full rebuild (absorbs feature cards) + StorySection split + i18n (SECT-02, SECT-03)
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
@@ -120,5 +120,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 2. Admin Creatives | v1.0 | 2/2 | Complete | 2026-06-17 |
 | 3. Affiliate Gallery & i18n | v1.0 | 1/1 | Complete | 2026-06-18 |
 | 4. Design System Foundation | v1.1 | 3/3 | Complete    | 2026-07-16 |
-| 5. Landing Page Sections | v1.1 | 3/5 | In Progress|  |
+| 5. Landing Page Sections | v1.1 | 4/5 | In Progress|  |
 | 6. Responsive, i18n & Regression Verification | v1.1 | 0/TBD | Not started | - |
