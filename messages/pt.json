@@ -30,7 +30,14 @@
         "description": "Feito com Nibs de Cacau Arriba puro e ingredientes afrodisíacos naturais - Maca Peruana, L-Teanina, Gengibre e Feno-grego - Dips desperta os sentidos, acende o desejo e transforma o prazer compartilhado em uma experiência intensa e irresistível.",
         "shortDescription": "Criado com ingredientes afrodisíacos naturais para despertar os sentidos.",
         "trustLine": "Ingredientes naturais - Checkout seguro",
-        "cta": "Adicionar ao carrinho"
+        "cta": "Adicionar ao carrinho",
+        "h1": "O <hl>chocolate</hl> que muda a noite.",
+        "socialProof": "Mais de 10.000 Casais Felizes",
+        "trust1": "100% Ingredientes Naturais",
+        "trust2": "Feito nos EUA",
+        "trust3": "Checkout Seguro",
+        "ctaPrimary": "Comprar Agora",
+        "ctaSecondary": "Como Funciona?"
     },
     "About": {
         "sectionTitle": "Feito para ser saboreado a dois.",
