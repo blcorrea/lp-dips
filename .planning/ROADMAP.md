@@ -77,11 +77,18 @@ Run `/gsd-new-milestone` to scope and plan the next milestone.
   5. O copy corrigido aparece nas seções afetadas — "Guarantee" (não "Gaurantee"), "Ingredients" (não "Igredients"), "Aphrodisiac" (não "Aphrodiasiac") — e o link de contato no footer usa o email de suporte real (não "help@tabs.co")
 
 **Plans**: 5 plans
+**Wave 1**
 
 - [ ] 05-01-PLAN.md — LandingHeader (trust bar + nav) + LandingFooter + new i18n namespaces (SECT-01, SECT-08, FUNC-04)
-- [ ] 05-02-PLAN.md — Hero full rebuild (absorbs feature cards) + StorySection split + i18n (SECT-02, SECT-03)
 - [ ] 05-03-PLAN.md — Ingredients carousel→split + FAQ shadcn accordion reskins (SECT-04, SECT-07, FUNC-04)
 - [ ] 05-04-PLAN.md — Reviews #2d1a69 masonry + Bundle selector reskin (pricing locked) (SECT-05, SECT-06, FUNC-01)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 05-02-PLAN.md — Hero full rebuild (absorbs feature cards) + StorySection split + i18n (SECT-02, SECT-03)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
 - [ ] 05-05-PLAN.md — Wire page.tsx (8 sections) + scroll-smooth + delete dead components + verify (all SECT, FUNC-01, FUNC-04)
 
 **UI hint**: yes
