@@ -39,6 +39,16 @@
         "ctaPrimary": "Buy Now",
         "ctaSecondary": "How It Works?"
     },
+    "Story": {
+        "ourStoryTitle": "Our Story",
+        "sideTitle": "Made to be Savoured by Two",
+        "p1": "Since ancient times, chocolate has been celebrated as the “food of the gods” – a symbol of pleasure, energy, and euphoria.",
+        "p2": "Dips was born from that same instinct: to unite the richness of premium chocolate with the thrill of intimate connection.",
+        "p3": "We blend technical precision, creativity, and ancestral ingredients to create a one-of-a-kind sensory experience – aphrodisiac, 100% natural, and eco-friendly. Each piece is an invitation to feel, to explore, to connect, with the flavor, with your body, and with whoever shares the moment by your side – the result is a sophisticated chocolate that offers pleasure without guilt, and temptation without excess.",
+        "badge1": "100% Natural",
+        "badge2": "Made in the USA",
+        "badge3": "Aphrodisiac Blend"
+    },
     "About": {
         "sectionTitle": "Made to be savored by two.",
         "titleLine1": "Made to",
