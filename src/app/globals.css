@@ -126,6 +126,50 @@
   --spacing-2xl: 48px;
   --spacing-3xl: 64px;
   --spacing-card-padding: 25px;
+
+  /* ============================= */
+  /* TYPOGRAPHY SCALE (extended, additive) */
+  /* ============================= */
+
+  --text-display-hero: 64px;
+  --text-display-hero--line-height: 1.05;
+  --text-heading-lg: 54px;
+  --text-heading-lg--line-height: 1.15;
+  --text-heading-md: 48px;
+  --text-heading-md--line-height: 1.15;
+  --text-heading-side: 64px;
+  --text-heading-side--line-height: 1.05;
+  --text-subtitle-italic-lg: 24px;
+  --text-subtitle-italic-lg--line-height: 1.4;
+  --text-subtitle-italic-sm: 20px;
+  --text-subtitle-italic-sm--line-height: 1.4;
+  --text-body-lg: 24px;
+  --text-body-lg--line-height: 1.5;
+  --text-body-md: 18px;
+  --text-body-md--line-height: 1.6;
+  --text-card-title-lg: 24px;
+  --text-card-title-lg--line-height: 1.2;
+  --text-card-title-sm: 18px;
+  --text-card-title-sm--line-height: 1.2;
+  --text-card-body: 14px;
+  --text-card-body--line-height: 1.5;
+  --text-cta-button: 16px;
+  --text-cta-button--line-height: 1.1;
+  --text-nav-link: 14px;
+  --text-nav-link--line-height: 1.2;
+  --text-trust-bar: 12px;
+  --text-trust-bar--line-height: 1.2;
+  --text-footer-heading: 22px;
+  --text-footer-heading--line-height: 1.2;
+  --text-footer-fine: 14px;
+  --text-footer-fine--line-height: 1.5;
+
+  /* ============================= */
+  /* FONT FAMILY TOKENS (redesign, additive) */
+  /* ============================= */
+
+  --font-card: var(--font-plus-jakarta-sans), sans-serif;
+  --font-cta: var(--font-dm-sans), sans-serif;
 }
 
 /* ============================= */
