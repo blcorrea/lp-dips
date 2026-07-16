@@ -78,7 +78,7 @@ export default async function LocaleLayout({
     <html
       lang={locale}
       suppressHydrationWarning
-      className={`${plusJakartaSans.variable} ${dmSans.variable}`}
+      className={`${plusJakartaSans.variable} ${dmSans.variable} scroll-smooth`}
     >
       <body className="antialiased bg-background text-foreground">
         <NextIntlClientProvider messages={messages} locale={locale}>
