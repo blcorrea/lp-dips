@@ -13,7 +13,7 @@ created: 2026-07-16
 
 **Source of truth for all raw values:** `scratchpad/figma/FIGMA-EXTRACTION.md` (must be copied into the repo during Phase 4 execution — see Assets section). Every hex/px value below is transcribed from that document; do not re-derive from screenshots.
 
-**Out of scope for this contract:** section layouts, component composition, responsive breakpoints, i18n copy (Phases 5–6). This document defines only the shared tokens, fonts, and the normalized CTA orange that those phases consume.
+**Out of scope for this contract:** section layouts, component composition, responsive breakpoints, i18n copy (Phases 5–6). This document defines only the shared tokens, fonts, and the normalized CTA orange that those phases consume. Focal point/visual hierarchy within a section is deferred to Phase 5 (section layouts) — this is a token/font/color foundation, not a layout spec.
 
 ---
 
@@ -69,6 +69,14 @@ Canonical 4-role summary (per template convention):
 | Label | 14px | 500 (FilsonPro Medium) | 1.2 |
 | Heading | 54px | 700 (AllRoundGothic Bold) | 1.15 |
 | Display | 64px | 700 (AllRoundGothic Bold) | 1.05 |
+
+**Typography Exception (declared, not a gap):** the canonical table above is the summary view only — it is not the real constraint for this phase. The "Extended type scale" below declares 4 font families, 16 named sizes, and 4 distinct weights (400/500/700 plus 400-italic), exceeding the standard max-4-size / max-2-weight caps. This is an intentional, bounded exception, not scope creep:
+
+1. **Sizes/weights are locked 1:1 to the client's Figma extraction**, verified against `FIGMA-EXTRACTION.md` by the checker — every row in the Extended type scale table traces to a specific Figma text layer, not an invented value. A marketing landing page with 9 distinct sections has a legitimately richer type hierarchy than a typical app screen.
+2. **Two of the four families are pre-existing production fonts already shipped sitewide** (`AllRoundGothic` 700, `FilsonPro` 400/500/700) — the extended scale mirrors typography that already exists in `globals.css` and is already rendered on 41 files across the app. It does not introduce new font-loading debt; it only adds `Plus Jakarta Sans` and `DM Sans` for the two roles with no existing asset.
+3. The exception is **named and bounded**: every size/weight/family combination is enumerated in the Extended type scale table below, with a single Figma usage citation each — Phase 5 must draw from this closed list, not invent additional sizes/weights ad hoc.
+
+Future readers (Phase 5 executor, Phase 5/6 checkers): treat the canonical 4-role table above as a quick-reference summary only. The Extended type scale is the real, enforceable contract for this phase.
 
 ### Font family assignments (confirmed)
 
