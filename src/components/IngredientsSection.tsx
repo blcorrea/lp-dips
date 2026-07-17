@@ -81,6 +81,9 @@ export default function IngredientsSection() {
           {/* LEFT: header + 6 ingredient cards */}
           <div>
             <ScrollReveal direction="up" delay={0.1} duration={0.8}>
+              <p className="text-subtitle-italic-sm font-body italic text-dips-text-lavender-muted mb-2">
+                {t('eyebrow')}
+              </p>
               <h2 className="text-heading-md font-heading text-dips-text-lavender mb-8 lg:mb-10">
                 {t('sectionTitle')}
               </h2>
