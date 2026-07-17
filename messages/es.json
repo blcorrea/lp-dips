@@ -41,7 +41,9 @@
     },
     "Story": {
         "ourStoryTitle": "Nuestra Historia",
+        "socialProof": "Más de 10,000 Parejas Felices",
         "sideTitle": "Hecho para Saborearse en Pareja",
+        "subtitle": "Un Chocolate creado para la conexión.",
         "p1": "Desde las antiguas civilizaciones, el chocolate ha sido celebrado como el “alimento de los dioses” – un símbolo de placer, energía y euforia.",
         "p2": "Dips nació de ese mismo instinto: unir la riqueza del chocolate premium con la emoción de la conexión íntima.",
         "p3": "Combinamos precisión técnica, creatividad e ingredientes ancestrales para crear una experiencia sensorial única – afrodisíaca, 100% natural y ecológica. Cada pieza es una invitación a sentir, a explorar, a conectar, con el sabor, con tu cuerpo y con quien comparte el momento a tu lado – el resultado es un chocolate sofisticado que ofrece placer sin culpa, y tentación sin excesos.",
@@ -474,7 +476,6 @@
     "BuySection": {
         "eyebrow": "La Experiencia Dips",
         "title": "Lleva la experiencia a casa.",
-        "subtitle": "Elige tu cantidad y comienza la experiencia con nuestro chocolate sensual premium, creado para compartirse.",
         "benefit1": "Ingredientes naturales",
         "benefit2": "Pago seguro",
         "benefit3": "Hecho para compartir",

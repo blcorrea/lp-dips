@@ -23,10 +23,18 @@ export default function StorySection() {
                         />
                         <div className="absolute inset-0 bg-gradient-to-br from-brand-orange/20 to-dips-purple-deepest/20" />
 
-                        <div className="relative z-10 flex flex-col gap-6 p-card-padding pb-10 lg:p-12">
+                        <div className="relative z-10 flex flex-col gap-4 p-card-padding pb-10 lg:p-12">
+                            <span className="w-fit rounded-full border border-dips-card-tint-2-border bg-dips-card-tint-2 px-4 py-1.5 text-[12px] font-semibold text-white">
+                                {t('socialProof')}
+                            </span>
+
                             <h2 className="font-heading text-heading-side font-bold leading-[1.05] text-white drop-shadow-[0_4px_18px_rgba(0,0,0,0.35)]">
                                 {t('sideTitle')}
                             </h2>
+
+                            <p className="font-body italic text-subtitle-italic-lg text-white/90">
+                                {t('subtitle')}
+                            </p>
 
                             <div className="flex flex-wrap gap-3">
                                 {BADGE_KEYS.map((key) => (

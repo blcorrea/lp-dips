@@ -41,7 +41,9 @@
     },
     "Story": {
         "ourStoryTitle": "Our Story",
+        "socialProof": "10,000+ Happy Couples",
         "sideTitle": "Made to be Savoured by Two",
+        "subtitle": "A Chocolate crafted for connection.",
         "p1": "Since ancient times, chocolate has been celebrated as the “food of the gods” – a symbol of pleasure, energy, and euphoria.",
         "p2": "Dips was born from that same instinct: to unite the richness of premium chocolate with the thrill of intimate connection.",
         "p3": "We blend technical precision, creativity, and ancestral ingredients to create a one-of-a-kind sensory experience – aphrodisiac, 100% natural, and eco-friendly. Each piece is an invitation to feel, to explore, to connect, with the flavor, with your body, and with whoever shares the moment by your side – the result is a sophisticated chocolate that offers pleasure without guilt, and temptation without excess.",
@@ -473,7 +475,6 @@
     "BuySection": {
         "eyebrow": "The Dips Experience",
         "title": "Bring the experience home.",
-        "subtitle": "Choose your quantity and start the experience with our premium sensual chocolate, crafted to be shared.",
         "benefit1": "Natural ingredients",
         "benefit2": "Secure checkout",
         "benefit3": "Made to share",
