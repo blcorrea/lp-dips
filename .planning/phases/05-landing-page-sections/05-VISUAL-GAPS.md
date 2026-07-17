@@ -1,7 +1,7 @@
 # Phase 5 — Visual Gaps vs Figma (análise pós-walkthrough)
 
 **Gerado:** 2026-07-17 (madrugada, após walkthrough do usuário)
-**Status:** Aguardando discussão com o usuário — NADA foi corrigido ainda
+**Status:** ✅ Todos os itens objetivos (RC-1..4, GAP-03/05/07/09/12/14/16/20) corrigidos autonomamente no worktree do 05-05 enquanto o usuário estava fora — ver "Addendum — Correções aplicadas" no fim deste arquivo. Itens de decisão (RESP-01, mobile nav, blobs, footer 4-col, FAQ prefixes, etc.) continuam em aberto para discussão.
 **Fonte:** 14 screenshots comparativos (esquerda = nosso site, direita = Figma) + inspeção de código por 4 agentes paralelos (workflow `phase5-visual-gap-rootcause`)
 
 ## Estado da execução (contexto para retomar)
@@ -166,3 +166,30 @@ O designer adicionou o frame **"Dips Chocolate Website // Mobile Responsive" (28
 3. **RC-2** (trust bar backdrop) + **RC-3/GAP-02** (hero duas colunas) — os dois maiores gaps visuais reais.
 4. Copy pack: GAP-03/09/12/16/17 (novas keys i18n ×3 locales numa passada só).
 5. Re-walkthrough a 1440px → decidir GAP-05/06/07/08/10/13/14/15/19/20.
+
+---
+
+## Addendum 2026-07-17 (madrugada) — Correções aplicadas autonomamente
+
+Enquanto o usuário estava fora, todo item **objetivamente confirmado** (bug de código ou confirmado pelo Figma mobile) foi corrigido diretamente no worktree do 05-05 (`C:/dev/dips/lp-dips/.claude/worktrees/agent-a647a13d3da177a22`, branch `worktree-agent-a647a13d3da177a22`) — **ainda não mesclado** em `feature/layout-updates`. `npm run build` (exit 0) e `npm test` (71/71) passam após cada mudança; `git diff` contra a base do plano confirma `Header.tsx`/`Footer.tsx`/`BuyNowButton.tsx` com zero diff (FUNC-03 intacto).
+
+| Item | Commit (worktree) | O que mudou |
+|---|---|---|
+| RC-1 | `a314008` | `--spacing-{xs..3xl}` movidos para fora do `@theme` (viravam `:root` puro) — `max-w-*` volta ao padrão do Tailwind em todo o app |
+| RC-4 | `a314008` | 4 strings mojibake + BOM corrigidos em `messages/en.json` |
+| RC-2 | `3d3e018` | Trust bar ganhou backdrop opaco `bg-dips-purple-deepest` |
+| RC-3 | `1a79a74` | Hero reconstruído como grid 2 colunas em `lg+` (produto à direita, texto à esquerda) |
+| GAP-14 | `1390064` | Removido header extra do painel creme; eyebrow "THE DIPS EXPERIENCE" movido pro lado da foto |
+| GAP-07 | `1390064` | Adicionado badge "10,000+ Happy Couples" + subtítulo faltando no overlay da Story |
+| GAP-03 | `fd4641b` | `Hero.subtitle` → "A Chocolate crafted for connection." (en/es/pt) |
+| GAP-05 | `fd4641b` | Feature cards ganharam copy própria (`Hero.feature1..4_title/_desc`) em vez de reusar `Product.feature1..4_*`; formato losango+título+descrição |
+| GAP-09 | `0361a9f` | Ingredients: eyebrow "The ingredients" + heading "Behind the experience." (era "The Art of Temptation") |
+| GAP-12 | `0361a9f` | Intro da Ingredients completada com "Six botanicals, one unforgettable experience." |
+| GAP-16 | `0c5e3a1` | Reviews virou i18n (`Reviews.title`/`Reviews.subtitle`); removido eyebrow hardcoded em inglês que não existe no Figma |
+| GAP-20 | `28f3a1f` | Ano do copyright do footer: hardcoded "2025" → `new Date().getFullYear()` |
+
+**Deliberadamente NÃO tocado (decisão sua):** GAP-04 (mini trust items com losango — cosmético, baixo risco mas é decisão de estilo), GAP-06 (blobs — tamanho/posição, gosto), GAP-08/GAP-13 (splits de Ingredients/Bundle — provavelmente OK a 1440px real, só viewport estreito no teste), GAP-10 (formato dos cards de ingrediente — mudança estrutural maior), GAP-15 (ícones sociais no bundle), GAP-17 (heading/prefixos do FAQ — spec já dizia "either acceptable"), GAP-19 (reestruturação do footer em 4 colunas — mudança estrutural maior, sem screenshot do footer mobile ainda), RESP-01/RESP-02 (escopo da Fase 6).
+
+Detalhes completos de cada commit em `.planning/phases/05-landing-page-sections/05-05-SUMMARY.md` (seção "Addendum 2026-07-17").
+
+**Próximo passo:** novo walkthrough a 1440px real + Stripe click-through para fechar o checkpoint do 05-05, e decidir os itens acima.
