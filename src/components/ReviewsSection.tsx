@@ -1,4 +1,7 @@
+"use client";
+
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { reviews, type Review } from '@/data/reviews';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -122,18 +125,20 @@ function ReviewCard({ review }: { review: Review }) {
 // ── Section ───────────────────────────────────────────────────────────────────
 
 export default function ReviewsSection() {
+  const t = useTranslations('Reviews');
+
   return (
     <section id="reviews" className="scroll-mt-[72px] bg-dips-purple-reviews px-6 py-20 sm:py-28">
       <div className="mx-auto max-w-7xl">
 
         {/* Header */}
         <div className="text-center mb-12 sm:mb-16">
-          <p className="text-brand-orange text-[11px] font-bold tracking-[0.22em] uppercase mb-4">
-            Real people. Real results.
-          </p>
           <h2 className="font-heading text-heading-lg text-white leading-[1.15] tracking-[-0.03em]">
-            What people are saying
+            {t('title')}
           </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-body-lg leading-relaxed text-white/80">
+            {t('subtitle')}
+          </p>
         </div>
 
         {/* Masonry grid — 2 cols on mobile, 3 from md up */}
