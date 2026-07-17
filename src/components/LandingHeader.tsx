@@ -40,17 +40,23 @@ export default function LandingHeader() {
 
   return (
     <>
-      {/* Trust bar */}
-      <div className="flex h-[45px] w-full items-center justify-center gap-6 bg-[rgba(45,26,105,0.4)] px-4">
-        {TRUST_BAR_KEYS.map((key) => (
-          <span
-            key={key}
-            className="flex items-center gap-2 text-trust-bar text-dips-text-lavender-muted"
-          >
-            <TrustBarDiamond />
-            {t(key)}
-          </span>
-        ))}
+      {/* Trust bar — solid dark backdrop (bg-dips-purple-deepest) behind the translucent
+          accent layer (rgba(45,26,105,0.4) per UI-SPEC) so the bar renders as dark purple
+          regardless of what the page background behind LandingHeader is. Without this
+          wrapper the translucent layer composited directly over <main>'s bg-brand-cream,
+          producing an unreadable light-lavender strip (05-VISUAL-GAPS.md RC-2). */}
+      <div className="w-full bg-dips-purple-deepest">
+        <div className="flex h-[45px] w-full items-center justify-center gap-6 bg-[rgba(45,26,105,0.4)] px-4">
+          {TRUST_BAR_KEYS.map((key) => (
+            <span
+              key={key}
+              className="flex items-center gap-2 text-trust-bar text-dips-text-lavender-muted"
+            >
+              <TrustBarDiamond />
+              {t(key)}
+            </span>
+          ))}
+        </div>
       </div>
 
       {/* Nav */}
