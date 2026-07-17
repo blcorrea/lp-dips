@@ -62,91 +62,22 @@ export default function Hero() {
         className="pointer-events-none absolute -right-20 bottom-10 opacity-70"
       />
 
-      <div className="container relative z-10 mx-auto flex flex-col items-center px-6 text-center">
-        {/* HEADLINE (two-tone via next-intl rich text) */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.15 }}
-          className="max-w-4xl"
-        >
-          <h1 className="font-heading text-display-hero font-bold leading-[1.05] text-white">
-            {t.rich("h1", {
-              hl: (chunks) => (
-                <span className="text-dips-text-headline-lilac">{chunks}</span>
-              ),
-            })}
-          </h1>
-        </motion.div>
-
-        {/* SUBTITLE */}
-        <motion.div
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.3 }}
-          className="mt-4"
-        >
-          <p className="font-body text-subtitle-italic-lg italic text-dips-text-lavender">
-            {t("subtitle")}
-          </p>
-        </motion.div>
-
-        {/* SOCIAL PROOF BADGE */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.45 }}
-          className="mt-6"
-        >
-          <div className="inline-flex items-center gap-2 rounded-full border border-dips-card-tint-2-border bg-dips-card-tint-2 px-5 py-2.5">
-            <HeroStars />
-            <span className="text-card-body font-medium text-dips-text-lavender">
-              {t("socialProof")}
-            </span>
-          </div>
-        </motion.div>
-
-        {/* MINI TRUST ITEMS */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.55 }}
-          className="mt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-2"
-        >
-          {TRUST_KEYS.map((key) => (
-            <span key={key} className="text-trust-bar text-dips-text-lavender-muted">
-              {t(key)}
-            </span>
-          ))}
-        </motion.div>
-
-        {/* DUAL CTA */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.97 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.65, delay: 0.7 }}
-          className="mt-8 flex flex-wrap items-center justify-center gap-4"
-        >
-          <a
-            href="#bundle"
-            className="inline-flex h-[50px] items-center justify-center rounded-full bg-brand-orange px-8 text-cta-button font-bold text-white transition-opacity duration-200 hover:opacity-90"
-          >
-            {t("ctaPrimary")}
-          </a>
-          <a
-            href="#ingredients"
-            className="inline-flex h-[50px] items-center justify-center rounded-full border border-[#58477e] bg-transparent px-8 text-cta-button font-bold text-white transition-colors duration-200 hover:bg-white/5"
-          >
-            {t("ctaSecondary")}
-          </a>
-        </motion.div>
-
+      {/*
+        Two-column composition at lg+ (Figma 1440px: text left, product right).
+        DOM order is [image, text] so the product image appears FIRST on mobile
+        (matches the Figma mobile frame, 281:22), then lg:order-* flips the
+        image to the right column / second position at desktop. Previously this
+        was a single flex-col stack at every breakpoint with the image below
+        the text (05-VISUAL-GAPS.md RC-3) -- that was wrong at ANY width, not
+        just narrow viewports.
+      */}
+      <div className="container relative z-10 mx-auto grid grid-cols-1 items-center gap-10 px-6 text-center lg:grid-cols-2 lg:gap-16 lg:text-left">
         {/* PRODUCT IMAGE */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.85 }}
-          className="relative mt-10 w-full max-w-[822px]"
+          className="relative order-1 mx-auto w-full max-w-[420px] lg:order-2 lg:max-w-[822px]"
         >
           <Image
             src="/images/redesign/hero-product.png"
@@ -157,6 +88,87 @@ export default function Hero() {
             className="w-full rotate-[-0.85deg] object-contain"
           />
         </motion.div>
+
+        {/* TEXT COLUMN */}
+        <div className="order-2 flex flex-col items-center lg:order-1 lg:items-start">
+          {/* HEADLINE (two-tone via next-intl rich text) */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.15 }}
+            className="max-w-xl lg:max-w-none"
+          >
+            <h1 className="font-heading text-display-hero font-bold leading-[1.05] text-white">
+              {t.rich("h1", {
+                hl: (chunks) => (
+                  <span className="text-dips-text-headline-lilac">{chunks}</span>
+                ),
+              })}
+            </h1>
+          </motion.div>
+
+          {/* SUBTITLE */}
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.3 }}
+            className="mt-4"
+          >
+            <p className="font-body text-subtitle-italic-lg italic text-dips-text-lavender">
+              {t("subtitle")}
+            </p>
+          </motion.div>
+
+          {/* SOCIAL PROOF BADGE */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.45 }}
+            className="mt-6"
+          >
+            <div className="inline-flex items-center gap-2 rounded-full border border-dips-card-tint-2-border bg-dips-card-tint-2 px-5 py-2.5">
+              <HeroStars />
+              <span className="text-card-body font-medium text-dips-text-lavender">
+                {t("socialProof")}
+              </span>
+            </div>
+          </motion.div>
+
+          {/* MINI TRUST ITEMS */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.55 }}
+            className="mt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 lg:justify-start"
+          >
+            {TRUST_KEYS.map((key) => (
+              <span key={key} className="text-trust-bar text-dips-text-lavender-muted">
+                {t(key)}
+              </span>
+            ))}
+          </motion.div>
+
+          {/* DUAL CTA */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.97 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.65, delay: 0.7 }}
+            className="mt-8 flex flex-wrap items-center justify-center gap-4 lg:justify-start"
+          >
+            <a
+              href="#bundle"
+              className="inline-flex h-[50px] items-center justify-center rounded-full bg-brand-orange px-8 text-cta-button font-bold text-white transition-opacity duration-200 hover:opacity-90"
+            >
+              {t("ctaPrimary")}
+            </a>
+            <a
+              href="#ingredients"
+              className="inline-flex h-[50px] items-center justify-center rounded-full border border-[#58477e] bg-transparent px-8 text-cta-button font-bold text-white transition-colors duration-200 hover:bg-white/5"
+            >
+              {t("ctaSecondary")}
+            </a>
+          </motion.div>
+        </div>
       </div>
 
       {/* FEATURE CARDS (absorbed from ProductSection, Product namespace verbatim) */}
