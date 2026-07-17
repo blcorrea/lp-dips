@@ -151,6 +151,14 @@ JSX tem `© 2025 –` literal; Figma mostra © 2026. Usar ano dinâmico + revisa
 - Click-through do checkout Stripe (FUNC-01) — checkpoint do 05-05 continua aberto.
 - Página compartilhada (ex. `/en/product/dips-chocolate`) intacta — diff de `Header.tsx`/`Footer.tsx`/`BuyNowButton.tsx` já confirmado zero via git, falta olho humano.
 
+## Addendum 2026-07-17 — Figma agora tem versão MOBILE
+
+O designer adicionou o frame **"Dips Chocolate Website // Mobile Responsive" (281:21, 375×9587px)** — extração parcial em `FIGMA-MOBILE-EXTRACTION.md` (5 de 7 seções capturadas; FAQs/Footer pendentes por rate limit). Consequências:
+
+- **RESP-01 muda de premissa** — mobile agora é "fiel ao Figma", não mais "decisão própria". O hambúrguer do header mobile já tem design.
+- **Vários gaps saíram de "a discutir" para "confirmados pelo Figma":** GAP-03 (subtítulo hero = "A Chocolate crafted for connection."), GAP-04 (mini trust com losangos), GAP-05 (feature cards têm copy própria do Figma — título curto + descrição, NÃO o `Product.feature1..4` atual; a decisão de reuso verbatim precisa ser revertida), GAP-09 ("The ingredients / Behind the experience."), GAP-10 (cards compactos horizontais), GAP-12 (intro completa), GAP-16 (Reviews com subtítulo-parágrafo, sem eyebrow).
+- **GAP-14 esclarecido:** "THE DIPS EXPERIENCE" existe no Figma como badge sobre a foto do bundle (não como header do painel creme).
+
 ## Proposta de ordem de ataque (para discutir)
 
 1. **RC-1** (rename dos tokens colidentes) — destrava GAP-18 e conserta regressão FUNC-03 em 12+ telas.
