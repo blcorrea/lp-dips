@@ -117,14 +117,13 @@
   /* ============================= */
   /* SPACING SCALE (named, additive) */
   /* ============================= */
-
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 16px;
-  --spacing-lg: 24px;
-  --spacing-xl: 32px;
-  --spacing-2xl: 48px;
-  --spacing-3xl: 64px;
+  /* --spacing-{xs..3xl} intentionally NOT declared here (moved to :root below).
+     Tailwind v4 auto-generates named utilities (max-w-xl, w-lg, p-sm, ...) from
+     ANY token registered under the --spacing-* namespace inside @theme, and that
+     silently overrides the framework's own --container-* scale for max-w-* --
+     e.g. max-w-xl became 32px instead of Tailwind's default 36rem, collapsing
+     every max-w-xs/sm/md/lg/xl/2xl/3xl usage across the app (14 sites, including
+     checkout/success and legal pages) to a few pixels. See 05-VISUAL-GAPS.md RC-1. */
   --spacing-card-padding: 25px;
 
   /* ============================= */
@@ -170,6 +169,22 @@
 
   --font-card: var(--font-plus-jakarta-sans), sans-serif;
   --font-cta: var(--font-dm-sans), sans-serif;
+}
+
+/* ============================= */
+/* SPACING SCALE (reference tokens, non-utility-generating) */
+/* ============================= */
+/* Plain CSS custom properties -- NOT inside @theme, so Tailwind does not turn
+   these into named utilities (max-w-xl, p-lg, ...). Use via arbitrary values,
+   e.g. p-[var(--space-lg)], if this named scale is ever needed directly. */
+:root {
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
 }
 
 /* ============================= */

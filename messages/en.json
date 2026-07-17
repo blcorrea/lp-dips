@@ -1,4 +1,4 @@
-﻿{
+{
     "Header": {
         "about": "About Us",
         "product": "The Product",
@@ -66,7 +66,7 @@
         "subtitle": "Every ingredient is carefully selected for its aphrodisiac properties and premium quality.",
 
         "cocoa_name": "Premium Arriba Cocoa Nibs",
-        "cocoa_desc": "Rich, intense flavor from single-origin Arriba cocoa â€“ the ultimate gourmet base.",
+        "cocoa_desc": "Rich, intense flavor from single-origin Arriba cocoa – the ultimate gourmet base.",
         "cocoa_keyword": "RITUAL",
         "cocoa_originsTitle": "Origins & Curiosities:",
         "cocoa_origins": "Cacao was once consumed in ceremonial drinks by ancient cultures, symbolizing abundance, warmth, and shared moments of connection.",
@@ -84,7 +84,7 @@
         "ginger_origins": "Used for centuries across many cultures, ginger is known for its warming nature and its connection to vitality and energy.",
 
         "theanine_name": "L-Theanine",
-        "theanine_desc": "â€œGood moodâ€ amino acid that improves focus and relaxation, helping you fully enjoy the moment.",
+        "theanine_desc": "“Good mood” amino acid that improves focus and relaxation, helping you fully enjoy the moment.",
         "theanine_keyword": "PRESENCE",
         "theanine_originsTitle": "Origins & Curiosities:",
         "theanine_origins": "Traditionally associated with tea rituals, L-Theanine has long been valued for promoting calm focus and attentive presence.",
@@ -202,7 +202,7 @@
         "fulfillmentTitle": "Fulfillment Times",
         "fulfillmentDesc": "We strive to fulfill orders the same day on most weekdays and Saturdays (excluding holidays). Orders placed Saturday evening or Sunday will ship on Monday.",
         "shippingOptionsTitle": "Shipping Options",
-        "shippingOptionsDesc1": "We offer standard shipping starting at $[calculated at checkout] on all orders, as well as expedited 2â€“5 day delivery through FedEx 2-Day for an additional cost.",
+        "shippingOptionsDesc1": "We offer standard shipping starting at $[calculated at checkout] on all orders, as well as expedited 2–5 day delivery through FedEx 2-Day for an additional cost.",
         "shippingOptionsDesc2": "All orders also qualify for DHL shipping, starting at $[calculated at checkout].",
         "internationalTitle": "International Orders",
         "internationalDesc": "Our chocolates are proudly crafted and shipped from the U.S. We accept international orders; however, customers are responsible for ensuring compliance with local regulations. We cannot refund shipments seized by customs.",
@@ -221,7 +221,7 @@
         "backToHome": "Back to Home",
         "lastUpdated": "Last Updated",
         "initiatingTitle": "Initiating a Return",
-        "initiatingDesc": "Returns must be requested within 14 days of delivery. Please contact our Customer Support team before sending any items backâ€”returns without prior approval cannot be accepted.",
+        "initiatingDesc": "Returns must be requested within 14 days of delivery. Please contact our Customer Support team before sending any items back—returns without prior approval cannot be accepted.",
         "damagedTitle": "Damaged or Melted Items",
         "damagedDesc": "If your chocolates arrive damaged, broken, misshapen, or melted, reach out to us immediately. Upon reasonable proof, we'll gladly provide a replacement to ensure your experience remains indulgent.",
         "chocolatePiecesTitle": "Dips Chocolate Pieces",
