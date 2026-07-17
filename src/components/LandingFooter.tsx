@@ -12,6 +12,7 @@ export default function LandingFooter() {
   const locale = (params.locale as string) || "en";
 
   const [submitted, setSubmitted] = useState(false);
+  const currentYear = new Date().getFullYear();
 
   function handleNewsletterSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -159,7 +160,7 @@ export default function LandingFooter() {
 
         {/* LEGAL TEXT */}
         <div className="mx-auto mt-12 max-w-xl text-center text-footer-fine text-dips-text-footer-fine">
-          <p>© 2025 – Dips Chocolate. {t("rightsReserved")}</p>
+          <p>© {currentYear} – Dips Chocolate. {t("rightsReserved")}</p>
 
           <p>{t("madeWith")}</p>
 
