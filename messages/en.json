@@ -25,7 +25,7 @@
         "headlinePart1": "Share it.",
         "headlinePart2": "Feel it.",
         "headlinePart3": "Love it.",
-        "subtitle": "Pleasure in its purest form.",
+        "subtitle": "A Chocolate crafted for connection.",
         "sub": "A chocolate made to tease.",
         "description": "Crafted with pure Arriba cocoa nibs and a proprietary blend of natural aphrodisiac ingredients, Dips awakens the senses, ignites desire, and turns shared pleasure into an intense and irresistible experience.",
         "shortDescription": "Crafted with natural aphrodisiac ingredients to awaken the senses.",
@@ -37,7 +37,15 @@
         "trust2": "Made in the USA",
         "trust3": "Secure Checkout",
         "ctaPrimary": "Buy Now",
-        "ctaSecondary": "How It Works?"
+        "ctaSecondary": "How It Works?",
+        "feature1_title": "Natural Aphrodisiac",
+        "feature1_desc": "Botanically sourced ingredients proven to ignite desire",
+        "feature2_title": "Premium Cocoa",
+        "feature2_desc": "Single-origin Arriba cocoa — the world's finest base",
+        "feature3_title": "For Couples",
+        "feature3_desc": "Crafted to deepen connection and shared pleasure",
+        "feature4_title": "Adults Only",
+        "feature4_desc": "A sophisticated experience for those who want more"
     },
     "Story": {
         "ourStoryTitle": "Our Story",

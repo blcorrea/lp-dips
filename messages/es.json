@@ -25,7 +25,7 @@
         "headlinePart1": "Compártelo.",
         "headlinePart2": "Siéntelo.",
         "headlinePart3": "Ámalo.",
-        "subtitle": "Placer en su forma más pura.",
+        "subtitle": "Un Chocolate creado para la conexión.",
         "sub": "Un chocolate hecho para provocar.",
         "description": "Elaborado con Nibs de Cacao Arriba puro e ingredientes afrodisíacos naturales - Polvo de Raíz de Maca, L-Teanina, Polvo de Jengibre y Polvo de Fenogreco - Dips despierta los sentidos, enciende el deseo y convierte el placer compartido en una experiencia intensa e irresistible.",
         "shortDescription": "Elaborado con ingredientes afrodisíacos naturales para despertar los sentidos.",
@@ -37,7 +37,15 @@
         "trust2": "Hecho en EE. UU.",
         "trust3": "Pago Seguro",
         "ctaPrimary": "Comprar Ahora",
-        "ctaSecondary": "¿Cómo Funciona?"
+        "ctaSecondary": "¿Cómo Funciona?",
+        "feature1_title": "Afrodisíaco Natural",
+        "feature1_desc": "Ingredientes de origen botánico comprobados para encender el deseo",
+        "feature2_title": "Cacao Premium",
+        "feature2_desc": "Cacao Arriba de origen único — la base más fina del mundo",
+        "feature3_title": "Para Parejas",
+        "feature3_desc": "Creado para profundizar la conexión y el placer compartido",
+        "feature4_title": "Solo Adultos",
+        "feature4_desc": "Una experiencia sofisticada para quienes buscan más"
     },
     "Story": {
         "ourStoryTitle": "Nuestra Historia",

@@ -24,7 +24,8 @@ function HeroStars() {
   );
 }
 
-// ── Feature cards (absorbed from ProductSection.tsx, Product namespace) ─────
+// ── Feature cards (own copy, Hero namespace -- Figma has dedicated title+desc
+//    per card, distinct from the old ProductSection.tsx / Product namespace copy) ─
 
 const FEATURES = [
   { titleKey: "feature1_title", descKey: "feature1_desc" },
@@ -37,7 +38,6 @@ const TRUST_KEYS = ["trust1", "trust2", "trust3"] as const;
 
 export default function Hero() {
   const t = useTranslations("Hero");
-  const tProduct = useTranslations("Product");
 
   return (
     <section
@@ -171,7 +171,8 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* FEATURE CARDS (absorbed from ProductSection, Product namespace verbatim) */}
+      {/* FEATURE CARDS (own Hero.feature1..4_title/_desc copy, matching the Figma
+          diamond+title / description card format -- see 05-VISUAL-GAPS.md GAP-05) */}
       <div className="container relative z-10 mx-auto mt-12 px-6 lg:mt-16">
         <div className="mx-auto grid max-w-7xl gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {FEATURES.map((feature, index) => (
@@ -182,11 +183,17 @@ export default function Hero() {
               duration={0.6}
             >
               <div className="h-full rounded-card border border-dips-card-tint-border bg-dips-card-tint p-card-padding text-white">
-                <p className="text-[15px] leading-relaxed lg:text-base">
-                  <span className="font-bold">{tProduct(feature.titleKey)}</span>{" "}
-                  <span className="font-normal text-white/85">
-                    {tProduct(feature.descKey)}
+                <div className="flex items-center gap-2">
+                  <span
+                    aria-hidden="true"
+                    className="inline-block h-[6px] w-[6px] shrink-0 rotate-[43deg] bg-brand-orange"
+                  />
+                  <span className="text-[15px] font-bold lg:text-base">
+                    {t(feature.titleKey)}
                   </span>
+                </div>
+                <p className="mt-2 text-[14px] leading-relaxed text-white/85 lg:text-[15px]">
+                  {t(feature.descKey)}
                 </p>
               </div>
             </ScrollReveal>

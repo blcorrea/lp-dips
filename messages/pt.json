@@ -25,7 +25,7 @@
         "headlinePart1": "Divida.",
         "headlinePart2": "Sinta.",
         "headlinePart3": "Ame.",
-        "subtitle": "O prazer em sua forma mais pura.",
+        "subtitle": "Um Chocolate feito para a conexão.",
         "sub": "Um chocolate feito para provocar.",
         "description": "Feito com Nibs de Cacau Arriba puro e ingredientes afrodisíacos naturais - Maca Peruana, L-Teanina, Gengibre e Feno-grego - Dips desperta os sentidos, acende o desejo e transforma o prazer compartilhado em uma experiência intensa e irresistível.",
         "shortDescription": "Criado com ingredientes afrodisíacos naturais para despertar os sentidos.",
@@ -37,7 +37,15 @@
         "trust2": "Feito nos EUA",
         "trust3": "Checkout Seguro",
         "ctaPrimary": "Comprar Agora",
-        "ctaSecondary": "Como Funciona?"
+        "ctaSecondary": "Como Funciona?",
+        "feature1_title": "Afrodisíaco Natural",
+        "feature1_desc": "Ingredientes de origem botânica comprovados para acender o desejo",
+        "feature2_title": "Cacau Premium",
+        "feature2_desc": "Cacau Arriba de origem única — a base mais fina do mundo",
+        "feature3_title": "Para Casais",
+        "feature3_desc": "Criado para aprofundar a conexão e o prazer compartilhado",
+        "feature4_title": "Somente Adultos",
+        "feature4_desc": "Uma experiência sofisticada para quem busca mais"
     },
     "Story": {
         "ourStoryTitle": "Nossa História",
