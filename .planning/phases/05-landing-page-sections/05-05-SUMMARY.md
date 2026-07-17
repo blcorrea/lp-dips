@@ -98,6 +98,64 @@ Each task was committed atomically:
 
 None beyond the build-gate env-file deviation documented above.
 
+## Addendum 2026-07-17 — Post-checkpoint fixes (still pending human sign-off)
+
+The user did the Task 3 manual walkthrough and found several real visual bugs
+vs. Figma — captured with full root-cause analysis in
+`.planning/phases/05-landing-page-sections/05-VISUAL-GAPS.md`. While the user
+was away, every objectively-confirmed item (root causes + gaps the new Figma
+mobile frame settled) was fixed directly in this worktree. Decision-only items
+(mobile nav pattern, blob sizing/position, footer 4-col restructure, FAQ
+prefix/heading wording, bundle-panel/social-icon placement, RESP-01 scope
+update) were deliberately left alone for discussion.
+
+**Commits (this worktree, chronological):**
+
+1. `a314008` — RC-1: moved `--spacing-{xs..3xl}` out of `@theme` (was silently
+   overriding Tailwind's `max-w-*` container scale app-wide, down to 4-64px —
+   affected `checkout/success`, legal pages, admin login, age modal, wishlist,
+   affiliate pages, 14 sites total) + RC-4: fixed 4 mojibake strings and BOM
+   in `messages/en.json` (pre-existing since 2026-05-28, unrelated to Phase 5)
+2. `3d3e018` — RC-2: trust bar now sits on an opaque `bg-dips-purple-deepest`
+   backdrop instead of compositing its translucent layer directly over
+   `<main>`'s cream background
+3. `1a79a74` — RC-3: `Hero.tsx` rebuilt as a two-column grid at `lg+` (product
+   image right, text left); was a single centered column with the image last
+   at every breakpoint
+4. `1390064` — GAP-14: removed the non-Figma "Choose your quantity..." header
+   from the bundle's cream panel, moved the eyebrow badge to the photo side;
+   GAP-07: added the missing "10,000+ Happy Couples" badge + subtitle to
+   StorySection's photo overlay (both confirmed by the new Figma mobile frame)
+5. `fd4641b` — GAP-03: `Hero.subtitle` updated to "A Chocolate crafted for
+   connection." (was stale pre-redesign copy); GAP-05: Hero's 4 feature cards
+   now use their own copy (`Hero.feature1..4_title/_desc`) instead of the
+   reused `Product.feature1..4_*` keys, matching the Figma mobile frame's
+   dedicated title+description per card
+6. `0361a9f` — GAP-09/GAP-12: `Ingredients` section now renders an italic
+   eyebrow ("The ingredients") over the heading ("Behind the experience.",
+   was "The Art of Temptation"), and the intro paragraph gained its closing
+   sentence ("Six botanicals, one unforgettable experience.")
+7. `0c5e3a1` — GAP-16: `ReviewsSection` converted to use i18n (`Reviews`
+   namespace) instead of hardcoded English JSX; removed the "Real people.
+   Real results." eyebrow (not in Figma) and added the subtitle paragraph
+   the Figma mobile frame shows under the heading
+8. `28f3a1f` — GAP-20: footer copyright year was hardcoded to "2025" (already
+   wrong the moment it was written) — now computed via `new Date().getFullYear()`
+
+All changes verified: `npm run build` exits 0, `npm test` (vitest) 71/71
+passing, and `git diff` against this plan's base commit (`ee75d66`) still
+shows zero diff on `Header.tsx`/`Footer.tsx`/`BuyNowButton.tsx` — the FUNC-03
+regression boundary held through every fix above.
+
+**Still pending (unchanged from before this addendum):**
+- The actual human walkthrough re-verification (Task 3's checkpoint is still
+  open — these fixes need a fresh look, not a rubber stamp)
+- Story/Ingredients/Bundle split layouts re-checked at a true 1440px viewport
+  (prior walkthrough used a ~985px half-screen window)
+- FAQs/Footer mobile Figma extraction (rate-limited, not yet captured)
+- Everything logged as a decision item in `05-VISUAL-GAPS.md`'s "para
+  discutir" sections
+
 ## User Setup Required
 
 None - no external service configuration required.
