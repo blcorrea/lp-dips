@@ -206,6 +206,20 @@ O usuário confirmou o **princípio-guia: o Figma é a fonte da verdade visual; 
 
 **Ainda decisão sua / fora de escopo da Fase 5:** RESP-01/RESP-02 (responsivo — Fase 6, agora que o Figma tem mobile), e a captura de FAQs/Footer mobile (quota).
 
+## Addendum 2026-07-20 (2ª rodada) — 5 diferenças do walkthrough a 1440px real
+
+O usuário rodou o walkthrough de verdade (janela maximizada) e achou mais 5 diferenças pontuais, todas resolvidas com CSS exato tirado do Figma:
+
+| # | Item | Causa raiz | Commit |
+|---|---|---|---|
+| GAP-22 | Trust bar não distribuída na largura toda | Era `justify-center` + gap fixo; Figma é `justify-content:space-between` na largura cheia (1390px, padding 25px) | `adeacf1` |
+| GAP-23 | Linha visível entre o header e o gradiente do Hero | O nav "Frame 4" no Figma **não tem fill nenhum** — flutua transparente sobre o gradiente. Removido o `bg-dips-purple-deepest` do `<header>` | `adeacf1` |
+| GAP-24 | Logo deformada | `logo-purple-part.svg` e `logo-orange-part.svg` são `preserveAspectRatio="none"` e cada um cobre uma **sub-região própria** da caixa 59×36 (não a caixa inteira). O `fill+object-contain` forçava as duas a esticar pra caixa toda, distorcendo a camada laranja (proporção nativa ~21×34, retrato). Corrigido com o tamanho/posição exatos de cada camada (extraídos do próprio dump grande que o usuário já tinha colado) | `adeacf1` |
+| GAP-06 (refinamento) | Blob inferior-direito ainda errado após a 1ª correção | A 1ª correção usou **pixels fixos** calculados sobre a tela de referência 1440px do Figma, mas nossa seção é fluida (não trava em 1440px) — qualquer diferença de largura desloca o blob grande (maior, mais perto da borda) proporcionalmente mais que o pequeno. Trocado para **porcentagem** direta (a mesma unidade que o Figma exporta), que escala certo em qualquer largura | `70c6f1f` |
+| GAP-25 | H1 em 3 linhas em vez de 2 | Achado no dump: no Figma, "The Chocolate" e "that changes the night." são **duas camadas de texto separadas** — quebra de linha manual do designer, não wrap automático por largura. Corrigido com 2 mudanças: (1) layout do Hero trocado de grid 50/50 pra imagem em overlay absoluto + coluna de texto com ~54% de largura; (2) `<br></br>` forçado depois de "Chocolate" no `Hero.h1` (só en; es/pt sem o marcador, mantêm wrap natural) | `70c6f1f` |
+
+Build + 71 testes verdes depois de cada commit.
+
 ## Addendum 2026-07-20 (fim) — GAP-06 FECHADO via extração manual do Dev Mode
 
 **Descoberta metodológica:** não dependemos de MCP. O usuário puxou o Hero inteiro do Figma "Dev Ready" com **botão direito → Copy as CSS** e colou aqui — isso dá exatamente o que o `get_design_context` daria (medidas, cores, espaçamentos), a custo zero de quota. Fica como o caminho padrão pra especificações exatas.
