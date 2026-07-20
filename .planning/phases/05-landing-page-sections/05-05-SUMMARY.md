@@ -205,5 +205,19 @@ None - no external service configuration required.
 - Once Task 3 is approved, this plan (and Phase 5) is complete; STATE.md/ROADMAP.md updates are owned by the orchestrator after all wave agents finish.
 
 ---
+
+## Addendum 2026-07-20 (5th round) — nav-frame offset root cause (`39774b7`)
+
+Fourth post-checkpoint feedback round: box image slow to appear, upper-left blob too far from the navbar, lower-right blob still wrong, feature-card font looking oversized.
+
+Root cause for 3 of the 4: every Y-offset pulled from the Figma "Copy as CSS" dump (both blobs, the product image, the H1) is measured from the top of Figma's full 1054px Hero frame, which in Figma's own composition includes the nav (72px) + trust bar (45px) = 117px drawn on top of the gradient. `LandingHeader` is a separate component rendered before `<Hero>` in our DOM, so our section's own top already corresponds to frame-y:117, not frame-y:0. Every offset used verbatim from the dump was landing 117px too low. Corrected by subtracting 117px throughout: small blob 121→4px, large blob clip-window 659→542px, product image 200→83px, text column margin retuned to 187px (same 267px target for the H1).
+
+Also found the image's fade-in `delay` was 0.85s vs. 0.15s for the H1 — by the time every text element had faded in, the box was still invisible, reading as "it never shows up beside the H1." Dropped to 0.1s.
+
+Card font: verified 18px/24px line-height, `rgba(49,34,89,.25)` bg, `#392a61` 2px border, 15px radius, 25px padding all match the Figma dump exactly via `globals.css` tokens. The "looks bigger" perception is the expected side effect of the already-accepted Satoshi→Plus Jakarta Sans substitution (different font metrics at the same declared size) — no code change made.
+
+Build green, 71/71 tests green.
+
+---
 *Phase: 05-landing-page-sections*
 *Completed: pending human verification*
