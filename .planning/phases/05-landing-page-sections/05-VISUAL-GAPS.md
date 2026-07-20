@@ -258,4 +258,16 @@ Build + 71 testes verdes.
 O CSS do Dev Mode mostrava o H1 todo branco (#FFFFFF), mas o usuário confirmou **visualmente no Figma (Dev Ready, desktop E mobile): "Chocolate" continua lilás** (#cfa9f6). O dump de "Copy as CSS" foi pego no nó de texto **pai** e **achatou a cor do sub-range** (o lilás aplicado só na palavra "Chocolate" se perdeu). Nossa implementação já usa lilás → **nada a mudar**.
 **Lição:** pra estilo por-palavra/sub-range, confiar no print/olho, não no Copy-as-CSS do nó pai (que reporta uma cor única).
 
+## Addendum 2026-07-20 (5ª rodada) — causa raiz do offset: frame do Figma inclui o nav
+
+O usuário reportou 4 problemas no novo print: imagem da caixa demorando pra aparecer, blob superior-esquerdo longe da navbar, cards + blob inferior-direito "ainda incorretos", fonte dos cards parecendo maior que deveria.
+
+| # | Item | Causa raiz real | Commit |
+|---|---|---|---|
+| GAP-29 | Blob superior-esquerdo longe da navbar; blob inferior-direito na posição errada | Todas as coordenadas Y tiradas do dump do Figma (blob pequeno top:121, blob grande top:659, imagem top:200, H1 top:384) são medidas a partir do topo do frame **completo de 1054px**, que no Figma inclui o nav (72px) + trust bar (45px) = 117px desenhados por cima do próprio gradiente. Nosso `LandingHeader` é um componente separado, renderizado **antes** da seção Hero — o topo da nossa seção já corresponde a frame-y:117, não frame-y:0. Cada offset usado direto do dump ficava 117px mais baixo (e proporcionalmente mais longe do nav) do que deveria. Corrigido subtraindo 117px de cada um: blob pequeno 121→4px, blob grande (janela de corte) 659→542px, imagem 200→83px, coluna de texto ajustada pra 187px de margem (mantendo o alvo de 267px pro H1) | `39774b7` |
+| GAP-28 (refinamento) | Imagem da caixa não aparecia "logo no início ao lado do H1" | Não era só posição — o `delay` da animação de fade-in da imagem era 0.85s contra 0.15s do H1 (e outros elementos de texto ainda mais cedo). Na prática a imagem ficava invisível por ~1.65s depois do H1 já estar totalmente visível, lendo como "a caixa nunca aparece". Reduzido pra 0.1s, aparecendo primeiro/junto com o texto | `39774b7` |
+| Cards — fonte "maior" | Investigado, não é bug | Conferido: 18px/24px line-height batem exatamente com o dump do Figma (Satoshi 700/400 18px); bg `rgba(49,34,89,.25)`, borda 2px `#392a61`, radius 15px (`--radius-card: 0.9375rem`), padding 25px — todos os tokens em `globals.css` batem com o spec. A percepção de "maior" é o efeito esperado da substituição Satoshi→Plus Jakarta Sans (DSGN, decisão já aceita na Fase 4): métricas de fonte diferentes no mesmo tamanho declarado. Não há ajuste de tamanho a fazer sem contradizer o próprio spec extraído — nenhuma mudança de código | — |
+
+Build + 71 testes verdes depois do commit.
+
 **Próximo passo:** novo walkthrough a **1440px real** (`localhost:3001`) + Stripe click-through para fechar o checkpoint do 05-05 → merge → completar a fase. E me diz o veredito do GAP-21.
