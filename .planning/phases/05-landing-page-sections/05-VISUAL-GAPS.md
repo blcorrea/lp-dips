@@ -215,9 +215,8 @@ O usuário confirmou o **princípio-guia: o Figma é a fonte da verdade visual; 
 
 **Bônus do mesmo dump** (mesmo commit): feature cards do Hero corrigidos de 14-15px → **18px** (Satoshi/font-card; título 700 branco, desc 400 #EBD9FE), losango 8px, borda 2px; botão "How It Works?" ganhou fill `dips-card-tint`. Confirmado já-correto pelo dump: gradiente do hero, bg/borda/raio dos cards, subtítulo, e a laranja normalizada #f27521 (DSGN-03) vs. a #FB6C04 do Figma.
 
-### ⚠ GAP-21 (NOVO) — divergência do H1 entre versões do Figma — PRECISA DA SUA DECISÃO
-O CSS do **Dev Ready (desktop)** mostra o H1 **todo branco**: "The Chocolate" (linha 1, #FFFFFF) + "that changes the night." (linha 2, #FFFFFF) — **sem** a palavra "Chocolate" em lilás.
-Mas o **frame mobile** e a página **Designs** (e seus próprios screenshots) mostram "**Chocolate**" em lilás (#cfa9f6).
-→ Mantive o lilás por ora (bate com o mobile e é mais branded), mas é uma **contradição entre versões do próprio Figma**. Preciso que você confirme: **"Chocolate" fica lilás ou branco?** (Se o Dev Ready for a fonte canônica do desktop, seria branco no desktop — mas aí ficaria inconsistente com o mobile lilás.)
+### GAP-21 — H1 "Chocolate" lilás — RESOLVIDO (sem mudança de código)
+O CSS do Dev Mode mostrava o H1 todo branco (#FFFFFF), mas o usuário confirmou **visualmente no Figma (Dev Ready, desktop E mobile): "Chocolate" continua lilás** (#cfa9f6). O dump de "Copy as CSS" foi pego no nó de texto **pai** e **achatou a cor do sub-range** (o lilás aplicado só na palavra "Chocolate" se perdeu). Nossa implementação já usa lilás → **nada a mudar**.
+**Lição:** pra estilo por-palavra/sub-range, confiar no print/olho, não no Copy-as-CSS do nó pai (que reporta uma cor única).
 
 **Próximo passo:** novo walkthrough a **1440px real** (`localhost:3001`) + Stripe click-through para fechar o checkpoint do 05-05 → merge → completar a fase. E me diz o veredito do GAP-21.
