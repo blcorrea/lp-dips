@@ -44,73 +44,86 @@ export default function Hero() {
       id="hero"
       className="relative w-full scroll-mt-[72px] overflow-hidden bg-gradient-to-b from-dips-purple-hero-start from-0% via-dips-purple-hero-mid via-[57.4%] to-dips-purple-hero-end to-100% pb-16 pt-14 sm:pt-16 lg:pt-20"
     >
-      {/* Decorative blobs — exact Figma Dev-Mode boxes (Hero frame 1440×1054).
-          blob-vector-2.svg is the SMALL 193×308 vector (upper-left, rotate -167.8°);
-          blob-vector-1.svg is the LARGE 341×511 vector (lower-right, rotate 53.34°).
-          Both SVGs are preserveAspectRatio="none" and un-rotated, so we size the
-          box to the Figma vector and apply the rotation here. Positions are the
-          1440px-reference offsets, anchored to their nearest corner. */}
-      <Image
-        src="/images/redesign/blob-vector-2.svg"
-        alt=""
+      {/* Decorative blobs — Figma Dev-Mode percentages (Hero frame 1440×1054),
+          applied as CSS percentages (not fixed px) so they scale correctly
+          regardless of the section's actual rendered width, which is fluid
+          here and was NOT exactly 1440px -- the earlier fixed-px version drifted
+          more visibly on the larger blob because it sits closer to an edge and
+          covers more area, so any width mismatch compounds. blob-vector-2.svg
+          is the SMALL 193×308 vector (upper-left, rotate -167.8°); blob-vector-1
+          .svg is the LARGE 341×511 vector (lower-right, rotate 53.34°). Both
+          SVGs are preserveAspectRatio="none", so each gets its own wrapper box
+          sized exactly by left/right/top/bottom (width/height auto-resolve),
+          with `fill` + object-fill stretching the SVG to that box. */}
+      <div
         aria-hidden="true"
-        width={193}
-        height={308}
-        className="pointer-events-none absolute left-[-54px] top-[121px] h-[308px] w-[193px] rotate-[-167.8deg]"
-      />
-      <Image
-        src="/images/redesign/blob-vector-1.svg"
-        alt=""
+        className="pointer-events-none absolute left-[-3.73%] right-[90.29%] top-[11.52%] bottom-[59.26%] rotate-[-167.8deg]"
+      >
+        <Image src="/images/redesign/blob-vector-2.svg" alt="" fill className="object-fill" />
+      </div>
+      <div
         aria-hidden="true"
-        width={341}
-        height={511}
-        className="pointer-events-none absolute right-[65px] bottom-[-116px] h-[511px] w-[341px] rotate-[53.34deg]"
-      />
+        className="pointer-events-none absolute left-[71.81%] right-[4.49%] top-[62.52%] bottom-[-11.01%] rotate-[53.34deg]"
+      >
+        <Image src="/images/redesign/blob-vector-1.svg" alt="" fill className="object-fill" />
+      </div>
 
       {/*
-        Two-column composition at lg+ (Figma 1440px: text left, product right).
-        DOM order is [image, text] so the product image appears FIRST on mobile
-        (matches the Figma mobile frame, 281:22), then lg:order-* flips the
-        image to the right column / second position at desktop. Previously this
-        was a single flex-col stack at every breakpoint with the image below
-        the text (05-VISUAL-GAPS.md RC-3) -- that was wrong at ANY width, not
-        just narrow viewports.
+        Desktop composition matches Figma's actual overlap: the product image
+        is an absolutely-positioned overlay pinned to the right (not a 50/50
+        grid column), so the text block gets nearly the full container width
+        -- a real CSS grid-cols-2 split (previous RC-3 fix) made the text
+        column too narrow, wrapping the H1 to 3 lines instead of Figma's 2.
+        On mobile the image stays in normal flow, first (order-1), matching
+        the Figma mobile frame (281:22); at lg+ it becomes `lg:absolute` and
+        vertically centers against the text block's own height via
+        inset-y-0 + my-auto (parent height is driven by the text column,
+        the only lg+ in-flow child).
       */}
-      <div className="container relative z-10 mx-auto grid grid-cols-1 items-center gap-10 px-6 text-center lg:grid-cols-2 lg:gap-16 lg:text-left">
-        {/* PRODUCT IMAGE */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.85 }}
-          className="relative order-1 mx-auto w-full max-w-[420px] lg:order-2 lg:max-w-[822px]"
-        >
-          <Image
-            src="/images/redesign/hero-product.png"
-            alt="Dips Chocolate"
-            width={822}
-            height={548}
-            priority
-            className="w-full rotate-[-0.85deg] object-contain"
-          />
-        </motion.div>
-
-        {/* TEXT COLUMN */}
-        <div className="order-2 flex flex-col items-center lg:order-1 lg:items-start">
-          {/* HEADLINE (two-tone via next-intl rich text) */}
+      <div className="container relative z-10 mx-auto px-6">
+        <div className="relative flex flex-col items-center gap-10 text-center lg:block lg:text-left">
+          {/* PRODUCT IMAGE */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.15 }}
-            className="max-w-xl lg:max-w-none"
+            transition={{ duration: 0.8, delay: 0.85 }}
+            className="relative order-1 mx-auto w-full max-w-[420px] lg:absolute lg:inset-y-0 lg:right-0 lg:order-none lg:my-auto lg:h-fit lg:w-[40%] lg:max-w-[580px]"
           >
-            <h1 className="font-heading text-display-hero font-bold leading-[1.05] text-white">
-              {t.rich("h1", {
-                hl: (chunks) => (
-                  <span className="text-dips-text-headline-lilac">{chunks}</span>
-                ),
-              })}
-            </h1>
+            <Image
+              src="/images/redesign/hero-product.png"
+              alt="Dips Chocolate"
+              width={822}
+              height={548}
+              priority
+              className="w-full rotate-[-0.85deg] object-contain"
+            />
           </motion.div>
+
+          {/* TEXT COLUMN */}
+          <div className="order-2 flex flex-col items-center lg:order-none lg:w-[54%] lg:items-start">
+            {/* HEADLINE (two-tone via next-intl rich text). Figma authors "The
+                Chocolate" and "that changes the night." as two separately
+                positioned text layers (a manual editorial line break, not
+                organic width-driven wrap) -- forcing the same <br/> here
+                guarantees the Figma-exact 2-line split at desktop width
+                regardless of exact column width, while leaving mobile
+                unaffected (it already wraps to the same first line
+                naturally at 375px, confirmed by the Figma mobile frame). */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.15 }}
+              className="max-w-xl lg:max-w-none"
+            >
+              <h1 className="font-heading text-display-hero font-bold leading-[1.05] text-white">
+                {t.rich("h1", {
+                  hl: (chunks) => (
+                    <span className="text-dips-text-headline-lilac">{chunks}</span>
+                  ),
+                  br: () => <br />,
+                })}
+              </h1>
+            </motion.div>
 
           {/* SUBTITLE */}
           <motion.div
@@ -180,6 +193,7 @@ export default function Hero() {
               {t("ctaSecondary")}
             </a>
           </motion.div>
+          </div>
         </div>
       </div>
 
