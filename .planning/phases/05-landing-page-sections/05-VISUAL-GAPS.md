@@ -192,4 +192,20 @@ Enquanto o usuário estava fora, todo item **objetivamente confirmado** (bug de 
 
 Detalhes completos de cada commit em `.planning/phases/05-landing-page-sections/05-05-SUMMARY.md` (seção "Addendum 2026-07-17").
 
-**Próximo passo:** novo walkthrough a 1440px real + Stripe click-through para fechar o checkpoint do 05-05, e decidir os itens acima.
+## Addendum 2026-07-20 — 2ª leva (itens de fidelidade restantes, aprovados pelo usuário)
+
+O usuário confirmou o **princípio-guia: o Figma é a fonte da verdade visual; implementar fielmente sem perguntar sobre fidelidade** (só os overrides funcionais documentados — preços/reviews/links/copy do FAQ reais — sobrepõem o Figma). Sob esse princípio, os gaps que estavam "a discutir" foram resolvidos em direção ao Figma:
+
+| Item | Commit (worktree) | O que mudou |
+|---|---|---|
+| GAP-15 | `930823d` | Removidos os ícones sociais (Instagram/TikTok) do painel do bundle — não existem no Figma |
+| GAP-17 | `fba6155` | Título FAQ → "FAQs" (en) / "Preguntas Frecuentes" / "Perguntas Frequentes"; removidos prefixos "Q1:".."Q6:" do en |
+| GAP-04 | `be4d30e` | Mini trust items do Hero com copy do Figma ("100% Natural / Satisfaction Guaranteed / 100% Discreet Shipping") + losango laranja |
+| GAP-10 | `f369205` | Cards de ingrediente → lista de coluna única, linhas compactas (ícone \| nome \| badge na mesma linha); badge virou pill outline com losango |
+| GAP-19 | `fd4f758` | Footer reestruturado no layout 2-zonas do Figma (marca+endereço+newsletter à esquerda, colunas de links à direita, faixa legal full-width) |
+
+**Adiado (não chutado):** GAP-06 (blobs decorativos do Hero — tamanho/posição exatos) precisa das medidas do Figma via `get_design_context`, bloqueado pela quota mensal do Figma MCP (plano Starter, 6 chamadas/mês, esgotada). A disposição atual (canto sup-esq / inf-dir) já bate com o arranjo geral do Figma; fidelidade exata espera o reset da quota ou um ajuste manual no walkthrough.
+
+**Ainda decisão sua / fora de escopo da Fase 5:** RESP-01/RESP-02 (responsivo — Fase 6, agora que o Figma tem mobile), e a captura de FAQs/Footer mobile (quota).
+
+**Próximo passo:** novo walkthrough a **1440px real** + Stripe click-through para fechar o checkpoint do 05-05 → merge → completar a fase.
