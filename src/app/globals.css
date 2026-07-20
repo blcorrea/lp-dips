@@ -219,14 +219,6 @@
     background: var(--color-brand-cream);
     color: var(--color-brand-charcoal);
     overflow-x: hidden;
-    /* Figma renders its canvas with smoothed (grayscale) antialiasing;
-       browsers default to a denser subpixel/ClearType-style render at the
-       same declared weight, which reads as noticeably thicker/bigger --
-       especially light text on dark backgrounds, like the Hero. This
-       normalizes rendering to match, independent of which typeface. */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
   }
 
   h1,
