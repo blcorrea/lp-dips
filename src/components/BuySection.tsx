@@ -3,7 +3,6 @@ import { getTranslations } from "next-intl/server";
 import { getPurchasableDipsProduct } from "@/lib/shopify-product";
 import ProductPurchaseBox from "@/components/ProductPurchaseBox";
 import TrackViewItem from "@/components/TrackViewItem";
-import SocialMediaButtons from "@/components/SocialMediaButtons";
 import { getLocalizedPricing } from "@/lib/pricing";
 
 type BuySectionProps = {
@@ -47,8 +46,6 @@ export default async function BuySection({ locale }: BuySectionProps) {
                 quantity={1}
                 currency={localizedPricing.currency}
               />
-
-              <SocialMediaButtons className="mt-6" compact />
             </div>
 
             {/* RIGHT: photo panel — eyebrow badge + heading-side + mini badges */}
