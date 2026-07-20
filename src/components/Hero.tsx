@@ -142,7 +142,14 @@ export default function Hero() {
             className="mt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 lg:justify-start"
           >
             {TRUST_KEYS.map((key) => (
-              <span key={key} className="text-trust-bar text-dips-text-lavender-muted">
+              <span
+                key={key}
+                className="flex items-center gap-2 text-trust-bar text-dips-text-lavender-muted"
+              >
+                <span
+                  aria-hidden="true"
+                  className="inline-block h-[6px] w-[6px] shrink-0 rotate-[43deg] bg-brand-orange"
+                />
                 {t(key)}
               </span>
             ))}
