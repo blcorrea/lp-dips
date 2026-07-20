@@ -220,6 +220,18 @@ O usuário rodou o walkthrough de verdade (janela maximizada) e achou mais 5 dif
 
 Build + 71 testes verdes depois de cada commit.
 
+## Addendum 2026-07-20 (3ª rodada) — 2 dos 5 acima não fecharam de primeira
+
+Re-teste do usuário mostrou: trust bar (GAP-22) e logo (GAP-24) corretos. Header ("pérola"), blob e H1 continuavam errados — com causas mais profundas do que a 1ª tentativa resolveu.
+
+| # | Item | Causa raiz real | Commit |
+|---|---|---|---|
+| GAP-27 | Header virou uma faixa clara ("pérola") entre duas faixas escuras | O nav do Figma não tem fill porque, no design, ele é parte do MESMO frame do Hero, desenhado sobre o gradiente. No nosso código, `LandingHeader` é renderizado **antes** da seção Hero no DOM — não sobreposto ao gradiente dela. "Transparente de verdade" mostrava o fundo cru da página (`bg-brand-cream`) atrás. Corrigido dando ao header (e à trust bar) a cor exata do início do gradiente do Hero (`#18012d`, `--color-dips-purple-hero-start`) em vez de transparente — mesma cor no ponto de encontro = sem costura, e continua opaco/legível ao rolar pra seções mais abaixo | `0bdd59f` |
+| GAP-26 | Blob inferior-direito ainda com "quina" exposta | O Figma usa `bottom:-11.01%` pra vazar o blob pra fora de um frame **fixo de 1054px** e cortar exatamente nesse ponto via overflow-hidden. Nossa seção Hero é fluida e bem mais alta que 1054px (H1+subtítulo+badges+CTA+cards), então ancorar pela borda inferior corta o blob num ponto totalmente diferente, expondo uma fatia errada da silhueta. Corrigido ancorando os dois blobs pelo **topo** (referência estável, não muda com a altura da seção), com tamanho fixo em pixels nativos, sem depender de corte | `e579ab1` |
+| GAP-25 (refinamento) | H1 ainda em 3 linhas mesmo com o `<br/>` forçado | O `<br/>` corrigiu a linha 1 ("The Chocolate" isolado), mas "that changes the night." ainda quebrava em 2 porque a coluna de texto (54%) continuava estreita demais — essa frase sozinha, em 64px AllRoundGothic Bold, precisa de uns 750-850px pra caber numa linha. Troquei o split por porcentagem por uma largura fixa `max-w-[1040px]` (perto do próprio box de 1062px do Figma) e estreitei a imagem (34%/480px) | `e579ab1` |
+
+Build + 71 testes verdes depois de cada commit.
+
 ## Addendum 2026-07-20 (fim) — GAP-06 FECHADO via extração manual do Dev Mode
 
 **Descoberta metodológica:** não dependemos de MCP. O usuário puxou o Hero inteiro do Figma "Dev Ready" com **botão direito → Copy as CSS** e colou aqui — isso dá exatamente o que o `get_design_context` daria (medidas, cores, espaçamentos), a custo zero de quota. Fica como o caminho padrão pra especificações exatas.
