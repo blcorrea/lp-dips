@@ -358,4 +358,17 @@ Build + 71 testes verdes.
 
 **Ressalva importante (avisar o usuário sempre que isso for revisitado):** `-webkit-font-smoothing` tem efeito forte no Chrome/Safari de **macOS**, mas é **majoritariamente ignorado no Chrome/Edge do Windows** (o pipeline de texto lá é o DirectWrite do SO, que não expõe esse controle pra páginas web). Como o usuário testa em Windows, é bem possível que essa mudança não mude visivelmente nada pra ele — nesse caso a diferença de "peso" percebida é uma diferença de **rasterização entre plataformas** (Figma/Mac vs. ClearType do Windows), não um bug de CSS/fonte corrigível no código. Isso é uma limitação conhecida e aceita em handoffs de design pra web — não dá pra igualar 100% o rendering entre design tool e navegador.
 
+## Addendum 2026-07-20 (12ª rodada) — font-smoothing revertido; tracking-tight nos cards
+
+O `-webkit-font-smoothing:antialiased` da 11ª rodada **teve efeito visível** no Chrome do usuário (contrariando a ressalva acima) — só que na direção errada: texto ficou mais fino **e** com aparência menor, pior que antes. Revertido (`a9e1fdb`): alternar essa propriedade só oscila entre "grosso" e "fino" sem nunca bater exatamente no renderizador interno do Figma — são pipelines de texto diferentes, não vale a pena insistir nessa dimensão via CSS global.
+
+**Achado concreto sobre a quebra de linha dos cards (2 vs. 3 linhas):** o usuário confirmou que o print com quebra em 2 linhas é do **próprio Figma** (não do nosso site). Isso permitiu isolar a causa: peguei o card "Natural Aphrodisiac", cuja descrição tem `align-self:stretch` no dump (largura fixa 251px, sem ambiguidade de auto-size) — o Figma quebra esse texto em 2 linhas nessa largura exata; o nosso quebra em 3, na MESMA largura, com a MESMA fonte nominal (Satoshi 18px). Como a largura é idêntica, isso prova que o motor de texto interno do Figma renderiza de forma mensuravelmente mais compacta que qualquer navegador real — não é bug de implementação (descartadas: largura de janela, já que o usuário confirmou 1440px+; validade do arquivo de fonte, conferido o header woff2 e a presença no CSS buildado).
+
+| # | Item | Correção | Commit |
+|---|---|---|---|
+| — | Font-smoothing piorou a percepção de peso | Revertido — não vale insistir, é diferença de pipeline Figma-vs-browser | `a9e1fdb` |
+| GAP-34 | Descrição dos cards quebrando em 3 linhas em vez de 2 (mesma largura que o Figma) | Adicionado `tracking-tight` (-0.025em) no título e na descrição dos cards — lever legítimo pra compensar a diferença de métrica sem encolher abaixo do 18px do spec. **Não é garantia de bater 100% em toda combinação de idioma/tamanho de string** — é uma compensação de diferença de plataforma, não correção de bug | `d26af7c` |
+
+Build + 71 testes verdes.
+
 **Próximo passo:** novo walkthrough a **1440px real** (`localhost:3001`) + Stripe click-through para fechar o checkpoint do 05-05 → merge → completar a fase. E me diz o veredito do GAP-21.
