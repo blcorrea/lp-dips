@@ -296,4 +296,20 @@ O usuário mandou o Copy-as-CSS da **Hero Section inteira** com o aninhamento co
 
 **Observação (fora do escopo dos 4 pontos atuais):** o dump mostra a navbar (`Frame 4`, 1360×72, `left:40 top:67 border-radius:20px`) como uma **barra flutuante arredondada, recuada 40px das bordas**, começando 22px abaixo da trust bar — a nossa é full-width, encostada, sem raio. Não faz parte das queixas atuais e o usuário não reclamou do header; anotado pra eventual ajuste de fidelidade.
 
+## Addendum 2026-07-20 (8ª rodada) — a assimetria dos dois blobs (por que um foi fácil e o outro não)
+
+O usuário perguntou: se os dois blobs funcionam igual (só uma parte do vetor aparece), por que o de cima foi acertado rápido e o de baixo não? A pergunta expôs que eu vinha usando a abordagem errada.
+
+**Resposta:** os dois são cortados em **bordas diferentes**.
+- Blob **superior**: cortado na borda **esquerda** (sangra pra fora pela esquerda). Nossa página e o Figma têm a **mesma largura** (ambos ancorados em x=0), então o corte horizontal cai no mesmo lugar **de graça** — o `overflow-hidden` da seção resolve sozinho. + a rotação (-167.8°, quase meia-volta) quase não inclina a bounding box. Por isso `absolute + rotate` bastou.
+- Blob **inferior**: cortado na borda de **baixo/direita** pelo frame **fixo de 1054px** do Figma. Nossa seção é **mais alta que 1054px**, então o `overflow-hidden` da seção fica muito abaixo do corte do Figma e nunca apara a cauda.
+
+Ou seja: **corte horizontal é de graça (larguras batem); corte vertical não é (alturas diferem).** Essa é a assimetria inteira — não a rotação em si.
+
+| # | Item | Correção | Commit |
+|---|---|---|---|
+| GAP-29 (4º refinamento, blob) | Blob inferior com abordagem frágil (janela 614×579 calculada na mão) | Trocado por um retângulo de corte explícito que **recria o frame do Figma**: uma faixa de largura cheia do topo da seção até o fundo do frame (1054 − 117px header = **937px**), com o blob dentro na caixa exata dele (`right:4.49%` + 341px nativo reproduz `left:71.81%`, `top:542px`, `rotate 53.34deg`). O navegador corta a forma rotacionada nas bordas retas da faixa **igual o Figma faz** — mesmo mecanismo do blob de cima, sem conta de canto | `5db12ab` |
+
+Build + 71 testes verdes.
+
 **Próximo passo:** novo walkthrough a **1440px real** (`localhost:3001`) + Stripe click-through para fechar o checkpoint do 05-05 → merge → completar a fase. E me diz o veredito do GAP-21.
