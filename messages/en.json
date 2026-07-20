@@ -14,12 +14,12 @@
         "order": "Order",
         "contact": "Contact",
         "shopNow": "Shop Now",
-        "trustBar1": "100% Natural Ingredients",
-        "trustBar2": "Made in the USA",
-        "trustBar3": "Secure Checkout",
-        "trustBar4": "Discreet Packaging",
-        "trustBar5": "Aphrodisiac Blend",
-        "trustBar6": "10,000+ Happy Couples"
+        "trustBar1": "Made in USA",
+        "trustBar2": "Premium Arriba Cocoa",
+        "trustBar3": "30 Days Satisfaction Guarantee",
+        "trustBar4": "Fast & Discreet Shipping",
+        "trustBar5": "10,000+ Happy Couples",
+        "trustBar6": "100% Natural Ingredients"
     },
     "Hero": {
         "headlinePart1": "Share it.",
