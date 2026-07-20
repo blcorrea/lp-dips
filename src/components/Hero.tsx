@@ -265,7 +265,7 @@ export default function Hero() {
       {/* FEATURE CARDS (own Hero.feature1..4_title/_desc copy, matching the Figma
           diamond+title / description card format -- see 05-VISUAL-GAPS.md GAP-05) */}
       <div className="container relative z-10 mx-auto mt-12 px-6 lg:mt-16">
-        <div className="mx-auto grid max-w-7xl gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mx-auto grid max-w-7xl gap-[25px] sm:grid-cols-2 lg:grid-cols-4">
           {FEATURES.map((feature, index) => (
             <ScrollReveal
               key={feature.titleKey}
@@ -273,32 +273,33 @@ export default function Hero() {
               delay={0.1 + index * 0.1}
               duration={0.6}
             >
-              {/* Feature card — exact "Frame 8" CSS from the user's per-layer
-                  dump: 301x127px, flex-direction:ROW (not column!),
-                  align-items:center, gap:10px, padding:25px, bg
-                  rgba(49,34,89,.25), 2px #392A61 border, 15px radius. The
-                  diamond sits BESIDE a title+description text block (both
-                  vertically stacked, 5px gap, per the earlier GAP-05 dump),
-                  not above a full-width description row -- that's what was
-                  making the text column narrower than expected (301 - 50px
-                  padding - ~18px diamond+gap = ~233px) and wrapping more
-                  than the previous column layout assumed, reading as
-                  "font looks too big". min-h (not a hard h-[127px]) so
-                  longer es/pt copy doesn't clip. See 05-VISUAL-GAPS.md
-                  GAP-29 (2nd refinement). */}
-              <div className="flex min-h-[127px] items-center gap-[10px] rounded-card border-2 border-dips-card-tint-border bg-dips-card-tint p-card-padding">
-                <span
-                  aria-hidden="true"
-                  className="inline-block h-2 w-2 shrink-0 rotate-[43deg] bg-brand-orange"
-                />
-                <div className="flex flex-col gap-[5px]">
+              {/* Feature card — the full nested section dump settles the
+                  structure (an isolated-layer dump had misled me into a
+                  diamond-beside-the-whole-block layout). The card (Frame 8,
+                  301x127, padding 25, bg rgba(49,34,89,.25), 2px #392A61,
+                  radius 15) wraps a SINGLE text stack (Frame 5, 251px). Inside
+                  that stack: a title row (Frame 10, flex-row gap:8px) holding
+                  [diamond 8px][title], sitting ABOVE the description (251px,
+                  full width, 2 lines) with a 5px gap. So the diamond is beside
+                  the TITLE only, and the description spans the full card width
+                  below it -- NOT the diamond beside the entire title+desc
+                  block. Diamond #F16B16 8px rotate43; title Satoshi 700 18/24
+                  #FFF; desc Satoshi 400 18/24 #EBD9FE. min-h (not hard h) so
+                  longer es/pt copy doesn't clip. See 05-VISUAL-GAPS.md GAP-29
+                  (3rd refinement). */}
+              <div className="flex min-h-[127px] flex-col justify-center gap-[5px] rounded-card border-2 border-dips-card-tint-border bg-dips-card-tint p-card-padding">
+                <div className="flex items-center gap-2">
+                  <span
+                    aria-hidden="true"
+                    className="inline-block h-2 w-2 shrink-0 rotate-[43deg] bg-brand-orange"
+                  />
                   <span className="font-card text-[18px] font-bold leading-6 text-white">
                     {t(feature.titleKey)}
                   </span>
-                  <p className="font-card text-[18px] font-normal leading-6 text-dips-text-lavender">
-                    {t(feature.descKey)}
-                  </p>
                 </div>
+                <p className="font-card text-[18px] font-normal leading-6 text-dips-text-lavender">
+                  {t(feature.descKey)}
+                </p>
               </div>
             </ScrollReveal>
           ))}
