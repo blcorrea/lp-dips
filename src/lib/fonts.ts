@@ -14,12 +14,14 @@ export const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 /**
- * CTA buttons — 700 only per the Phase 4 UI-SPEC.
+ * CTA buttons — spec is 700; 600 added so the Hero buttons can use a
+ * slightly thinner weight per user request (same "thinner over Figma
+ * default" treatment applied to the card description).
  * Feeds --font-cta in globals.css via the CSS variable below.
  */
 export const dmSans = DM_Sans({
   subsets: ['latin'],
-  weight: ['700'],
+  weight: ['600', '700'],
   display: 'swap',
   variable: '--font-dm-sans',
 });

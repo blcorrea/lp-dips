@@ -141,7 +141,10 @@ export default function Hero() {
           >
             <div className="inline-flex items-center gap-2 rounded-full border border-dips-card-tint-2-border bg-dips-card-tint-2 px-5 py-2.5">
               <HeroStars />
-              <span className="text-card-body font-medium text-dips-text-lavender">
+              {/* font-medium (500) -> font-normal (400): thinner, same
+                  treatment as the card description -- FilsonPro Regular is
+                  the lightest weight we have self-hosted for this family. */}
+              <span className="text-card-body font-normal text-dips-text-lavender">
                 {t("socialProof")}
               </span>
             </div>
@@ -208,15 +211,21 @@ export default function Hero() {
             transition={{ duration: 0.65, delay: 0.55 }}
             className="mt-6 flex flex-wrap items-center justify-center gap-4 lg:justify-start"
           >
+            {/* font-cta (DM Sans) was missing on both buttons -- they were
+                silently inheriting the body's FilsonPro instead of the
+                Figma-specified DM Sans. font-semibold (600), not the spec's
+                700: same "thinner" treatment as the card description, per
+                user request, using DM Sans's own lighter weight (Google Font,
+                no extra file needed) instead of the Bold cut. */}
             <a
               href="#bundle"
-              className="inline-flex h-[50px] items-center justify-center rounded-full bg-brand-orange px-8 text-cta-button font-bold text-white transition-opacity duration-200 hover:opacity-90"
+              className="inline-flex h-[50px] items-center justify-center rounded-full bg-brand-orange px-8 text-cta-button font-cta font-semibold text-white transition-opacity duration-200 hover:opacity-90"
             >
               {t("ctaPrimary")}
             </a>
             <a
               href="#ingredients"
-              className="inline-flex h-[50px] items-center justify-center rounded-full border border-[#58477e] bg-dips-card-tint px-8 text-cta-button font-bold text-white transition-colors duration-200 hover:bg-white/5"
+              className="inline-flex h-[50px] items-center justify-center rounded-full border border-[#58477e] bg-dips-card-tint px-8 text-cta-button font-cta font-semibold text-white transition-colors duration-200 hover:bg-white/5"
             >
               {t("ctaSecondary")}
             </a>
@@ -242,6 +251,7 @@ export default function Hero() {
                 direction="up"
                 delay={0.1 + index * 0.1}
                 duration={0.6}
+                className="h-full"
               >
                 {/* Card (Frame 8, 301x127, padding 25, bg rgba(49,34,89,.25),
                     2px #392A61, radius 15) wraps a single text stack: a title
@@ -249,25 +259,26 @@ export default function Hero() {
                     (full width, 2 lines in Figma's own render), 5px gap.
                     Diamond beside the TITLE only.
 
-                    h-[152px] is a FIXED height, not min-h -- the user was
-                    explicit that cards must NEVER differ in height from each
-                    other, at any viewport width. A min-h/grid-stretch
-                    approach only guarantees equal height WITHIN one row;
-                    at sm:grid-cols-2 the 4 cards form two independent rows
-                    that can size differently from each other, and Spanish/
-                    Portuguese copy (checked in messages/es.json, pt.json) is
-                    long enough to need a 3rd description line at this card
-                    width, which a min-h wouldn't force other cards to match.
-                    152px = 3-line desc (72px) + title row (24px) + 5px gap +
-                    50px padding, sized to the longest real translation across
-                    en/es/pt so nothing clips. justify-start (not center) so
-                    every title starts at the exact same y inside the card,
-                    regardless of how many lines its own description wraps to
-                    -- user flagged titles drifting to different heights when
-                    vertically centered against a fixed-height box with
-                    variable content length. See 05-VISUAL-GAPS.md GAP-34
-                    (3rd/4th refinement). */}
-                <div className="flex h-[152px] flex-col justify-start gap-[5px] rounded-card border-2 border-dips-card-tint-border bg-dips-card-tint p-card-padding">
+                    h-full (not a fixed px height) -- user clarified "never
+                    different heights from each other" means relative equality
+                    achieved dynamically (every card inherits whichever card's
+                    content is tallest), not a hardcoded magic number that
+                    leaves excess empty space on shorter cards. CSS Grid's
+                    default align-items:stretch already does exactly this for
+                    items sharing a row: the ScrollReveal wrapper (a direct
+                    grid item, no height of its own) stretches to the row's
+                    tallest member automatically, and h-full here makes the
+                    card fill that stretched height. At lg:grid-cols-4 all 4
+                    cards share one row, so this holds regardless of which
+                    card's own translation wraps to 2 vs 3 lines. (At
+                    sm:grid-cols-2 the 4 split into two independent rows that
+                    only stretch within their own pair -- true cross-row
+                    equality at that breakpoint would need JS measurement;
+                    mobile/tablet fidelity is explicitly Phase 6 scope, see
+                    RESP-01/02.) justify-start keeps every title pinned to the
+                    same y regardless of how tall the stretched card ends up.
+                    See 05-VISUAL-GAPS.md GAP-34 (5th refinement). */}
+                <div className="flex h-full flex-col justify-start gap-[5px] rounded-card border-2 border-dips-card-tint-border bg-dips-card-tint p-card-padding">
                   <div className="flex items-center gap-2">
                     <span
                       aria-hidden="true"
