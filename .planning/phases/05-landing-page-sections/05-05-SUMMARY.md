@@ -218,6 +218,18 @@ Card font: verified 18px/24px line-height, `rgba(49,34,89,.25)` bg, `#392a61` 2p
 
 Build green, 71/71 tests green.
 
+## Addendum 2026-07-20 (6th round) — exact per-layer CSS, blob geometry rebuilt (`58ec330`)
+
+Small blob confirmed fixed. Asked the user for individual-layer Copy as CSS (blob, product image, one card) instead of the flattened parent "Hero Section" dump — this gave exact numbers without needing to infer nested offsets.
+
+Large blob: the previous clip window (341x395) matched the box's *unrotated* size. Rotating 341x511 by 53.34deg produces a ~614x579 bounding box, and Figma's 1440x1054 frame clips that rotated silhouette on both the bottom and the right edge (not just the bottom, as previously assumed) — the old window cropped along the wrong lines, producing a kite-shaped artifact. Recomputed the 4 rotated corners from the exact layer CSS (`left:71.81% right:4.49% top:62.52% bottom:-11.01%`, `rotate(53.34deg)`), intersected with the frame's clip rect, and rebuilt as an outer clip window (542x429, flush right) containing an unclipped inner 614x579 box with the image centered and rotated inside.
+
+Product image: width was 52%/780px (an earlier eyeballed approximation); exact CSS (`width:821.74px` in a 1440-wide frame) gives 57.06%/822px.
+
+Feature cards: exact CSS for the card ("Frame 8", 301x127px) shows `flex-direction: row`, not column — the diamond sits beside a stacked title+description block, not above a full-width description row. The narrower effective text column in the row layout was reading as "font too big" even though the declared size (18px) was already correct.
+
+Build green, 71/71 tests green.
+
 ---
 *Phase: 05-landing-page-sections*
 *Completed: pending human verification*
