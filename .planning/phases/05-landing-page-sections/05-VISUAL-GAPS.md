@@ -373,4 +373,12 @@ Build + 71 testes verdes.
 
 **Correção (mesma sessão):** usuário não gostou do resultado do `tracking-tight` (achou "apertado") e pediu explicitamente **tamanho menor e/ou fonte mais fina** em vez de reduzir o espaçamento entre letras. Revertido tracking-tight; título e descrição dos cards reduzidos de 18px → **16px** (mantendo Satoshi 700/400, tracking normal) — commit `f0d821c`. Build + 71 testes verdes.
 
+**Correção (3ª rodada, mesma sessão):** usuário pediu (1) fonte ainda mais fina, e (2) **os 4 cards nunca podem ter alturas diferentes entre si, em nenhuma largura de tela**. Achado importante: `min-h` + stretch do CSS grid só garante alturas iguais **dentro da mesma linha** — em `sm:grid-cols-2` os 4 cards formam 2 linhas independentes, que podem ter alturas diferentes uma da outra; e conferi que a cópia em es/pt (`messages/es.json`, `pt.json`) é longa o bastante pra precisar de uma 3ª linha de descrição nessa largura de card.
+
+| # | Item | Correção | Commit |
+|---|---|---|---|
+| GAP-34 (3º refinamento) | Cards podiam variar de altura entre si (grid stretch só vale dentro da mesma linha) + descrição ainda "grossa" | Baixado Satoshi **Light (300)** como 4º peso self-hosted; descrição trocada de `font-normal`(400)→`font-light`(300) (título continua Bold/700, batendo exato com o Figma). Altura do card trocada de `min-h-[127px]` pra **`h-[152px]` fixo** (constante, não derivado de conteúdo/grid) — dimensionado pra caber a 3ª linha da tradução mais longa (es/pt) sem cortar texto, garantindo alturas idênticas em qualquer largura de tela | `e4b7212` |
+
+Build + 71 testes verdes.
+
 **Próximo passo:** novo walkthrough a **1440px real** (`localhost:3001`) + Stripe click-through para fechar o checkpoint do 05-05 → merge → completar a fase. E me diz o veredito do GAP-21.
