@@ -247,24 +247,20 @@ export default function Hero() {
                       aria-hidden="true"
                       className="inline-block h-2 w-2 shrink-0 rotate-[43deg] bg-brand-orange"
                     />
-                    <span className="font-card text-[18px] font-bold leading-6 tracking-tight text-white">
+                    <span className="font-card text-[16px] font-bold leading-6 text-white">
                       {t(feature.titleKey)}
                     </span>
                   </div>
-                  {/* tracking-tight (-0.025em): confirmed via the user's Figma
-                      screenshot that even a fixed 251px box (align-self:stretch
-                      in the dump, no auto-width ambiguity) wraps this exact text
-                      to 2 lines in Figma's own renderer but 3 in a real browser
-                      at the same 18px Satoshi -- Figma's internal text engine
-                      shapes measurably more compactly than any browser can, a
-                      known Figma-to-web fidelity gap (not an implementation
-                      bug, confirmed by ruling out viewport width and font-file
-                      validity first). Slight negative tracking is the
-                      legitimate lever left to close it without shrinking below
-                      the spec's 18px. Not a guaranteed pixel-for-pixel match in
-                      every locale/string length. See 05-VISUAL-GAPS.md
-                      GAP-34. */}
-                  <p className="font-card text-[18px] font-normal leading-6 tracking-tight text-dips-text-lavender">
+                  {/* 16px, not the spec's 18px -- user preference (over
+                      tracking-tight, which read as cramped): confirmed via a
+                      Figma screenshot that Figma's own text engine wraps this
+                      exact string at this exact box width more compactly than
+                      any browser does at 18px Satoshi, even with align-self:
+                      stretch (no auto-width ambiguity), so 18px reliably wraps
+                      to 3 lines instead of Figma's 2. Sizing down is the
+                      user's preferred lever over squeezing letter-spacing.
+                      See 05-VISUAL-GAPS.md GAP-34 (2nd refinement). */}
+                  <p className="font-card text-[16px] font-normal leading-6 text-dips-text-lavender">
                     {t(feature.descKey)}
                   </p>
                 </div>
