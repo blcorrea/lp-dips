@@ -390,4 +390,16 @@ Build + 71 testes verdes.
 
 Build + 71 testes verdes.
 
+**Correção (5ª rodada, mesma sessão):** usuário esclareceu que "nunca podem ter alturas diferentes entre si" não significa um valor travado (o `h-[152px]` fixo deixava muito espaço sobrando embaixo nos cards mais curtos) — quer que todos herdem dinamicamente a altura do card com **mais** conteúdo. Também pediu pra aplicar em todos os outros textos da Hero o mesmo tratamento de "afinar" que foi feito na descrição dos cards.
+
+| # | Item | Correção | Commit |
+|---|---|---|---|
+| GAP-34 (5º refinamento) | Altura fixa (152px) deixava espaço sobrando nos cards mais curtos | Trocado `h-[152px]` fixo por `h-full` no card + `className="h-full"` no wrapper `ScrollReveal` — usa o `align-items:stretch` padrão do CSS Grid, que já estica todo item de uma linha pro tamanho do maior automaticamente, sem número mágico. Vale em `lg:grid-cols-4` (os 4 cards numa linha só); em `sm:grid-cols-2` (2 linhas independentes) só o par de cada linha se iguala entre si — igualdade cruzada entre linhas exigiria JS, e fidelidade mobile é escopo da Fase 6 (RESP-01/02) | `2d4555d` |
+| — (bug real encontrado) | Botões CTA nunca tinham a classe `font-cta` — herdavam FilsonPro (fonte do corpo) em vez do DM Sans do Figma | Adicionado `font-cta` nos dois botões; peso trocado de Bold(700)→**Semibold(600)** (peso mais fino do DM Sans, sem precisar de arquivo extra, é Google Font) | `2d4555d` |
+| — | Badge "10.000+ Happy Couples" com peso Medium(500) | Reduzido pra `font-normal`(400) — peso mais fino que já temos self-hosted pra FilsonPro | `2d4555d` |
+
+**Não alterado (limitação de arquivo de fonte, não decisão):** H1 (AllRoundGothic) e subtítulo/trust items (FilsonPro) não ficaram mais finos — só temos o corte **Bold** da AllRoundGothic, e o FilsonPro Regular(400) já É o peso mais claro que temos self-hosted pra essa família. Precisaria adquirir um peso adicional (Light, por ex.) dessas fontes comerciais pra aplicar o mesmo tratamento — não tentei baixar/substituir sem confirmar licenciamento.
+
+Build + 71 testes verdes.
+
 **Próximo passo:** novo walkthrough a **1440px real** (`localhost:3001`) + Stripe click-through para fechar o checkpoint do 05-05 → merge → completar a fase. E me diz o veredito do GAP-21.
