@@ -371,4 +371,6 @@ O `-webkit-font-smoothing:antialiased` da 11ª rodada **teve efeito visível** n
 
 Build + 71 testes verdes.
 
+**Correção (mesma sessão):** usuário não gostou do resultado do `tracking-tight` (achou "apertado") e pediu explicitamente **tamanho menor e/ou fonte mais fina** em vez de reduzir o espaçamento entre letras. Revertido tracking-tight; título e descrição dos cards reduzidos de 18px → **16px** (mantendo Satoshi 700/400, tracking normal) — commit `f0d821c`. Build + 71 testes verdes.
+
 **Próximo passo:** novo walkthrough a **1440px real** (`localhost:3001`) + Stripe click-through para fechar o checkpoint do 05-05 → merge → completar a fase. E me diz o veredito do GAP-21.
