@@ -204,8 +204,20 @@ O usuário confirmou o **princípio-guia: o Figma é a fonte da verdade visual; 
 | GAP-10 | `f369205` | Cards de ingrediente → lista de coluna única, linhas compactas (ícone \| nome \| badge na mesma linha); badge virou pill outline com losango |
 | GAP-19 | `fd4f758` | Footer reestruturado no layout 2-zonas do Figma (marca+endereço+newsletter à esquerda, colunas de links à direita, faixa legal full-width) |
 
-**Adiado (não chutado):** GAP-06 (blobs decorativos do Hero — tamanho/posição exatos) precisa das medidas do Figma via `get_design_context`, bloqueado pela quota mensal do Figma MCP (plano Starter, 6 chamadas/mês, esgotada). A disposição atual (canto sup-esq / inf-dir) já bate com o arranjo geral do Figma; fidelidade exata espera o reset da quota ou um ajuste manual no walkthrough.
-
 **Ainda decisão sua / fora de escopo da Fase 5:** RESP-01/RESP-02 (responsivo — Fase 6, agora que o Figma tem mobile), e a captura de FAQs/Footer mobile (quota).
 
-**Próximo passo:** novo walkthrough a **1440px real** + Stripe click-through para fechar o checkpoint do 05-05 → merge → completar a fase.
+## Addendum 2026-07-20 (fim) — GAP-06 FECHADO via extração manual do Dev Mode
+
+**Descoberta metodológica:** não dependemos de MCP. O usuário puxou o Hero inteiro do Figma "Dev Ready" com **botão direito → Copy as CSS** e colou aqui — isso dá exatamente o que o `get_design_context` daria (medidas, cores, espaçamentos), a custo zero de quota. Fica como o caminho padrão pra especificações exatas.
+
+**GAP-06 (blobs) — RESOLVIDO exato** (commit `e436b0a`):
+- Os 2 SVGs estavam com nome trocado vs. posição: `blob-vector-2.svg` = vetor pequeno 193×308 (sup-esq, `left:-54 top:121 rotate(-167.8deg)`); `blob-vector-1.svg` = vetor grande 341×511 (inf-dir, `right:65 bottom:-116 rotate(53.34deg)`). SVGs são `preserveAspectRatio="none"` e não-rotacionados → box dimensionado ao vetor do Figma + rotação aplicada no CSS. Removido o dimming `opacity-70` (Figma não tem).
+
+**Bônus do mesmo dump** (mesmo commit): feature cards do Hero corrigidos de 14-15px → **18px** (Satoshi/font-card; título 700 branco, desc 400 #EBD9FE), losango 8px, borda 2px; botão "How It Works?" ganhou fill `dips-card-tint`. Confirmado já-correto pelo dump: gradiente do hero, bg/borda/raio dos cards, subtítulo, e a laranja normalizada #f27521 (DSGN-03) vs. a #FB6C04 do Figma.
+
+### ⚠ GAP-21 (NOVO) — divergência do H1 entre versões do Figma — PRECISA DA SUA DECISÃO
+O CSS do **Dev Ready (desktop)** mostra o H1 **todo branco**: "The Chocolate" (linha 1, #FFFFFF) + "that changes the night." (linha 2, #FFFFFF) — **sem** a palavra "Chocolate" em lilás.
+Mas o **frame mobile** e a página **Designs** (e seus próprios screenshots) mostram "**Chocolate**" em lilás (#cfa9f6).
+→ Mantive o lilás por ora (bate com o mobile e é mais branded), mas é uma **contradição entre versões do próprio Figma**. Preciso que você confirme: **"Chocolate" fica lilás ou branco?** (Se o Dev Ready for a fonte canônica do desktop, seria branco no desktop — mas aí ficaria inconsistente com o mobile lilás.)
+
+**Próximo passo:** novo walkthrough a **1440px real** (`localhost:3001`) + Stripe click-through para fechar o checkpoint do 05-05 → merge → completar a fase. E me diz o veredito do GAP-21.
