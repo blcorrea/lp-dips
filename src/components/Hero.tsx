@@ -44,33 +44,42 @@ export default function Hero() {
       id="hero"
       className="relative w-full scroll-mt-[72px] overflow-hidden bg-gradient-to-b from-dips-purple-hero-start from-0% via-dips-purple-hero-mid via-[57.4%] to-dips-purple-hero-end to-100% pb-16 pt-14 sm:pt-16 lg:pt-20"
     >
-      {/* Small blob -- position confirmed correct by the user. */}
+      {/* Both blobs' Figma coordinates are measured from the top of the FULL
+          1054px Hero frame, which in Figma's own composition starts at the
+          NAV, not at the gradient -- nav (72px) + trust bar (45px) = 117px
+          sit inside that same frame, on top of the gradient. Our LandingHeader
+          renders as a separate component BEFORE this section, so this
+          section's own top already corresponds to Figma-frame-y:117, not
+          y:0. Every top offset pulled from the frame dump must subtract that
+          117px, or everything renders 117px lower (and proportionally
+          farther from the nav) than intended. See 05-VISUAL-GAPS.md GAP-29. */}
       <Image
         src="/images/redesign/blob-vector-2.svg"
         alt=""
         aria-hidden="true"
         width={193}
         height={308}
-        className="pointer-events-none absolute left-[-3.73%] top-[121px] rotate-[-167.8deg]"
+        className="pointer-events-none absolute left-[-3.73%] top-[4px] rotate-[-167.8deg]"
       />
 
       {/* Large blob -- the user's annotated screenshot confirmed the ROUNDED
           BODY renders in the right place; the bug is the POINTED TAIL, which
           Figma never shows because its Hero frame is a FIXED 1054px-tall box
           that crops the shape via overflow-hidden at an exact point (the box
-          is at top:659px, 511px tall, so only the top 395px of it -- 1054-659
-          -- falls inside the frame; the rest is clipped). Our Hero section is
-          fluid and much taller than 1054px, so the section's own
+          is at frame-y:659, 511px tall, so only the top 395px of it --
+          1054-659 -- falls inside the frame; the rest is clipped). Our Hero
+          section is fluid and much taller than 1054px, so the section's own
           overflow-hidden never reaches far enough up to crop this tail.
           Fix: give the blob its OWN fixed-size overflow-hidden clip window
-          (395px tall, matching Figma's exact crop math) positioned/sized
-          independently of the page's actual height below it, then rotate the
-          image inside at the same relative position it would have in Figma.
-          This reproduces the identical crop regardless of how tall our
-          section grows. See 05-VISUAL-GAPS.md GAP-26 (3rd refinement). */}
+          (395px tall, matching Figma's exact crop math), positioned at
+          659-117=542px (nav-offset corrected, see comment above) so it lands
+          at the same point relative to the page content as it does relative
+          to the gradient in Figma, then rotate the image inside at the same
+          relative position it would have in Figma. See 05-VISUAL-GAPS.md
+          GAP-26 (3rd refinement) + GAP-29. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute right-[4.49%] top-[659px] h-[395px] w-[341px] overflow-hidden"
+        className="pointer-events-none absolute right-[4.49%] top-[542px] h-[395px] w-[341px] overflow-hidden"
       >
         <Image
           src="/images/redesign/blob-vector-1.svg"
@@ -93,14 +102,19 @@ export default function Hero() {
         At lg+, the image is pinned near the TOP (not vertically centered
         against the text -- that was a placeholder approximation) and the
         text column gets a top margin, reproducing Figma's actual vertical
-        rhythm: the product image starts at y:200 while the headline starts
-        at y:384 (both measured from the Hero frame's own top) -- a 184px gap
-        where only the blob + top of the product image are visible before any
-        text appears. Also sized the image much closer to Figma's true
-        57%-of-1440/822px reference (was shrunk to 34%/480px while I was still
-        fighting the H1 wrap issue -- fixed separately now via max-width, so
-        the image no longer needs to be small to make room). See
-        05-VISUAL-GAPS.md GAP-28.
+        rhythm: the product image starts at frame-y:200 while the headline
+        starts at frame-y:384 -- both nav-offset corrected (-117px, see the
+        blob comment above) to y:83 and y:267 relative to this section's own
+        top -- an 184px gap where only the blob + top of the product image
+        are visible before any text appears. Also sized the image much closer
+        to Figma's true 57%-of-1440/822px reference (was shrunk to 34%/480px
+        while I was still fighting the H1 wrap issue -- fixed separately now
+        via max-width, so the image no longer needs to be small to make
+        room). The image's own fade-in delay was 0.85s (vs. 0.15s for the
+        H1) -- long enough that the image was still invisible while every
+        text element had already appeared, reading as "the box never shows up
+        beside the H1". Dropped to 0.1s so it appears first, alongside/before
+        the text. See 05-VISUAL-GAPS.md GAP-28/GAP-29.
       */}
       <div className="container relative z-10 mx-auto px-6">
         <div className="relative flex flex-col items-center gap-10 text-center lg:block lg:text-left">
@@ -108,8 +122,8 @@ export default function Hero() {
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.85 }}
-            className="relative order-1 mx-auto w-full max-w-[420px] lg:absolute lg:top-[60px] lg:right-[2%] lg:order-none lg:w-[52%] lg:max-w-[780px]"
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="relative order-1 mx-auto w-full max-w-[420px] lg:absolute lg:top-[83px] lg:right-[2%] lg:order-none lg:w-[52%] lg:max-w-[780px]"
           >
             <Image
               src="/images/redesign/hero-product.png"
@@ -127,10 +141,11 @@ export default function Hero() {
               split (54%) still left it too narrow at typical desktop widths,
               wrapping to a 2nd sub-line (3 lines total instead of Figma's 2).
               Matches Figma's own headline box width (1062px) closely. The
-              lg:mt-[180px] creates the "breathing room" gap described above
-              -- text starts noticeably below the image instead of at the same
-              height, matching Figma's own vertical offset between the two. */}
-          <div className="order-2 flex flex-col items-center lg:order-none lg:mt-[180px] lg:max-w-[1040px] lg:items-start">
+              lg:mt-[187px] (267 target - 80px section padding-top) creates
+              the "breathing room" gap described above -- text starts
+              noticeably below the image instead of at the same height,
+              matching Figma's own vertical offset between the two. */}
+          <div className="order-2 flex flex-col items-center lg:order-none lg:mt-[187px] lg:max-w-[1040px] lg:items-start">
             {/* HEADLINE (two-tone via next-intl rich text). Figma authors "The
                 Chocolate" and "that changes the night." as two separately
                 positioned text layers (a manual editorial line break, not
