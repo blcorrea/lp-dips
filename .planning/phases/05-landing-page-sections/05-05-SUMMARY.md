@@ -142,10 +142,48 @@ update) were deliberately left alone for discussion.
 8. `28f3a1f` — GAP-20: footer copyright year was hardcoded to "2025" (already
    wrong the moment it was written) — now computed via `new Date().getFullYear()`
 
-All changes verified: `npm run build` exits 0, `npm test` (vitest) 71/71
-passing, and `git diff` against this plan's base commit (`ee75d66`) still
-shows zero diff on `Header.tsx`/`Footer.tsx`/`BuyNowButton.tsx` — the FUNC-03
-regression boundary held through every fix above.
+### Second batch (2026-07-20) — remaining Figma-fidelity items, user-approved
+
+The user confirmed the guiding principle: **the Figma is the visual source of
+truth; match it faithfully, don't ask fidelity questions** (only documented
+functional overrides — real prices/reviews/links/FAQ copy — win over it). Under
+that principle, the remaining "decision" gaps were resolved toward Figma:
+
+9. `fba6155` — GAP-17: FAQ heading -> "FAQs" (en) / "Preguntas Frecuentes" /
+   "Perguntas Frequentes" (dropped the "(FAQ)" parenthetical); stripped the
+   literal "Q1:".."Q6:" prefixes from the en `q1..q6` values (es/pt were clean).
+   Answer copy untouched (documented override).
+10. `be4d30e` — GAP-04: Hero mini trust items match Figma copy ("100% Natural",
+    "Satisfaction Guaranteed", "100% Discreet Shipping") + orange rotated-diamond
+    glyph before each (was stale copy, no diamonds).
+11. `f369205` — GAP-10: Ingredients cards rebuilt as a single-column list of
+    compact horizontal rows (icon | name | keyword badge on one line, badge
+    right); badge restyled from solid-orange fill to Figma outlined pill with a
+    small orange diamond.
+12. `fd4f758` — GAP-19: footer restructured to Figma's two-zone layout (brand +
+    real address + "Never Satisfied?" newsletter on the LEFT; Orders / Quick
+    Links / Customer Care columns on the RIGHT; full-width legal strip below).
+    Real links/email/address kept (documented override). `#footer-contact`
+    anchor preserved on the Customer Care column.
+13. `930823d` — GAP-15: removed the non-Figma Instagram/TikTok social icons
+    from the bundle cream panel.
+
+**Deferred (not guessed):** GAP-06 (Hero decorative blobs exact size/position)
+— needs precise Figma measurements via `get_design_context`, which is blocked
+by the Figma MCP monthly quota (Starter plan, 6 calls/month, exhausted). The
+current upper-left / lower-right blob arrangement matches the Figma's general
+placement; exact fidelity waits for quota reset or a hand-nudge during the
+1440px walkthrough.
+
+All second-batch changes verified: `npm run build` exits 0, `npm test` 71/71,
+and `git diff` vs the plan base still shows zero diff on
+`Header.tsx`/`Footer.tsx`/`BuyNowButton.tsx` (FUNC-03 boundary intact).
+
+---
+
+**First-batch verification note (unchanged):** `npm run build` exits 0, `npm test`
+(vitest) 71/71 passing, and `git diff` against this plan's base commit (`ee75d66`)
+shows zero diff on `Header.tsx`/`Footer.tsx`/`BuyNowButton.tsx`.
 
 **Still pending (unchanged from before this addendum):**
 - The actual human walkthrough re-verification (Task 3's checkpoint is still
