@@ -40,12 +40,17 @@ export default function LandingHeader() {
 
   return (
     <>
-      {/* Trust bar — solid dark backdrop (bg-dips-purple-deepest) behind the translucent
-          accent layer (rgba(45,26,105,0.4) per UI-SPEC) so the bar renders as dark purple
-          regardless of what the page background behind LandingHeader is. Without this
-          wrapper the translucent layer composited directly over <main>'s bg-brand-cream,
-          producing an unreadable light-lavender strip (05-VISUAL-GAPS.md RC-2). */}
-      <div className="w-full bg-dips-purple-deepest">
+      {/* Trust bar — solid backdrop using --color-dips-purple-hero-start (#18012d),
+          the EXACT color at the 0% stop of Hero's own gradient, not the darker
+          dips-purple-deepest (#0a0519). LandingHeader renders as a sibling
+          BEFORE <Hero> in page.tsx (not overlapping Hero's own gradient box),
+          so "matching Figma's no-fill nav" literally (fully transparent) shows
+          <main>'s bg-brand-cream through it instead -- a light "pearl" strip
+          sandwiched between two dark bars. Using the Hero gradient's own start
+          color here makes the boundary between header and Hero seamless (same
+          color meets same color) while staying opaque/legible once scrolled
+          past Hero into later sections. See 05-VISUAL-GAPS.md GAP-23/GAP-27. */}
+      <div className="w-full bg-dips-purple-hero-start">
         {/* justify-between across full width (px-[25px] pad) matches the Figma
             Dev Mode dump exactly (Frame 10: justify-content:space-between,
             width:1390px, left:25px inside the 1440px bar) -- was justify-center
@@ -64,12 +69,14 @@ export default function LandingHeader() {
         </div>
       </div>
 
-      {/* Nav — no fill (Figma's nav "Frame 4" has no `background` at all, floating
-          transparently over the Hero gradient it sits on). The previous solid
-          bg-dips-purple-deepest created a visible seam/border against the Hero
-          gradient below it that doesn't exist in Figma. See 05-VISUAL-GAPS.md
-          GAP-23. */}
-      <header className="sticky top-0 z-50 w-full">
+      {/* Nav — bg-dips-purple-hero-start (same reasoning as the trust bar above):
+          Figma's nav "Frame 4" itself has no fill because it's drawn directly on
+          top of the Hero gradient in the same design frame. Our header is a
+          separate component sitting before Hero in the DOM, so true
+          transparency exposed the page's cream background instead. Matching
+          the gradient's exact start color reproduces the seamless look without
+          that architecture mismatch. See 05-VISUAL-GAPS.md GAP-23/GAP-27. */}
+      <header className="sticky top-0 z-50 w-full bg-dips-purple-hero-start">
         <div className="flex h-[72px] w-full items-center justify-between px-5 md:px-[40px]">
           {/* Logo — two SVG layers, each preserveAspectRatio="none" and sized/
               positioned to their OWN sub-region of the 59x36 logo box (per Figma
