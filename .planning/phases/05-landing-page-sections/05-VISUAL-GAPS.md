@@ -232,6 +232,19 @@ Re-teste do usuário mostrou: trust bar (GAP-22) e logo (GAP-24) corretos. Heade
 
 Build + 71 testes verdes depois de cada commit.
 
+## Addendum 2026-07-20 (4ª rodada) — blob (causa real!) + respiro do topo + imagem pequena
+
+O usuário mandou um print anotado com um traço azul mostrando **exatamente** qual parte do blob deveria aparecer (o corpo arredondado) e qual não (a cauda pontiaguda) — isso resolveu de vez a investigação do blob.
+
+| # | Item | Causa raiz real | Commit |
+|---|---|---|---|
+| GAP-26 (3ª tentativa, resolvida) | Blob ainda com "quina"/cauda visível | O frame do Hero no Figma é uma caixa **fixa de 1054px** que corta o blob (rotacionado) via overflow-hidden num ponto exato — a caixa local do blob fica em top:659/altura:511, então só os primeiros 395px (1054-659) dela ficam dentro do frame; o resto é cortado. Nossa seção é fluida e bem mais alta que 1054px, então o overflow-hidden da seção nunca chega a cortar essa cauda — a forma inteira aparece, incluindo a parte que o Figma sempre esconde. Corrigido dando ao blob sua **própria janela de corte fixa** (341×395px, com overflow-hidden), independente da altura real da página abaixo dela, com a imagem rotacionada 341×511 dentro na mesma posição relativa que tem no Figma | `bf9cbbd` |
+| GAP-28 (novo) | Falta "respiro" no topo da seção + imagem da caixa pequena demais | No Figma, a imagem do produto começa em y:200 enquanto o título começa em y:384 (medido do topo do frame) — um vão de 184px onde só aparecem o blob + o início da imagem antes de qualquer texto. Minha tentativa de centralizar verticalmente a imagem contra o texto eliminou esse vão. Além disso, eu tinha encolhido a imagem pra 34%/480px enquanto ainda perseguia o bug do H1 quebrando em 3 linhas — bem menor que o tamanho real do Figma (57%/822px). Corrigido: imagem ancorada perto do topo (`top-[60px]`, `52%/780px`, bem mais perto do tamanho real) em vez de centralizada, e a coluna de texto ganhou `mt-[180px]` pra reproduzir o vão | `bf9cbbd` |
+
+Build + 71 testes verdes.
+
+**Pendente:** o usuário também apontou diferença nos 4 feature-cards, mas o CSS que ele colou (2x) foi só o wrapper "Hero Section" repetido, não o card específico — os valores exatos dos cards (301/311px, `rgba(49,34,89,.25)`, borda 2px `#392A61`, radius 15px, Satoshi 18px) já foram implementados a partir do dump grande anterior. Aguardando confirmação/novo print após esta rodada, ou o CSS de um card individual se a diferença persistir.
+
 ## Addendum 2026-07-20 (fim) — GAP-06 FECHADO via extração manual do Dev Mode
 
 **Descoberta metodológica:** não dependemos de MCP. O usuário puxou o Hero inteiro do Figma "Dev Ready" com **botão direito → Copy as CSS** e colou aqui — isso dá exatamente o que o `get_design_context` daria (medidas, cores, espaçamentos), a custo zero de quota. Fica como o caminho padrão pra especificações exatas.
