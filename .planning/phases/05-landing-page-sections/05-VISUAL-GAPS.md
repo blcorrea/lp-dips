@@ -344,4 +344,18 @@ Build + 71 testes verdes.
 
 **Mapeamento de fontes agora fiel ao Figma:** H1 = AllRoundGothic ✓, subtítulo = FilsonPro ✓, botões = DM Sans ✓, cards = **Satoshi** ✓ (era o único fora).
 
+## Addendum 2026-07-20 (11ª rodada) — TODAS as fontes destoando, não só os cards
+
+O usuário reportou que mesmo depois do fix da Satoshi, **todas as fontes** da Hero (H1, subtítulo, trust items, botões, cards) continuavam parecendo mais grossas/maiores que o Figma — não era só questão de família de fonte.
+
+**Causa:** `globals.css` não tinha nenhuma regra de font-smoothing. O Figma renderiza seu canvas com antialiasing suavizado (grayscale); navegadores no Windows usam por padrão um render mais denso (ClearType/subpixel) no mesmo peso declarado — mais perceptível em texto claro sobre fundo escuro, como a Hero inteira.
+
+| # | Item | Correção | Commit |
+|---|---|---|---|
+| GAP-33 | Todas as fontes da Hero (não só cards) lendo mais grossas/maiores que o Figma | Adicionado `-webkit-font-smoothing: antialiased`, `-moz-osx-font-smoothing: grayscale`, `text-rendering: optimizeLegibility` no `body` — normaliza o render em vez de mexer na fonte em si, efeito site-wide | `deb4e72` |
+
+Build + 71 testes verdes.
+
+**Ressalva importante (avisar o usuário sempre que isso for revisitado):** `-webkit-font-smoothing` tem efeito forte no Chrome/Safari de **macOS**, mas é **majoritariamente ignorado no Chrome/Edge do Windows** (o pipeline de texto lá é o DirectWrite do SO, que não expõe esse controle pra páginas web). Como o usuário testa em Windows, é bem possível que essa mudança não mude visivelmente nada pra ele — nesse caso a diferença de "peso" percebida é uma diferença de **rasterização entre plataformas** (Figma/Mac vs. ClearType do Windows), não um bug de CSS/fonte corrigível no código. Isso é uma limitação conhecida e aceita em handoffs de design pra web — não dá pra igualar 100% o rendering entre design tool e navegador.
+
 **Próximo passo:** novo walkthrough a **1440px real** (`localhost:3001`) + Stripe click-through para fechar o checkpoint do 05-05 → merge → completar a fase. E me diz o veredito do GAP-21.
