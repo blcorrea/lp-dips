@@ -284,4 +284,16 @@ Build + 71 testes verdes.
 
 **Metodologia confirmada:** CSS de camada individual (clique na camada específica → Copy as CSS) é muito mais confiável que o dump do frame pai inteiro — elimina a necessidade de inferir offsets aninhados manualmente, que foi a fonte dos erros anteriores.
 
+## Addendum 2026-07-20 (7ª rodada) — dump da SEÇÃO INTEIRA (aninhamento preservado) corrige estrutura do card
+
+O usuário mandou o Copy-as-CSS da **Hero Section inteira** com o aninhamento completo (pai→filho). Isso é o formato ideal — melhor que camadas isoladas, porque o aninhamento diz como os elementos se compõem. Revelou que a "correção" do card na 6ª rodada (`58ec330`) estava **errada na direção oposta**.
+
+| # | Item | Verdade do aninhamento | Commit |
+|---|---|---|---|
+| GAP-29 (3º refinamento, cards) | Estrutura do card invertida | O card (`Frame 8`, 301×127, padding 25) tem **um único filho**: a pilha de texto (`Frame 5`, 251px). Dentro dela, a linha do título (`Frame 10`, flex-row gap:8px) = `[losango][título]` fica **acima** da descrição (251px, largura cheia, 2 linhas), gap 5px. Ou seja: losango ao lado **só do título**, descrição embaixo em largura cheia — não losango ao lado do bloco título+descrição inteiro (o que a 6ª rodada fez, enganada por um dump de camada isolada). Revertido pro layout em coluna com o losango aninhado na linha do título. Gap entre cards também ajustado pro 25px exato do Figma (era 24px) | `64e08e6` |
+
+**Lição metodológica final:** o dump da **seção inteira com aninhamento** > camadas isoladas > dump do wrapper pai achatado. O aninhamento é o que desambigua a composição. Camadas com nome de texto (`The Chocolate`, `Natural Aphrodisiac`, `Shop Now`) se auto-identificam; só as decorativas genéricas (`Vector`, `Rectangle`, `Group`) precisam de um rótulo entre parênteses.
+
+**Observação (fora do escopo dos 4 pontos atuais):** o dump mostra a navbar (`Frame 4`, 1360×72, `left:40 top:67 border-radius:20px`) como uma **barra flutuante arredondada, recuada 40px das bordas**, começando 22px abaixo da trust bar — a nossa é full-width, encostada, sem raio. Não faz parte das queixas atuais e o usuário não reclamou do header; anotado pra eventual ajuste de fidelidade.
+
 **Próximo passo:** novo walkthrough a **1440px real** (`localhost:3001`) + Stripe click-through para fechar o checkpoint do 05-05 → merge → completar a fase. E me diz o veredito do GAP-21.
