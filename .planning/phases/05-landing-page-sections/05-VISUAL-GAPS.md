@@ -330,4 +330,18 @@ Build + 71 testes verdes.
 
 **Por que isso deve finalmente fechar:** as três queixas (imagem, cards, blob) tinham a **mesma causa raiz** — referências de layout divergentes numa tela mais larga que o design. Unificando tudo num canvas de 1440 centralizado, todos os elementos compartilham a mesma referência e param de derivar; em ~1440 a página fica 1:1 com o Figma.
 
+## Addendum 2026-07-20 (10ª rodada) — a fonte dos cards não era Satoshi (causa da "fonte grande")
+
+O usuário sacou: os cards pareciam "com a fonte maior" não por causa do tamanho, mas porque **não estávamos usando a fonte do Figma**. O Figma usa **Satoshi** nos cards; a Fase 4 substituiu por **Plus Jakarta Sans** (`src/lib/fonts.ts` até tinha o comentário "Satoshi substitute per the Phase 4 UI-SPEC") porque os arquivos não estavam no repo. Métricas de fonte diferentes no mesmo 18px declarado = texto lendo como maior. O tamanho estava certo; a **fonte** estava errada.
+
+**Diagnóstico do usuário confirmado por teste:** antes disso, baixamos todos os textos da Hero 2 passos (só working tree, nunca commitado) pra ver se o problema era tamanho — ficou menor mas ainda "errado", o que isolou a fonte como causa real. Teste revertido.
+
+| # | Item | Correção | Commit |
+|---|---|---|---|
+| GAP-32 | Cards (e ingredient/bundle/review do site todo) na fonte errada (Plus Jakarta em vez de Satoshi) | Baixado Satoshi Regular (400) + Bold (700) da Fontshare (grátis, self-host permitido), colocado em `public/fonts/*.woff2`, `@font-face` junto de FilsonPro/AllRoundGothic, e `--font-card` trocado pra `'Satoshi'` (Plus Jakarta mantido como fallback de carregamento). Sem mudança de tamanho — o teste de tamanho foi revertido | `53aca4d` |
+
+Build + 71 testes verdes.
+
+**Mapeamento de fontes agora fiel ao Figma:** H1 = AllRoundGothic ✓, subtítulo = FilsonPro ✓, botões = DM Sans ✓, cards = **Satoshi** ✓ (era o único fora).
+
 **Próximo passo:** novo walkthrough a **1440px real** (`localhost:3001`) + Stripe click-through para fechar o checkpoint do 05-05 → merge → completar a fase. E me diz o veredito do GAP-21.
