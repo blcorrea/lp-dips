@@ -381,4 +381,13 @@ Build + 71 testes verdes.
 
 Build + 71 testes verdes.
 
+**Correção (4ª rodada, mesma sessão):** print anotado com linha vermelha mostrou os títulos começando em alturas diferentes entre cards (efeito colateral do `justify-center` numa caixa de altura fixa com descrições de 2 vs. 3 linhas). Usuário também confirmou que a fonte da descrição já está visualmente parecida com o Figma — falta só caber em 2 linhas, e pediu aumentar levemente a largura dos cards.
+
+| # | Item | Correção | Commit |
+|---|---|---|---|
+| GAP-34 (4º refinamento) | Início dos títulos em alturas diferentes entre cards | `justify-center` → `justify-start` no card — título agora sempre começa no mesmo y, independente de quantas linhas a descrição daquele card específico ocupa | `931ff12` |
+| — | Cards estreitos demais pra descrição caber em 2 linhas | Gap entre cards reduzido de 25px (valor do Figma) → **15px**, ganhando ~7-8px de largura por card — fecha a diferença pro ~258px que "Crafted to deepen connection and shared pleasure" precisa pra 2 linhas, sem mexer nas margens laterais da seção nem no padding interno do card | `931ff12` |
+
+Build + 71 testes verdes.
+
 **Próximo passo:** novo walkthrough a **1440px real** (`localhost:3001`) + Stripe click-through para fechar o checkpoint do 05-05 → merge → completar a fase. E me diz o veredito do GAP-21.
