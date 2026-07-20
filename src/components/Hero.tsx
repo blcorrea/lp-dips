@@ -239,9 +239,23 @@ export default function Hero() {
                 {/* Card (Frame 8, 301x127, padding 25, bg rgba(49,34,89,.25),
                     2px #392A61, radius 15) wraps a single text stack: a title
                     row (diamond 8px + title, 8px gap) ABOVE the description
-                    (full width, 2 lines), 5px gap. Diamond beside the TITLE
-                    only. min-h so longer es/pt copy doesn't clip. */}
-                <div className="flex min-h-[127px] flex-col justify-center gap-[5px] rounded-card border-2 border-dips-card-tint-border bg-dips-card-tint p-card-padding">
+                    (full width, 2 lines in Figma's own render), 5px gap.
+                    Diamond beside the TITLE only.
+
+                    h-[152px] is a FIXED height, not min-h -- the user was
+                    explicit that cards must NEVER differ in height from each
+                    other, at any viewport width. A min-h/grid-stretch
+                    approach only guarantees equal height WITHIN one row;
+                    at sm:grid-cols-2 the 4 cards form two independent rows
+                    that can size differently from each other, and Spanish/
+                    Portuguese copy (checked in messages/es.json, pt.json) is
+                    long enough to need a 3rd description line at this card
+                    width, which a min-h wouldn't force other cards to match.
+                    152px = 3-line desc (72px) + title row (24px) + 5px gap +
+                    50px padding, sized to the longest real translation across
+                    en/es/pt so nothing clips. See 05-VISUAL-GAPS.md GAP-34
+                    (3rd refinement). */}
+                <div className="flex h-[152px] flex-col justify-center gap-[5px] rounded-card border-2 border-dips-card-tint-border bg-dips-card-tint p-card-padding">
                   <div className="flex items-center gap-2">
                     <span
                       aria-hidden="true"
@@ -251,16 +265,15 @@ export default function Hero() {
                       {t(feature.titleKey)}
                     </span>
                   </div>
-                  {/* 16px, not the spec's 18px -- user preference (over
-                      tracking-tight, which read as cramped): confirmed via a
+                  {/* 16px (not the spec's 18px) + Satoshi Light (300, not the
+                      spec's 400) -- user preference: size/weight down over
+                      tracking-tight, which read as cramped. Confirmed via a
                       Figma screenshot that Figma's own text engine wraps this
-                      exact string at this exact box width more compactly than
-                      any browser does at 18px Satoshi, even with align-self:
-                      stretch (no auto-width ambiguity), so 18px reliably wraps
-                      to 3 lines instead of Figma's 2. Sizing down is the
-                      user's preferred lever over squeezing letter-spacing.
-                      See 05-VISUAL-GAPS.md GAP-34 (2nd refinement). */}
-                  <p className="font-card text-[16px] font-normal leading-6 text-dips-text-lavender">
+                      exact string more compactly than any browser does at
+                      18px/400 Satoshi, even at an identical box width, so the
+                      declared spec values reliably wrap to 3 lines instead of
+                      Figma's 2. See 05-VISUAL-GAPS.md GAP-34. */}
+                  <p className="font-card text-[16px] font-light leading-6 text-dips-text-lavender">
                     {t(feature.descKey)}
                   </p>
                 </div>
