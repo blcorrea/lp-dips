@@ -44,29 +44,33 @@ export default function Hero() {
       id="hero"
       className="relative w-full scroll-mt-[72px] overflow-hidden bg-gradient-to-b from-dips-purple-hero-start from-0% via-dips-purple-hero-mid via-[57.4%] to-dips-purple-hero-end to-100% pb-16 pt-14 sm:pt-16 lg:pt-20"
     >
-      {/* Decorative blobs — Figma Dev-Mode percentages (Hero frame 1440×1054),
-          applied as CSS percentages (not fixed px) so they scale correctly
-          regardless of the section's actual rendered width, which is fluid
-          here and was NOT exactly 1440px -- the earlier fixed-px version drifted
-          more visibly on the larger blob because it sits closer to an edge and
-          covers more area, so any width mismatch compounds. blob-vector-2.svg
-          is the SMALL 193×308 vector (upper-left, rotate -167.8°); blob-vector-1
-          .svg is the LARGE 341×511 vector (lower-right, rotate 53.34°). Both
-          SVGs are preserveAspectRatio="none", so each gets its own wrapper box
-          sized exactly by left/right/top/bottom (width/height auto-resolve),
-          with `fill` + object-fill stretching the SVG to that box. */}
-      <div
+      {/* Decorative blobs. Root cause of the large blob's exposed "corner":
+          Figma's large blob uses bottom:-11.01% to intentionally bleed past a
+          FIXED 1054px-tall frame, relying on overflow-hidden to crop it at an
+          exact, known point. Our Hero section is fluid and considerably
+          TALLER than 1054px once real content (H1/subtitle/badges/CTA/feature
+          cards) is laid out, so a bottom-anchored crop lands at a completely
+          different point in the shape, exposing a different (wrong) silhouette
+          slice than Figma shows. Fix: anchor both blobs from the TOP (stable
+          reference regardless of how tall the section grows) with fixed
+          native-asset pixel sizes (no crop, no stretch) instead of a
+          bottom-relative negative offset. See 05-VISUAL-GAPS.md GAP-26. */}
+      <Image
+        src="/images/redesign/blob-vector-2.svg"
+        alt=""
         aria-hidden="true"
-        className="pointer-events-none absolute left-[-3.73%] right-[90.29%] top-[11.52%] bottom-[59.26%] rotate-[-167.8deg]"
-      >
-        <Image src="/images/redesign/blob-vector-2.svg" alt="" fill className="object-fill" />
-      </div>
-      <div
+        width={193}
+        height={308}
+        className="pointer-events-none absolute left-[-3.73%] top-[121px] rotate-[-167.8deg]"
+      />
+      <Image
+        src="/images/redesign/blob-vector-1.svg"
+        alt=""
         aria-hidden="true"
-        className="pointer-events-none absolute left-[71.81%] right-[4.49%] top-[62.52%] bottom-[-11.01%] rotate-[53.34deg]"
-      >
-        <Image src="/images/redesign/blob-vector-1.svg" alt="" fill className="object-fill" />
-      </div>
+        width={341}
+        height={511}
+        className="pointer-events-none absolute right-[4.49%] top-[659px] rotate-[53.34deg]"
+      />
 
       {/*
         Desktop composition matches Figma's actual overlap: the product image
@@ -87,7 +91,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.85 }}
-            className="relative order-1 mx-auto w-full max-w-[420px] lg:absolute lg:inset-y-0 lg:right-0 lg:order-none lg:my-auto lg:h-fit lg:w-[40%] lg:max-w-[580px]"
+            className="relative order-1 mx-auto w-full max-w-[420px] lg:absolute lg:inset-y-0 lg:right-0 lg:order-none lg:my-auto lg:h-fit lg:w-[34%] lg:max-w-[480px]"
           >
             <Image
               src="/images/redesign/hero-product.png"
@@ -99,8 +103,15 @@ export default function Hero() {
             />
           </motion.div>
 
-          {/* TEXT COLUMN */}
-          <div className="order-2 flex flex-col items-center lg:order-none lg:w-[54%] lg:items-start">
+          {/* TEXT COLUMN — max-w-[1040px] (not a % split) because "that changes
+              the night." at the 64px AllRoundGothic Bold display size needs
+              roughly 750-850px on its own to fit on one line; a percentage
+              split (54%) still left it too narrow at typical desktop widths,
+              wrapping to a 2nd sub-line (3 lines total instead of Figma's 2).
+              Matches Figma's own headline box width (1062px) closely; the
+              image (now narrower, 34%/480px cap) is an absolute overlay that
+              doesn't consume layout space, so widening text here is safe. */}
+          <div className="order-2 flex flex-col items-center lg:order-none lg:max-w-[1040px] lg:items-start">
             {/* HEADLINE (two-tone via next-intl rich text). Figma authors "The
                 Chocolate" and "that changes the night." as two separately
                 positioned text layers (a manual editorial line break, not
