@@ -39,6 +39,27 @@
   font-display: swap;
 }
 
+/* Satoshi (self-hosted, from Fontshare) — the real card font per Figma.
+   Earlier phases substituted Plus Jakarta Sans because the files weren't in
+   the repo; different font metrics at the same declared size were making the
+   card text read as oversized. Regular (400) = card body, Bold (700) = card
+   titles. */
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ============================= */
 /* THEME VARIABLES */
 /* ============================= */
@@ -167,7 +188,7 @@
   /* FONT FAMILY TOKENS (redesign, additive) */
   /* ============================= */
 
-  --font-card: var(--font-plus-jakarta-sans), sans-serif;
+  --font-card: 'Satoshi', var(--font-plus-jakarta-sans), sans-serif;
   --font-cta: var(--font-dm-sans), sans-serif;
 }
 
