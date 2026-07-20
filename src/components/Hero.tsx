@@ -36,169 +36,108 @@ const FEATURES = [
 
 const TRUST_KEYS = ["trust1", "trust2", "trust3"] as const;
 
+/*
+  Hero — the desktop (lg+) layout is a FAITHFUL reproduction of Figma's fixed
+  1440x1054 frame, not a fluid approximation. Every earlier round failed
+  because the design is an absolutely-positioned pixel frame and we kept trying
+  to re-derive it as flowing/percentage layout, which drifts as the viewport
+  widens past 1440.
+
+  How the two coordinate systems line up:
+  - Figma's frame is 1440 wide x 1054 tall and INCLUDES the nav (top:67, h:72)
+    and trust bar (top:0, h:45) drawn on top of the gradient.
+  - In our app those two live in <LandingHeader>, a sibling rendered BEFORE
+    this <section>. LandingHeader is 45 + 72 = 117px tall, so this section's
+    own top corresponds to Figma frame-y:117.
+  - Therefore the desktop canvas is 1054 - 117 = 937px tall, and any element's
+    canvas-y = its Figma frame-y minus 117. (small blob 121->4, image
+    200->84, text block 384->267, large blob 659->542, cards 860->743.)
+
+  The canvas is capped at max-w-[1440px] and centered so it renders 1:1 with
+  the design; on viewports wider than 1440 the extra width is plain gradient
+  gutter instead of stretched/drifted content. Below lg the whole thing
+  collapses to a normal fluid stack (image, then text, then cards, in flow).
+*/
+
 export default function Hero() {
   const t = useTranslations("Hero");
 
   return (
     <section
       id="hero"
-      className="relative w-full scroll-mt-[72px] overflow-hidden bg-gradient-to-b from-dips-purple-hero-start from-0% via-dips-purple-hero-mid via-[57.4%] to-dips-purple-hero-end to-100% pb-16 pt-14 sm:pt-16 lg:pt-20"
+      className="relative w-full scroll-mt-[72px] overflow-hidden bg-gradient-to-b from-dips-purple-hero-start from-0% via-dips-purple-hero-mid via-[57.4%] to-dips-purple-hero-end to-100% pb-16 pt-10 sm:pt-12 lg:p-0"
     >
-      {/* Both blobs' Figma coordinates are measured from the top of the FULL
-          1054px Hero frame, which in Figma's own composition starts at the
-          NAV, not at the gradient -- nav (72px) + trust bar (45px) = 117px
-          sit inside that same frame, on top of the gradient. Our LandingHeader
-          renders as a separate component BEFORE this section, so this
-          section's own top already corresponds to Figma-frame-y:117, not
-          y:0. Every top offset pulled from the frame dump must subtract that
-          117px, or everything renders 117px lower (and proportionally
-          farther from the nav) than intended. See 05-VISUAL-GAPS.md GAP-29. */}
+      {/* Small blob -- top-left, bleeds off the left edge. Its rotation
+          (-167.8deg, almost a half-turn) barely tilts its bounding box, and
+          it's clipped on the LEFT edge, which our page shares with Figma
+          (equal widths) -- so simple viewport-relative absolute positioning +
+          the section's overflow-hidden reproduces it for free. Confirmed
+          correct by the user; kept full-bleed (section-relative). */}
       <Image
         src="/images/redesign/blob-vector-2.svg"
         alt=""
         aria-hidden="true"
         width={193}
         height={308}
-        className="pointer-events-none absolute left-[-3.73%] top-[4px] rotate-[-167.8deg]"
+        className="pointer-events-none absolute left-[-3.73%] top-[4px] z-0 rotate-[-167.8deg]"
       />
 
-      {/* Large blob -- SAME mechanism as the small blob above (position it,
-          let overflow-hidden trim the overflow), but the clip boundary that
-          matters is different, which is the whole reason one was trivial and
-          this one wasn't. The small blob is cut on the LEFT edge, and our
-          page shares Figma's left edge (x=0, equal widths), so that cut lands
-          identically for free. The large blob is cut on the BOTTOM/RIGHT by
-          Figma's FIXED 1054px-tall frame -- and our section is TALLER than
-          1054px (real content: H1, subtitle, badges, CTAs, cards), so the
-          section's own bottom overflow-hidden sits far below Figma's cut and
-          never trims the tail. Horizontal clip is free (widths match);
-          vertical clip is not (heights differ).
+      {/* 1440 canvas (see file header). Fluid stack below lg; fixed 937px
+          absolute canvas at lg+. */}
+      <div className="relative mx-auto w-full max-w-[1440px] px-6 lg:h-[937px] lg:px-0">
+        {/* Large blob -- SAME clip idea as the small blob, but it lives INSIDE
+            this canvas (not the section) so its right edge stays aligned with
+            the cards' right edge at any width, since the cards share the
+            canvas. Figma clips it with the fixed 1054px frame on the
+            bottom/right; we recreate that frame as a full-canvas-width band
+            ending at the frame bottom (canvas-y 937), with the blob at its
+            exact box: right 4.49% + native 341px reproduces left 71.81%; top
+            659-117=542; rotate 53.34deg. The browser then trims the rotated
+            shape along the band's straight right/bottom edges exactly the way
+            Figma's frame does. Desktop only. See 05-VISUAL-GAPS.md GAP-30. */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-0 hidden h-[937px] overflow-hidden lg:block">
+          <Image
+            src="/images/redesign/blob-vector-1.svg"
+            alt=""
+            aria-hidden="true"
+            width={341}
+            height={511}
+            className="absolute right-[4.49%] top-[542px] rotate-[53.34deg]"
+          />
+        </div>
 
-          Fix: instead of computing the visible rotated polygon by hand (the
-          fragile 614x579 corner-math window this replaces), just recreate
-          Figma's frame as an explicit clip rectangle -- a full-width band
-          from the section top down to Figma's frame bottom (1054 - 117px
-          header = 937px) -- and drop the blob inside at its exact frame box
-          (right:4.49% + native 341px width reproduces left:71.81%; top
-          659-117=542px; rotate 53.34deg). The band's right edge = the
-          section edge = Figma's x:1440, its bottom = Figma's y:1054; the
-          browser clips the rotated shape along those straight edges exactly
-          the way Figma's frame does, no bounding-box math. See
-          05-VISUAL-GAPS.md GAP-29 (4th refinement). */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-[937px] overflow-hidden"
-      >
-        <Image
-          src="/images/redesign/blob-vector-1.svg"
-          alt=""
-          width={341}
-          height={511}
-          className="absolute right-[4.49%] top-[542px] rotate-[53.34deg]"
-        />
-      </div>
+        {/* PRODUCT IMAGE -- Figma 821.74x547.83 at left:585.63 top:200.77 in the
+            1440 frame => right 2.27%, width 57.07%, canvas-y 84. It overlaps the
+            end of the headline on purpose (text is z-10 above, image z-[5]
+            below), matching Figma where "night." sits in front of the podium.
+            Mobile: normal flow, first, centered. Fade-in leads the text (delay
+            0.1s) so the box is present from the start beside the H1. */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="relative z-[5] mx-auto mt-4 w-full max-w-[420px] lg:absolute lg:right-[2.27%] lg:top-[84px] lg:mt-0 lg:w-[57.07%] lg:max-w-[822px]"
+        >
+          <Image
+            src="/images/redesign/hero-product.png"
+            alt="Dips Chocolate"
+            width={822}
+            height={548}
+            priority
+            className="w-full rotate-[-0.85deg] object-contain"
+          />
+        </motion.div>
 
-      {/*
-        Desktop composition matches Figma's actual overlap: the product image
-        is an absolutely-positioned overlay pinned to the right (not a 50/50
-        grid column), so the text block gets nearly the full container width
-        -- a real CSS grid-cols-2 split (previous RC-3 fix) made the text
-        column too narrow, wrapping the H1 to 3 lines instead of Figma's 2.
-        On mobile the image stays in normal flow, first (order-1), matching
-        the Figma mobile frame (281:22).
-
-        At lg+, the image is pinned near the TOP (not vertically centered
-        against the text -- that was a placeholder approximation) and the
-        text column gets a top margin, reproducing Figma's actual vertical
-        rhythm: the product image starts at frame-y:200 while the headline
-        starts at frame-y:384 -- both nav-offset corrected (-117px, see the
-        blob comment above) to y:83 and y:267 relative to this section's own
-        top -- an 184px gap where only the blob + top of the product image
-        are visible before any text appears. Exact box CSS (width:821.74px,
-        left:585.63px in a 1440-wide frame) gives width:57.06% / right:2.27%
-        -- the previous 52%/780px/2% figures were an earlier eyeballed
-        approximation from before the individual-layer CSS was available,
-        noticeably smaller than the real 57%/822px. The image no longer
-        needs to be small to make room for the H1 (that's handled separately
-        via max-width on the text column). The image's own fade-in delay was
-        0.85s (vs. 0.15s for the
-        H1) -- long enough that the image was still invisible while every
-        text element had already appeared, reading as "the box never shows up
-        beside the H1". Dropped to 0.1s so it appears first, alongside/before
-        the text. See 05-VISUAL-GAPS.md GAP-28/GAP-29.
-      */}
-      <div className="container relative z-10 mx-auto px-6">
-        <div className="relative flex flex-col items-center gap-10 text-center lg:block lg:text-left">
-          {/* PRODUCT IMAGE */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="relative order-1 mx-auto w-full max-w-[420px] lg:absolute lg:top-[84px] lg:right-[2.27%] lg:order-none lg:w-[57.06%] lg:max-w-[822px]"
-          >
-            <Image
-              src="/images/redesign/hero-product.png"
-              alt="Dips Chocolate"
-              width={822}
-              height={548}
-              priority
-              className="w-full rotate-[-0.85deg] object-contain"
-            />
-          </motion.div>
-
-          {/* TEXT COLUMN — max-w-[1040px] (not a % split) because "that changes
-              the night." at the 64px AllRoundGothic Bold display size needs
-              roughly 750-850px on its own to fit on one line; a percentage
-              split (54%) still left it too narrow at typical desktop widths,
-              wrapping to a 2nd sub-line (3 lines total instead of Figma's 2).
-              Matches Figma's own headline box width (1062px) closely. The
-              lg:mt-[187px] (267 target - 80px section padding-top) creates
-              the "breathing room" gap described above -- text starts
-              noticeably below the image instead of at the same height,
-              matching Figma's own vertical offset between the two. */}
-          <div className="order-2 flex flex-col items-center lg:order-none lg:mt-[187px] lg:max-w-[1040px] lg:items-start">
-            {/* HEADLINE (two-tone via next-intl rich text). Figma authors "The
-                Chocolate" and "that changes the night." as two separately
-                positioned text layers (a manual editorial line break, not
-                organic width-driven wrap) -- forcing the same <br/> here
-                guarantees the Figma-exact 2-line split at desktop width
-                regardless of exact column width, while leaving mobile
-                unaffected (it already wraps to the same first line
-                naturally at 375px, confirmed by the Figma mobile frame). */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.15 }}
-              className="max-w-xl lg:max-w-none"
-            >
-              <h1 className="font-heading text-display-hero font-bold leading-[1.05] text-white">
-                {t.rich("h1", {
-                  hl: (chunks) => (
-                    <span className="text-dips-text-headline-lilac">{chunks}</span>
-                  ),
-                  br: () => <br />,
-                })}
-              </h1>
-            </motion.div>
-
-          {/* SUBTITLE */}
-          <motion.div
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
-            className="mt-4"
-          >
-            <p className="font-body text-subtitle-italic-lg italic text-dips-text-lavender">
-              {t("subtitle")}
-            </p>
-          </motion.div>
-
-          {/* SOCIAL PROOF BADGE */}
+        {/* TEXT BLOCK -- Figma order (top to bottom): badge, headline, subtitle,
+            [gap], trust items, CTAs. Figma frame left:78 top:384 => canvas
+            left:78 top:267; width up to 1062. Mobile: normal flow, centered. */}
+        <div className="relative z-10 mt-8 flex flex-col items-center text-center lg:absolute lg:left-[78px] lg:top-[267px] lg:mt-0 lg:max-w-[1062px] lg:items-start lg:text-left">
+          {/* SOCIAL PROOF BADGE -- Figma places this ABOVE the headline (first
+              child of the text block), not after the subtitle. */}
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.45 }}
-            className="mt-6"
+            transition={{ duration: 0.6, delay: 0.15 }}
           >
             <div className="inline-flex items-center gap-2 rounded-full border border-dips-card-tint-2-border bg-dips-card-tint-2 px-5 py-2.5">
               <HeroStars />
@@ -208,12 +147,45 @@ export default function Hero() {
             </div>
           </motion.div>
 
-          {/* MINI TRUST ITEMS */}
+          {/* HEADLINE (two-tone via next-intl rich text). Figma authors "The
+              Chocolate" and "that changes the night." as two separate text
+              layers -- a manual editorial break -- so we force the same <br/>
+              (en only; es/pt wrap naturally). */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.25 }}
+            className="mt-6 max-w-xl lg:max-w-none"
+          >
+            <h1 className="font-heading text-display-hero font-bold leading-[1.05] text-white">
+              {t.rich("h1", {
+                hl: (chunks) => (
+                  <span className="text-dips-text-headline-lilac">{chunks}</span>
+                ),
+                br: () => <br />,
+              })}
+            </h1>
+          </motion.div>
+
+          {/* SUBTITLE */}
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.35 }}
+            className="mt-4"
+          >
+            <p className="font-body text-subtitle-italic-lg italic text-dips-text-lavender">
+              {t("subtitle")}
+            </p>
+          </motion.div>
+
+          {/* MINI TRUST ITEMS (Figma: a 50px gap separates these + the CTAs from
+              the headline group -- hence the larger mt here). */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.55 }}
-            className="mt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 lg:justify-start"
+            transition={{ duration: 0.6, delay: 0.45 }}
+            className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 lg:justify-start"
           >
             {TRUST_KEYS.map((key) => (
               <span
@@ -233,8 +205,8 @@ export default function Hero() {
           <motion.div
             initial={{ opacity: 0, scale: 0.97 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.65, delay: 0.7 }}
-            className="mt-8 flex flex-wrap items-center justify-center gap-4 lg:justify-start"
+            transition={{ duration: 0.65, delay: 0.55 }}
+            className="mt-6 flex flex-wrap items-center justify-center gap-4 lg:justify-start"
           >
             <a
               href="#bundle"
@@ -249,51 +221,43 @@ export default function Hero() {
               {t("ctaSecondary")}
             </a>
           </motion.div>
-          </div>
         </div>
-      </div>
 
-      {/* FEATURE CARDS (own Hero.feature1..4_title/_desc copy, matching the Figma
-          diamond+title / description card format -- see 05-VISUAL-GAPS.md GAP-05) */}
-      <div className="container relative z-10 mx-auto mt-12 px-6 lg:mt-16">
-        <div className="mx-auto grid max-w-7xl gap-[25px] sm:grid-cols-2 lg:grid-cols-4">
-          {FEATURES.map((feature, index) => (
-            <ScrollReveal
-              key={feature.titleKey}
-              direction="up"
-              delay={0.1 + index * 0.1}
-              duration={0.6}
-            >
-              {/* Feature card — the full nested section dump settles the
-                  structure (an isolated-layer dump had misled me into a
-                  diamond-beside-the-whole-block layout). The card (Frame 8,
-                  301x127, padding 25, bg rgba(49,34,89,.25), 2px #392A61,
-                  radius 15) wraps a SINGLE text stack (Frame 5, 251px). Inside
-                  that stack: a title row (Frame 10, flex-row gap:8px) holding
-                  [diamond 8px][title], sitting ABOVE the description (251px,
-                  full width, 2 lines) with a 5px gap. So the diamond is beside
-                  the TITLE only, and the description spans the full card width
-                  below it -- NOT the diamond beside the entire title+desc
-                  block. Diamond #F16B16 8px rotate43; title Satoshi 700 18/24
-                  #FFF; desc Satoshi 400 18/24 #EBD9FE. min-h (not hard h) so
-                  longer es/pt copy doesn't clip. See 05-VISUAL-GAPS.md GAP-29
-                  (3rd refinement). */}
-              <div className="flex min-h-[127px] flex-col justify-center gap-[5px] rounded-card border-2 border-dips-card-tint-border bg-dips-card-tint p-card-padding">
-                <div className="flex items-center gap-2">
-                  <span
-                    aria-hidden="true"
-                    className="inline-block h-2 w-2 shrink-0 rotate-[43deg] bg-brand-orange"
-                  />
-                  <span className="font-card text-[18px] font-bold leading-6 text-white">
-                    {t(feature.titleKey)}
-                  </span>
+        {/* FEATURE CARDS -- Figma row at frame top:860 => canvas top:743, spanning
+            left:78 to right:78. Sharing the canvas with the large blob is what
+            keeps the blob tucked behind the 4th card. Mobile: normal flow below
+            the text. */}
+        <div className="relative z-10 mt-16 lg:absolute lg:inset-x-[78px] lg:top-[743px] lg:mt-0">
+          <div className="grid grid-cols-1 gap-[25px] sm:grid-cols-2 lg:grid-cols-4">
+            {FEATURES.map((feature, index) => (
+              <ScrollReveal
+                key={feature.titleKey}
+                direction="up"
+                delay={0.1 + index * 0.1}
+                duration={0.6}
+              >
+                {/* Card (Frame 8, 301x127, padding 25, bg rgba(49,34,89,.25),
+                    2px #392A61, radius 15) wraps a single text stack: a title
+                    row (diamond 8px + title, 8px gap) ABOVE the description
+                    (full width, 2 lines), 5px gap. Diamond beside the TITLE
+                    only. min-h so longer es/pt copy doesn't clip. */}
+                <div className="flex min-h-[127px] flex-col justify-center gap-[5px] rounded-card border-2 border-dips-card-tint-border bg-dips-card-tint p-card-padding">
+                  <div className="flex items-center gap-2">
+                    <span
+                      aria-hidden="true"
+                      className="inline-block h-2 w-2 shrink-0 rotate-[43deg] bg-brand-orange"
+                    />
+                    <span className="font-card text-[18px] font-bold leading-6 text-white">
+                      {t(feature.titleKey)}
+                    </span>
+                  </div>
+                  <p className="font-card text-[18px] font-normal leading-6 text-dips-text-lavender">
+                    {t(feature.descKey)}
+                  </p>
                 </div>
-                <p className="font-card text-[18px] font-normal leading-6 text-dips-text-lavender">
-                  {t(feature.descKey)}
-                </p>
-              </div>
-            </ScrollReveal>
-          ))}
+              </ScrollReveal>
+            ))}
+          </div>
         </div>
       </div>
     </section>
