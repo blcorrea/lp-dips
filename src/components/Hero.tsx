@@ -44,22 +44,27 @@ export default function Hero() {
       id="hero"
       className="relative w-full scroll-mt-[72px] overflow-hidden bg-gradient-to-b from-dips-purple-hero-start from-0% via-dips-purple-hero-mid via-[57.4%] to-dips-purple-hero-end to-100% pb-16 pt-14 sm:pt-16 lg:pt-20"
     >
-      {/* Decorative blobs */}
-      <Image
-        src="/images/redesign/blob-vector-1.svg"
-        alt=""
-        aria-hidden="true"
-        width={420}
-        height={420}
-        className="pointer-events-none absolute -left-24 top-10 opacity-70"
-      />
+      {/* Decorative blobs — exact Figma Dev-Mode boxes (Hero frame 1440×1054).
+          blob-vector-2.svg is the SMALL 193×308 vector (upper-left, rotate -167.8°);
+          blob-vector-1.svg is the LARGE 341×511 vector (lower-right, rotate 53.34°).
+          Both SVGs are preserveAspectRatio="none" and un-rotated, so we size the
+          box to the Figma vector and apply the rotation here. Positions are the
+          1440px-reference offsets, anchored to their nearest corner. */}
       <Image
         src="/images/redesign/blob-vector-2.svg"
         alt=""
         aria-hidden="true"
-        width={380}
-        height={380}
-        className="pointer-events-none absolute -right-20 bottom-10 opacity-70"
+        width={193}
+        height={308}
+        className="pointer-events-none absolute left-[-54px] top-[121px] h-[308px] w-[193px] rotate-[-167.8deg]"
+      />
+      <Image
+        src="/images/redesign/blob-vector-1.svg"
+        alt=""
+        aria-hidden="true"
+        width={341}
+        height={511}
+        className="pointer-events-none absolute right-[65px] bottom-[-116px] h-[511px] w-[341px] rotate-[53.34deg]"
       />
 
       {/*
@@ -170,7 +175,7 @@ export default function Hero() {
             </a>
             <a
               href="#ingredients"
-              className="inline-flex h-[50px] items-center justify-center rounded-full border border-[#58477e] bg-transparent px-8 text-cta-button font-bold text-white transition-colors duration-200 hover:bg-white/5"
+              className="inline-flex h-[50px] items-center justify-center rounded-full border border-[#58477e] bg-dips-card-tint px-8 text-cta-button font-bold text-white transition-colors duration-200 hover:bg-white/5"
             >
               {t("ctaSecondary")}
             </a>
@@ -189,17 +194,20 @@ export default function Hero() {
               delay={0.1 + index * 0.1}
               duration={0.6}
             >
-              <div className="h-full rounded-card border border-dips-card-tint-border bg-dips-card-tint p-card-padding text-white">
+              {/* Feature card — Figma: bg rgba(49,34,89,.25), 2px #392A61 border,
+                  15px radius, 25px padding; diamond 8px; title Satoshi 700 18px
+                  white; desc Satoshi 400 18px #EBD9FE; 5px title→desc gap. */}
+              <div className="flex h-full flex-col justify-center gap-[5px] rounded-card border-2 border-dips-card-tint-border bg-dips-card-tint p-card-padding">
                 <div className="flex items-center gap-2">
                   <span
                     aria-hidden="true"
-                    className="inline-block h-[6px] w-[6px] shrink-0 rotate-[43deg] bg-brand-orange"
+                    className="inline-block h-2 w-2 shrink-0 rotate-[43deg] bg-brand-orange"
                   />
-                  <span className="text-[15px] font-bold lg:text-base">
+                  <span className="font-card text-[18px] font-bold leading-6 text-white">
                     {t(feature.titleKey)}
                   </span>
                 </div>
-                <p className="mt-2 text-[14px] leading-relaxed text-white/85 lg:text-[15px]">
+                <p className="font-card text-[18px] font-normal leading-6 text-dips-text-lavender">
                   {t(feature.descKey)}
                 </p>
               </div>
