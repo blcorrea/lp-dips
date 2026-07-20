@@ -62,49 +62,40 @@ export default function Hero() {
         className="pointer-events-none absolute left-[-3.73%] top-[4px] rotate-[-167.8deg]"
       />
 
-      {/* Large blob -- the previous clip-window (341x395, matching the
-          UNROTATED box) was the wrong shape: rotating a 341x511 box by
-          53.34deg produces a rotated bounding box of ~614x579 (a rotated
-          rectangle's bounding box is always bigger than the rectangle
-          itself), and that ROTATED silhouette is what Figma's 1440x1054
-          frame actually clips -- on BOTH the bottom AND the right edge, not
-          just the bottom. The old window was clipping the rotated shape
-          along the wrong lines entirely, producing the kite/arrow artifact.
+      {/* Large blob -- SAME mechanism as the small blob above (position it,
+          let overflow-hidden trim the overflow), but the clip boundary that
+          matters is different, which is the whole reason one was trivial and
+          this one wasn't. The small blob is cut on the LEFT edge, and our
+          page shares Figma's left edge (x=0, equal widths), so that cut lands
+          identically for free. The large blob is cut on the BOTTOM/RIGHT by
+          Figma's FIXED 1054px-tall frame -- and our section is TALLER than
+          1054px (real content: H1, subtitle, badges, CTAs, cards), so the
+          section's own bottom overflow-hidden sits far below Figma's cut and
+          never trims the tail. Horizontal clip is free (widths match);
+          vertical clip is not (heights differ).
 
-          Recomputed from the exact box CSS (left:71.81% right:4.49%
-          top:62.52% bottom:-11.01% of a 1440x1054 frame -> box at
-          x:[1034,1375] y:[659,1170], center 1204.7/914.6) rotated 53.34deg
-          around its own center: rotated corners span x:[897.9,1511.5]
-          y:[625.2,1203.9]. Intersecting that with the frame's own
-          0..1440/0..1054 clip rectangle gives the actually-visible slice:
-          x:[897.9,1440] y:[625.2,1054] -- i.e. flush with the frame's right
-          edge, 542x429px, top-left coinciding exactly with the rotated
-          bounding box's own top-left (only the bottom/right get cut, not
-          top/left). frame-y:625.2 nav-corrected (-117, see comment above)
-          -> 508px.
-
-          Implementation: an outer clip window sized to that visible slice
-          (542x429, right:0/top:508px so it's flush with the section's own
-          right edge), containing an INNER unclipped div sized to the FULL
-          rotated bounding box (614x579, same top-left as the window, so no
-          extra offset needed), with the actual 341x511 box centered inside
-          it (left:136px top:34px = (614-341)/2, (579-511)/2) and rotated in
-          place -- reproducing Figma's rotate-then-clip pipeline exactly
-          instead of guessing a clip shape. See 05-VISUAL-GAPS.md GAP-29
-          (2nd refinement). */}
+          Fix: instead of computing the visible rotated polygon by hand (the
+          fragile 614x579 corner-math window this replaces), just recreate
+          Figma's frame as an explicit clip rectangle -- a full-width band
+          from the section top down to Figma's frame bottom (1054 - 117px
+          header = 937px) -- and drop the blob inside at its exact frame box
+          (right:4.49% + native 341px width reproduces left:71.81%; top
+          659-117=542px; rotate 53.34deg). The band's right edge = the
+          section edge = Figma's x:1440, its bottom = Figma's y:1054; the
+          browser clips the rotated shape along those straight edges exactly
+          the way Figma's frame does, no bounding-box math. See
+          05-VISUAL-GAPS.md GAP-29 (4th refinement). */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute right-0 top-[508px] h-[429px] w-[542px] overflow-hidden"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[937px] overflow-hidden"
       >
-        <div className="relative h-[579px] w-[614px]">
-          <Image
-            src="/images/redesign/blob-vector-1.svg"
-            alt=""
-            width={341}
-            height={511}
-            className="absolute left-[136px] top-[34px] rotate-[53.34deg]"
-          />
-        </div>
+        <Image
+          src="/images/redesign/blob-vector-1.svg"
+          alt=""
+          width={341}
+          height={511}
+          className="absolute right-[4.49%] top-[542px] rotate-[53.34deg]"
+        />
       </div>
 
       {/*
