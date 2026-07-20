@@ -46,11 +46,16 @@ export default function LandingHeader() {
           wrapper the translucent layer composited directly over <main>'s bg-brand-cream,
           producing an unreadable light-lavender strip (05-VISUAL-GAPS.md RC-2). */}
       <div className="w-full bg-dips-purple-deepest">
-        <div className="flex h-[45px] w-full items-center justify-center gap-6 bg-[rgba(45,26,105,0.4)] px-4">
+        {/* justify-between across full width (px-[25px] pad) matches the Figma
+            Dev Mode dump exactly (Frame 10: justify-content:space-between,
+            width:1390px, left:25px inside the 1440px bar) -- was justify-center
+            with a fixed gap, which clustered the items instead of spreading them
+            edge to edge. See 05-VISUAL-GAPS.md GAP-22. */}
+        <div className="flex h-[45px] w-full items-center justify-between gap-4 bg-[rgba(45,26,105,0.4)] px-[25px]">
           {TRUST_BAR_KEYS.map((key) => (
             <span
               key={key}
-              className="flex items-center gap-2 text-trust-bar text-dips-text-lavender-muted"
+              className="flex shrink-0 items-center gap-2 text-trust-bar text-dips-text-lavender-muted"
             >
               <TrustBarDiamond />
               {t(key)}
@@ -59,24 +64,37 @@ export default function LandingHeader() {
         </div>
       </div>
 
-      {/* Nav */}
-      <header className="sticky top-0 z-50 w-full bg-dips-purple-deepest">
+      {/* Nav — no fill (Figma's nav "Frame 4" has no `background` at all, floating
+          transparently over the Hero gradient it sits on). The previous solid
+          bg-dips-purple-deepest created a visible seam/border against the Hero
+          gradient below it that doesn't exist in Figma. See 05-VISUAL-GAPS.md
+          GAP-23. */}
+      <header className="sticky top-0 z-50 w-full">
         <div className="flex h-[72px] w-full items-center justify-between px-5 md:px-[40px]">
-          {/* Logo */}
+          {/* Logo — two SVG layers, each preserveAspectRatio="none" and sized/
+              positioned to their OWN sub-region of the 59x36 logo box (per Figma
+              Dev Mode: purple layer left:0 top:9.47% w:100% h:90.53%; orange layer
+              left:32.87% top:0 w:36.4% h:93.31%). The previous `fill +
+              object-contain` forced BOTH layers to fill the full 59x36 box
+              independently, stretching the orange layer (native ratio ~21x34,
+              portrait) into a landscape box -- the deformed logo. See
+              05-VISUAL-GAPS.md GAP-24. */}
           <Link href={`/${locale}#hero`} className="flex flex-shrink-0 items-center gap-2">
             <span className="relative inline-block h-[36px] w-[59px]">
               <Image
                 src="/images/redesign/logo-purple-part.svg"
                 alt=""
-                fill
                 aria-hidden="true"
-                className="object-contain"
+                width={59}
+                height={33}
+                className="absolute left-0 top-[3px]"
               />
               <Image
                 src="/images/redesign/logo-orange-part.svg"
                 alt="Dips"
-                fill
-                className="object-contain"
+                width={21}
+                height={34}
+                className="absolute left-[19px] top-0"
               />
             </span>
             <span className="text-nav-link text-dips-text-lavender-muted">
