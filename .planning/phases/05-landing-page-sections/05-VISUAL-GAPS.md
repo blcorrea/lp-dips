@@ -270,4 +270,18 @@ O usuário reportou 4 problemas no novo print: imagem da caixa demorando pra apa
 
 Build + 71 testes verdes depois do commit.
 
+## Addendum 2026-07-20 (6ª rodada) — CSS por-camada individual, geometria refeita do zero
+
+Blob superior confirmado resolvido. Pedimos ao usuário CSS individual (não mais o wrapper "Hero Section" inteiro) de: blob inferior, imagem do produto, e um card — isso deu números exatos sem precisar inferir offsets aninhados.
+
+| # | Item | Causa raiz real | Commit |
+|---|---|---|---|
+| GAP-29 (2º refinamento) | Blob inferior-direito ainda com artefato tipo "pipa"/seta | A janela de corte anterior (341×395) tinha o tamanho da caixa **não-rotacionada**. Rotacionar uma caixa 341×511 em 53.34° produz uma caixa delimitadora de **~614×579** — bem maior — e é ESSA silhueta rotacionada que o frame 1440×1054 do Figma corta, tanto embaixo **quanto à direita** (não só embaixo, como eu assumia). A janela antiga cortava nas linhas erradas. Recalculei os 4 cantos rotacionados a partir do CSS exato da camada (`left:71.81% right:4.49% top:62.52% bottom:-11.01%`, `rotate(53.34deg)`), cruzei com o retângulo de corte do frame, e reconstruí como uma janela externa (542×429px, encostada na borda direita) contendo uma div interna sem corte (614×579) com a imagem real centralizada e rotacionada dentro | `58ec330` |
+| Imagem do produto — tamanho | Largura implementada em 52%/780px quando o CSS exato (`width:821.74px` num frame de 1440px) dá **57.06%/822px** — uma aproximação de "olho" de antes de ter o CSS da camada, visivelmente menor que o real | `58ec330` |
+| Cards — estrutura (não só fonte) | O CSS exato do card ("Frame 8": 301×127px) mostra `flex-direction: row`, não coluna — o losango fica **ao lado** de um bloco título+descrição empilhado, não numa linha acima de uma descrição de largura total. Isso deixa o texto numa coluna mais estreita (~233px em vez de ~251px), quebrando mais linhas do que o layout em coluna assumia — e lia como "fonte grande demais". Reestruturado pra `flex-row items-center gap-[10px]`, com losango + `flex-col` (título+descrição) dentro | `58ec330` |
+
+Build + 71 testes verdes.
+
+**Metodologia confirmada:** CSS de camada individual (clique na camada específica → Copy as CSS) é muito mais confiável que o dump do frame pai inteiro — elimina a necessidade de inferir offsets aninhados manualmente, que foi a fonte dos erros anteriores.
+
 **Próximo passo:** novo walkthrough a **1440px real** (`localhost:3001`) + Stripe click-through para fechar o checkpoint do 05-05 → merge → completar a fase. E me diz o veredito do GAP-21.
