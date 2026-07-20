@@ -312,4 +312,22 @@ Ou seja: **corte horizontal é de graça (larguras batem); corte vertical não �
 
 Build + 71 testes verdes.
 
+## Addendum 2026-07-20 (9ª rodada) — reconstrução do hero desktop como CANVAS ABSOLUTO 1440 (causa raiz de tudo)
+
+O usuário mandou **screenshots do próprio Figma** (não do browser) como referência. Comparando com o dump, ficou claro que o problema era **estrutural**, não ajuste fino: a composição desktop do Figma é um **frame absoluto de 1440×1054** com tudo posicionado em pixels, e nós vínhamos tentando reproduzir isso com layout fluido/porcentagem — que deriva assim que a viewport passa de 1440 (a tela do usuário é mais larga).
+
+Sintomas que isso explicava de uma vez:
+- **Imagem da caixa**: estava dentro de um `container` que trava em 1280px → encolhia e não alcançava a direita.
+- **Blob inferior "solto"**: ancorado na viewport (right 4.49% da tela) enquanto os cards estavam no container de 1280 → o blob nunca encaixava atrás do 4º card porque as duas referências divergiam ao alargar a tela.
+- **Badge fora de ordem**: o dump mostra o badge "10.000+ Happy Couples" como **primeiro filho** do bloco de texto (acima do H1); o nosso estava depois do subtítulo.
+
+| # | Item | Correção | Commit |
+|---|---|---|---|
+| GAP-30 | Hero desktop derivando em telas largas (imagem, cards, blob) | Reconstruído o layout `lg+` como um **canvas `max-w-[1440px]` centralizado, altura fixa 937px** (1054 do frame − 117px do header que mora no `LandingHeader`), com cada elemento no seu **coordenada exata do Figma menos 117**: imagem `right 2.27% / w 57.07% / top 84`, bloco de texto `left 78 / top 267`, cards `inset-x 78 / top 743`, blob grande `right 4.49% / top 542` **dentro do canvas** (alinha com os cards em qualquer largura). Abaixo de `lg`, colapsa pro empilhamento fluido de antes. Em telas > 1440 a sobra vira gutter de gradiente em vez de conteúdo esticado | `5ab9e7d` |
+| GAP-31 | Badge de prova social depois do subtítulo | Movido pra **acima do H1** (primeiro filho do bloco de texto), na ordem do Figma: badge → H1 → subtítulo → [gap] → trust items → CTAs | `5ab9e7d` |
+
+Build + 71 testes verdes.
+
+**Por que isso deve finalmente fechar:** as três queixas (imagem, cards, blob) tinham a **mesma causa raiz** — referências de layout divergentes numa tela mais larga que o design. Unificando tudo num canvas de 1440 centralizado, todos os elementos compartilham a mesma referência e param de derivar; em ~1440 a página fica 1:1 com o Figma.
+
 **Próximo passo:** novo walkthrough a **1440px real** (`localhost:3001`) + Stripe click-through para fechar o checkpoint do 05-05 → merge → completar a fase. E me diz o veredito do GAP-21.
