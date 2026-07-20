@@ -62,32 +62,49 @@ export default function Hero() {
         className="pointer-events-none absolute left-[-3.73%] top-[4px] rotate-[-167.8deg]"
       />
 
-      {/* Large blob -- the user's annotated screenshot confirmed the ROUNDED
-          BODY renders in the right place; the bug is the POINTED TAIL, which
-          Figma never shows because its Hero frame is a FIXED 1054px-tall box
-          that crops the shape via overflow-hidden at an exact point (the box
-          is at frame-y:659, 511px tall, so only the top 395px of it --
-          1054-659 -- falls inside the frame; the rest is clipped). Our Hero
-          section is fluid and much taller than 1054px, so the section's own
-          overflow-hidden never reaches far enough up to crop this tail.
-          Fix: give the blob its OWN fixed-size overflow-hidden clip window
-          (395px tall, matching Figma's exact crop math), positioned at
-          659-117=542px (nav-offset corrected, see comment above) so it lands
-          at the same point relative to the page content as it does relative
-          to the gradient in Figma, then rotate the image inside at the same
-          relative position it would have in Figma. See 05-VISUAL-GAPS.md
-          GAP-26 (3rd refinement) + GAP-29. */}
+      {/* Large blob -- the previous clip-window (341x395, matching the
+          UNROTATED box) was the wrong shape: rotating a 341x511 box by
+          53.34deg produces a rotated bounding box of ~614x579 (a rotated
+          rectangle's bounding box is always bigger than the rectangle
+          itself), and that ROTATED silhouette is what Figma's 1440x1054
+          frame actually clips -- on BOTH the bottom AND the right edge, not
+          just the bottom. The old window was clipping the rotated shape
+          along the wrong lines entirely, producing the kite/arrow artifact.
+
+          Recomputed from the exact box CSS (left:71.81% right:4.49%
+          top:62.52% bottom:-11.01% of a 1440x1054 frame -> box at
+          x:[1034,1375] y:[659,1170], center 1204.7/914.6) rotated 53.34deg
+          around its own center: rotated corners span x:[897.9,1511.5]
+          y:[625.2,1203.9]. Intersecting that with the frame's own
+          0..1440/0..1054 clip rectangle gives the actually-visible slice:
+          x:[897.9,1440] y:[625.2,1054] -- i.e. flush with the frame's right
+          edge, 542x429px, top-left coinciding exactly with the rotated
+          bounding box's own top-left (only the bottom/right get cut, not
+          top/left). frame-y:625.2 nav-corrected (-117, see comment above)
+          -> 508px.
+
+          Implementation: an outer clip window sized to that visible slice
+          (542x429, right:0/top:508px so it's flush with the section's own
+          right edge), containing an INNER unclipped div sized to the FULL
+          rotated bounding box (614x579, same top-left as the window, so no
+          extra offset needed), with the actual 341x511 box centered inside
+          it (left:136px top:34px = (614-341)/2, (579-511)/2) and rotated in
+          place -- reproducing Figma's rotate-then-clip pipeline exactly
+          instead of guessing a clip shape. See 05-VISUAL-GAPS.md GAP-29
+          (2nd refinement). */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute right-[4.49%] top-[542px] h-[395px] w-[341px] overflow-hidden"
+        className="pointer-events-none absolute right-0 top-[508px] h-[429px] w-[542px] overflow-hidden"
       >
-        <Image
-          src="/images/redesign/blob-vector-1.svg"
-          alt=""
-          width={341}
-          height={511}
-          className="absolute left-0 top-0 rotate-[53.34deg]"
-        />
+        <div className="relative h-[579px] w-[614px]">
+          <Image
+            src="/images/redesign/blob-vector-1.svg"
+            alt=""
+            width={341}
+            height={511}
+            className="absolute left-[136px] top-[34px] rotate-[53.34deg]"
+          />
+        </div>
       </div>
 
       {/*
@@ -106,11 +123,14 @@ export default function Hero() {
         starts at frame-y:384 -- both nav-offset corrected (-117px, see the
         blob comment above) to y:83 and y:267 relative to this section's own
         top -- an 184px gap where only the blob + top of the product image
-        are visible before any text appears. Also sized the image much closer
-        to Figma's true 57%-of-1440/822px reference (was shrunk to 34%/480px
-        while I was still fighting the H1 wrap issue -- fixed separately now
-        via max-width, so the image no longer needs to be small to make
-        room). The image's own fade-in delay was 0.85s (vs. 0.15s for the
+        are visible before any text appears. Exact box CSS (width:821.74px,
+        left:585.63px in a 1440-wide frame) gives width:57.06% / right:2.27%
+        -- the previous 52%/780px/2% figures were an earlier eyeballed
+        approximation from before the individual-layer CSS was available,
+        noticeably smaller than the real 57%/822px. The image no longer
+        needs to be small to make room for the H1 (that's handled separately
+        via max-width on the text column). The image's own fade-in delay was
+        0.85s (vs. 0.15s for the
         H1) -- long enough that the image was still invisible while every
         text element had already appeared, reading as "the box never shows up
         beside the H1". Dropped to 0.1s so it appears first, alongside/before
@@ -123,7 +143,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="relative order-1 mx-auto w-full max-w-[420px] lg:absolute lg:top-[83px] lg:right-[2%] lg:order-none lg:w-[52%] lg:max-w-[780px]"
+            className="relative order-1 mx-auto w-full max-w-[420px] lg:absolute lg:top-[84px] lg:right-[2.27%] lg:order-none lg:w-[57.06%] lg:max-w-[822px]"
           >
             <Image
               src="/images/redesign/hero-product.png"
@@ -253,22 +273,32 @@ export default function Hero() {
               delay={0.1 + index * 0.1}
               duration={0.6}
             >
-              {/* Feature card — Figma: bg rgba(49,34,89,.25), 2px #392A61 border,
-                  15px radius, 25px padding; diamond 8px; title Satoshi 700 18px
-                  white; desc Satoshi 400 18px #EBD9FE; 5px title→desc gap. */}
-              <div className="flex h-full flex-col justify-center gap-[5px] rounded-card border-2 border-dips-card-tint-border bg-dips-card-tint p-card-padding">
-                <div className="flex items-center gap-2">
-                  <span
-                    aria-hidden="true"
-                    className="inline-block h-2 w-2 shrink-0 rotate-[43deg] bg-brand-orange"
-                  />
+              {/* Feature card — exact "Frame 8" CSS from the user's per-layer
+                  dump: 301x127px, flex-direction:ROW (not column!),
+                  align-items:center, gap:10px, padding:25px, bg
+                  rgba(49,34,89,.25), 2px #392A61 border, 15px radius. The
+                  diamond sits BESIDE a title+description text block (both
+                  vertically stacked, 5px gap, per the earlier GAP-05 dump),
+                  not above a full-width description row -- that's what was
+                  making the text column narrower than expected (301 - 50px
+                  padding - ~18px diamond+gap = ~233px) and wrapping more
+                  than the previous column layout assumed, reading as
+                  "font looks too big". min-h (not a hard h-[127px]) so
+                  longer es/pt copy doesn't clip. See 05-VISUAL-GAPS.md
+                  GAP-29 (2nd refinement). */}
+              <div className="flex min-h-[127px] items-center gap-[10px] rounded-card border-2 border-dips-card-tint-border bg-dips-card-tint p-card-padding">
+                <span
+                  aria-hidden="true"
+                  className="inline-block h-2 w-2 shrink-0 rotate-[43deg] bg-brand-orange"
+                />
+                <div className="flex flex-col gap-[5px]">
                   <span className="font-card text-[18px] font-bold leading-6 text-white">
                     {t(feature.titleKey)}
                   </span>
+                  <p className="font-card text-[18px] font-normal leading-6 text-dips-text-lavender">
+                    {t(feature.descKey)}
+                  </p>
                 </div>
-                <p className="font-card text-[18px] font-normal leading-6 text-dips-text-lavender">
-                  {t(feature.descKey)}
-                </p>
               </div>
             </ScrollReveal>
           ))}
