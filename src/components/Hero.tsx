@@ -228,7 +228,14 @@ export default function Hero() {
             keeps the blob tucked behind the 4th card. Mobile: normal flow below
             the text. */}
         <div className="relative z-10 mt-16 lg:absolute lg:inset-x-[78px] lg:top-[743px] lg:mt-0">
-          <div className="grid grid-cols-1 gap-[25px] sm:grid-cols-2 lg:grid-cols-4">
+          {/* gap-[15px], not the spec's 25px -- user asked to widen the cards
+              slightly so the 2-word-longer descriptions ("Crafted to deepen
+              connection and shared pleasure", 258px needed) fit Figma's 2
+              lines instead of 3. Narrowing the gap between cards gives each
+              one more width without touching the section's own side insets
+              or the card's internal padding. See 05-VISUAL-GAPS.md GAP-34
+              (4th refinement). */}
+          <div className="grid grid-cols-1 gap-[15px] sm:grid-cols-2 lg:grid-cols-4">
             {FEATURES.map((feature, index) => (
               <ScrollReveal
                 key={feature.titleKey}
@@ -253,9 +260,14 @@ export default function Hero() {
                     width, which a min-h wouldn't force other cards to match.
                     152px = 3-line desc (72px) + title row (24px) + 5px gap +
                     50px padding, sized to the longest real translation across
-                    en/es/pt so nothing clips. See 05-VISUAL-GAPS.md GAP-34
-                    (3rd refinement). */}
-                <div className="flex h-[152px] flex-col justify-center gap-[5px] rounded-card border-2 border-dips-card-tint-border bg-dips-card-tint p-card-padding">
+                    en/es/pt so nothing clips. justify-start (not center) so
+                    every title starts at the exact same y inside the card,
+                    regardless of how many lines its own description wraps to
+                    -- user flagged titles drifting to different heights when
+                    vertically centered against a fixed-height box with
+                    variable content length. See 05-VISUAL-GAPS.md GAP-34
+                    (3rd/4th refinement). */}
+                <div className="flex h-[152px] flex-col justify-start gap-[5px] rounded-card border-2 border-dips-card-tint-border bg-dips-card-tint p-card-padding">
                   <div className="flex items-center gap-2">
                     <span
                       aria-hidden="true"
