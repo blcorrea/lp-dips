@@ -89,7 +89,9 @@ export default function IngredientsSection() {
               </h2>
             </ScrollReveal>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Single-column list of compact horizontal rows per Figma:
+                [icon] name .......... [keyword badge] all on one line. */}
+            <div className="flex flex-col gap-4">
               {ingredients.map((ingredient) => {
                 const isCocoa = ingredient.nameKey === 'cocoa_name';
 
@@ -117,14 +119,16 @@ export default function IngredientsSection() {
                           className="object-contain"
                         />
                       </div>
-                      <div className="min-w-0">
-                        <h3 className="text-card-title-sm font-card text-dips-text-lavender truncate">
-                          {t(ingredient.nameKey)}
-                        </h3>
-                        <span className="mt-1 inline-block rounded-full bg-brand-orange px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
-                          {t(ingredient.keywordKey)}
-                        </span>
-                      </div>
+                      <h3 className="min-w-0 flex-1 text-card-title-sm font-card leading-tight text-dips-text-lavender">
+                        {t(ingredient.nameKey)}
+                      </h3>
+                      <span className="ml-auto flex shrink-0 items-center gap-1.5 rounded-full border border-white/15 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-dips-text-lavender-muted">
+                        <span
+                          aria-hidden="true"
+                          className="inline-block h-[5px] w-[5px] shrink-0 rotate-[43deg] bg-brand-orange"
+                        />
+                        {t(ingredient.keywordKey)}
+                      </span>
                     </div>
                   </ScrollReveal>
                 );
