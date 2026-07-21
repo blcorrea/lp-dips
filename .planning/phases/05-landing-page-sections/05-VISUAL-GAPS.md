@@ -525,4 +525,22 @@ Build + 71 testes verdes.
 
 **Correção (mesma sessão, `1c1e1b9`):** usuário substituiu a foto (`story-couple-photo.png`, commit `c832912`) e apontou que título+subtítulo tinham ficado embaixo junto das feature badges, quando no Figma ficam junto do badge "10,000+ Happy Couples" no **topo** (grupo `justify-between` #1, 645×249). Reestruturado em dois filhos diretos: grupo de cima (badge+título+subtítulo) e grupo de baixo (só a fileira de feature badges, empurrada pro rodapé).
 
+## Addendum 2026-07-21 — Seção 3 (Ingredients) reconstruída: layout Figma + INTERATIVIDADE (GAP-36)
+
+Usuário mandou o Copy-as-CSS da seção inteira (frame 1440×839) + print do Figma, e especificou um requisito que o Figma estático não mostra: **a seção é interativa** — clicar num ingrediente à esquerda seleciona ele (linha expande com descrição curta abaixo do nome, no estado destacado) e o card de detalhe à direita (ícone, nome, tag, descrição, Origins & Curiosities) troca junto. O ícone do card da direita é sempre o mesmo asset da linha selecionada.
+
+**Sobre a copy:** o usuário inicialmente disse que não tínhamos os textos, depois corrigiu — o site antigo (carrossel de cards de ingredientes) já os tinha. Confirmado: as chaves `*_desc`/`*_origins` de todos os 6 ingredientes já estavam migradas no i18n (en/es/pt) — nenhum texto novo foi inventado.
+
+Implementação (`a403cdc`):
+- `useState` com índice selecionado (default: Arriba Cocoa, como no mock); linhas viram `<button>` com `aria-pressed`
+- Estado selecionado = anatomia exata do Figma: cores quentes `#371629`/`#5B2F2D` (tokens ingredient-hl), ícone 44px, descrição de 1 linha `#96838F`; não-selecionado = `#231435`/`#39294C`, ícone menor, sem descrição (o Figma mantém `display:none` nelas)
+- Pills de keyword: rounded-full, borda 2px `#5B2F2D`, bg `rgba(55,22,41,.15)`, losango 5px, Satoshi 700 10px uppercase
+- Card de detalhe: cores exatas (`rgba(49,34,89,.15)` / borda `rgba(57,41,76,.5)`), card interno de curiosidades (`rgba(55,22,41,.4)` / `rgba(91,47,45,.4)`) com losango+título
+- Badge "10,000+ Happy Couples" adicionado no painel esquerdo (Figma) — nova chave `Ingredients.socialProof` nas 3 línguas
+- ":" final de "Origins & Curiosities:" removido (Figma não tem), 3 línguas
+- Tokens já batiam exatos: `dips-purple-section` = `#1A0A2E` (bg dos painéis), `dips-text-lavender-muted` = `#AE9BDA` (intro)
+- Fontes 1 passo abaixo do spec (tratamento Hero/Story): título 48→44, eyebrow 20→18, intro 24→21, nome no detalhe 24→21, nomes das linhas 16→14, descrições 14→13
+
+Build + 71 testes verdes.
+
 **Próximo passo:** novo walkthrough a **1440px real** (`localhost:3001`) + Stripe click-through para fechar o checkpoint do 05-05 → merge → completar a fase. E me diz o veredito do GAP-21.
