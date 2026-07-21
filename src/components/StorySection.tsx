@@ -57,17 +57,17 @@ export default function StorySection() {
                         />
                         <div className="absolute inset-0 bg-gradient-to-b from-[#f15a22]/20 to-[#39165e]/20" />
 
-                        {/* SOCIAL PROOF BADGE — top of the photo (Figma Frame 8:
-                            padding 15, radius 15, diamond + Inter 700 #EADAE4) */}
-                        <div className="relative z-10">
-                            <span className="inline-flex items-center gap-2 rounded-card border-2 border-dips-card-tint-2-border bg-dips-card-tint-2 px-[15px] py-3 text-[14px] font-bold text-[#eadae4]">
+                        {/* TOP GROUP — badge + title + subtitle bundled together near
+                            the top of the photo (Figma's first justify-between child,
+                            645x249: badge, then title, then subtitle). User flagged
+                            this was wrongly split before -- title/subtitle had drifted
+                            down to the bottom group instead of staying with the badge. */}
+                        <div className="relative z-10 flex flex-col gap-4">
+                            <span className="inline-flex w-fit items-center gap-2 rounded-card border-2 border-dips-card-tint-2-border bg-dips-card-tint-2 px-[15px] py-3 text-[14px] font-bold text-[#eadae4]">
                                 <Diamond />
                                 {t('socialProof')}
                             </span>
-                        </div>
 
-                        {/* TITLE BLOCK — bottom of the photo */}
-                        <div className="relative z-10 flex flex-col gap-4">
                             {/* Figma authors "Made to be" / "Savoured by Two" as two
                                 separate text layers (manual editorial break) -- forced
                                 <br/> in en only, es/pt wrap naturally (same approach
@@ -79,20 +79,21 @@ export default function StorySection() {
                             <p className="font-body text-[21px] italic leading-[1.4] text-dips-text-lavender">
                                 {t('subtitle')}
                             </p>
+                        </div>
 
-                            {/* Badge row (Figma Frame 4: justify-between, 15px padding,
-                                radius 15, diamond + Satoshi 700 white) */}
-                            <div className="mt-2 flex flex-wrap items-center gap-3 lg:justify-between">
-                                {BADGE_KEYS.map((key) => (
-                                    <span
-                                        key={key}
-                                        className="inline-flex items-center gap-2 rounded-card border-2 border-dips-card-lavender-border bg-dips-card-lavender px-[15px] py-3 font-card text-[13px] font-bold text-white"
-                                    >
-                                        <Diamond />
-                                        {t(key)}
-                                    </span>
-                                ))}
-                            </div>
+                        {/* BOTTOM GROUP — feature badges only, pushed to the bottom of
+                            the photo by the panel's own justify-between (Figma's
+                            second child, the 626x49 badge row). */}
+                        <div className="relative z-10 flex flex-wrap items-center gap-3 lg:justify-between">
+                            {BADGE_KEYS.map((key) => (
+                                <span
+                                    key={key}
+                                    className="inline-flex items-center gap-2 rounded-card border-2 border-dips-card-lavender-border bg-dips-card-lavender px-[15px] py-3 font-card text-[13px] font-bold text-white"
+                                >
+                                    <Diamond />
+                                    {t(key)}
+                                </span>
+                            ))}
                         </div>
                     </div>
                 </ScrollReveal>
