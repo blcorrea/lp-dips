@@ -651,3 +651,25 @@ O Figma agora TEM versão mobile própria (375px, 7 seções) — descoberto e d
 Commit `232c525`. Build + 71 testes verdes.
 
 **Pendente:** Header mobile (hambúrguer com drawer real) fica fora de escopo desta rodada — o estado fechado já bate com o Figma, o drawer funcional é tarefa própria. Próximas seções mobile a fazer: Story, Ingredients, Bundle, Reviews, FAQ, Footer.
+
+## Addendum 2026-07-21 — Story mobile (RESP-02)
+
+Mesmo esquema: Copy-as-CSS do frame mobile (375×1090, Figma node `281:146` — o layer chama "Ingredients" no Figma mas é a seção Story) + 2 prints, análise no Fable, plano commitado em `.planning/phases/05-landing-page-sections/RESP-02-STORY-MOBILE-PLAN.md` antes da execução (Sonnet).
+
+Estrutura já batia (foto com badge+título+subtítulo no topo, badges na base, painel "Our Story" embaixo é exatamente o que o código já fazia abaixo de `lg`) — só medidas e tipografia precisavam ajustar:
+
+| Item | Antes (mobile) | Depois (Figma mobile) |
+|---|---|---|
+| Altura da foto | `min-h-[420px]` | **`min-h-[699px]`** (igual desktop) |
+| Título sobre a foto | 58px fixo | **48px** (Figma 54, um passo abaixo) |
+| Subtítulo sobre a foto | 21px fixo | **14px** (Figma 16) |
+| Badge social proof (topo) | 14px/px-15/py-3 | **12px/p-3** |
+| Gap do grupo do topo | 16px | **10px** |
+| Badges da base | linha com wrap | **coluna empilhada** (gap 15) |
+| Título "Our Story" | 48px fixo | **40px** (Figma 44) |
+| Parágrafos | 21px, gap 24px | **13px**, gap 10px (Figma 14px/10px) |
+| Padding do painel escuro | `p-6 py-12` (48px vertical) | **`p-6`** (o `py-12` dobrava o respiro do Figma) |
+
+Todas as mudanças só na base; `lg:` mantém os valores desktop já aprovados. `justify-center` do painel (pedido do usuário em 2026-07-21) mantido nas duas larguras.
+
+Commit `ed08f39`. Build + 71 testes verdes.
