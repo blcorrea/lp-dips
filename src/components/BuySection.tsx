@@ -45,8 +45,15 @@ export default async function BuySection({ locale }: BuySectionProps) {
       className="scroll-mt-[72px] bg-dips-cream"
     >
       <div className="mx-auto grid max-w-[1440px] grid-cols-1 lg:grid-cols-2">
-        {/* LEFT: dips-cream panel — bundle cards only, per Figma (05-VISUAL-GAPS.md GAP-14) */}
-        <div className="flex flex-col justify-center p-6 py-12 lg:p-10">
+        {/* LEFT (desktop) / SECOND (mobile): dips-cream panel — bundle cards
+            only, per Figma (05-VISUAL-GAPS.md GAP-14).
+
+            Mobile (RESP-04): Figma's mobile frame shows the PHOTO first and
+            this cream panel second (opposite of desktop) -- order-2 swaps
+            it after the photo below; lg reverts to order-1 (first, left
+            column). Also drops the extra py-12 (Figma mobile spec is
+            ~25px). */}
+        <div className="order-2 flex flex-col justify-center p-6 lg:order-1 lg:py-12 lg:p-10">
           <ProductPurchaseBox
             priceAmount={localizedPricing.price}
             currencyCode={localizedPricing.currency}
@@ -64,8 +71,13 @@ export default async function BuySection({ locale }: BuySectionProps) {
           />
         </div>
 
-        {/* RIGHT: photo panel — justify-between column, content pinned right */}
-        <div className="relative flex min-h-[420px] flex-col justify-between overflow-hidden p-6 lg:min-h-[699px] lg:p-10">
+        {/* RIGHT (desktop) / FIRST (mobile): photo panel — justify-between
+            column, content pinned right.
+
+            Mobile (RESP-04): order-1 puts this first (Figma mobile spec),
+            min-h-[699px] at the base too (was 420px), lg reverts to order-2
+            (second, right column). */}
+        <div className="relative order-1 flex min-h-[699px] flex-col justify-between overflow-hidden p-6 lg:order-2 lg:p-10">
           <Image
             src="/images/redesign/experience-couple-photo.png"
             alt=""
@@ -76,9 +88,11 @@ export default async function BuySection({ locale }: BuySectionProps) {
           {/* Flat 20% black overlay (Figma: linear-gradient(0deg, rgba(0,0,0,.2), rgba(0,0,0,.2)) -- not the previous bottom-heavy fade */}
           <div className="absolute inset-0 bg-black/20" />
 
-          {/* TOP GROUP — badge + title + subtitle, right-aligned */}
-          <div className="relative z-10 flex flex-col items-end gap-4 text-right">
-            <span className="inline-flex w-fit items-center gap-2 rounded-card border-2 border-dips-card-tint-2-border bg-dips-card-tint-2 px-[15px] py-3 text-[14px] font-bold text-[#eadae4]">
+          {/* TOP GROUP — badge + title + subtitle, right-aligned.
+              Mobile (RESP-04): title 58->40px, subtitle 21->14px, badge
+              12px/rounded-[10px] (Figma mobile spec), tighter gap. */}
+          <div className="relative z-10 flex flex-col items-end gap-2.5 text-right lg:gap-4">
+            <span className="inline-flex w-fit items-center gap-2 rounded-[10px] border-2 border-dips-card-tint-2-border bg-dips-card-tint-2 p-3 text-[12px] font-bold text-[#eadae4] lg:rounded-card lg:px-[15px] lg:py-3 lg:text-[14px]">
               <Diamond />
               {t("eyebrow")}
             </span>
@@ -86,21 +100,24 @@ export default async function BuySection({ locale }: BuySectionProps) {
             {/* Figma authors "Bring the" / "Experience home." as two separate
                 text layers (manual editorial break) -- same <br/> rich-text
                 approach as Hero/Story (en only; es/pt wrap naturally). */}
-            <h3 className="font-heading text-[58px] font-bold leading-[1.2] text-white">
+            <h3 className="font-heading text-[40px] font-bold leading-[1.2] text-white lg:text-[58px]">
               {t.rich("title", { br: () => <br /> })}
             </h3>
 
-            <p className="font-body text-[21px] italic leading-[1.4] text-dips-text-lavender">
+            <p className="font-body text-[14px] italic leading-[1.4] text-dips-text-lavender lg:text-[21px]">
               {t("subtitle")}
             </p>
           </div>
 
-          {/* BOTTOM GROUP — 3 benefit badges */}
-          <div className="relative z-10 flex flex-wrap items-center justify-end gap-3 lg:justify-between">
+          {/* BOTTOM GROUP — 3 benefit badges. Mobile (RESP-04): stacked
+              column at the LEFT edge (Figma mobile spec), rounded-[10px]/
+              12px text -- was a wrapped row at the right, which is the
+              lg-only treatment now. */}
+          <div className="relative z-10 flex flex-col items-start gap-[15px] lg:flex-row lg:flex-wrap lg:items-center lg:justify-between lg:gap-3">
             {benefitKeys.map((key) => (
               <span
                 key={key}
-                className="inline-flex items-center gap-2 rounded-card border-2 border-[rgba(146,122,210,0.25)] bg-dips-card-lavender px-[15px] py-3 font-card text-[13px] font-bold text-white"
+                className="inline-flex items-center gap-2 rounded-[10px] border-2 border-[rgba(146,122,210,0.25)] bg-dips-card-lavender px-[15px] py-3 font-card text-[12px] font-bold text-white lg:rounded-card lg:text-[13px]"
               >
                 <Diamond />
                 {t(key)}

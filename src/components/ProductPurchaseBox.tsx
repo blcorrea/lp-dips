@@ -104,7 +104,11 @@ export default function ProductPurchaseBox({
               type="button"
               onClick={() => setSelectedId(bundle.id)}
               className={cn(
-                'relative flex w-full items-center gap-[10px] rounded-card border-2 px-[25px] py-5 text-left transition-colors duration-150',
+                // Mobile (RESP-04): a 2-row column (image+name/price on top,
+                // pill+total below, full width) instead of the desktop's
+                // single row -- matches the Figma mobile card anatomy. p-5
+                // (was px-[25px] py-5, Figma mobile spec is 20px).
+                'relative flex w-full flex-col gap-[10px] rounded-card border-2 p-5 text-left transition-colors duration-150 lg:flex-row lg:items-center lg:px-[25px] lg:py-5',
                 isSelected
                   ? 'border-brand-orange bg-dips-card-ingredient-hl'
                   : 'border-dips-bundle-light-border bg-dips-bundle-light hover:border-brand-orange/40',
@@ -116,27 +120,29 @@ export default function ProductPurchaseBox({
                 isMostPopular && 'mt-[14px]'
               )}
             >
-              {/* Thumbnail — dedicated per-bundle photo (buy-1/2/3.png,
-                  user-provided, bg removed). Already composed in the
-                  correct orientation -- no mirror needed (unlike the
-                  earlier single reused hero-product.png, which was
-                  mirrored to match Figma's flip). */}
-              <div className="relative h-[74px] w-[110px] shrink-0">
-                <Image
-                  src={bundle.image}
-                  alt=""
-                  fill
-                  className="object-contain"
-                  sizes="110px"
-                />
-              </div>
+              {/* Row 1 (mobile) / left group (desktop): thumbnail + name +
+                  unit price. Thumbnail — dedicated per-bundle photo
+                  (buy-1/2/3.png, user-provided, bg removed). Already
+                  composed in the correct orientation -- no mirror needed
+                  (unlike the earlier single reused hero-product.png, which
+                  was mirrored to match Figma's flip). */}
+              <div className="flex items-center gap-[10px] lg:flex-1">
+                <div className="relative h-[74px] w-[110px] shrink-0">
+                  <Image
+                    src={bundle.image}
+                    alt=""
+                    fill
+                    className="object-contain"
+                    sizes="110px"
+                  />
+                </div>
 
-              <div className="flex flex-1 items-center justify-between gap-[10px]">
-                {/* Label + unit price */}
+                {/* Label + unit price. Mobile (RESP-04): name 18->14px,
+                    one step below the Figma mobile spec (16px). */}
                 <div className="flex flex-col gap-[5px]">
                   <span
                     className={cn(
-                      'font-card text-[18px] font-bold leading-[1.2]',
+                      'font-card text-[14px] font-bold leading-[1.2] lg:text-[18px]',
                       isSelected ? 'text-white' : 'text-dips-text-purple-deep'
                     )}
                   >
@@ -146,29 +152,33 @@ export default function ProductPurchaseBox({
                     ${bundle.unitPrice.toFixed(2)} / {t('perBox')}
                   </span>
                 </div>
+              </div>
 
-                {/* Right: discount pill + total */}
-                <div className="flex flex-col items-end gap-[10px]">
-                  <span
-                    className={cn(
-                      'inline-flex shrink-0 items-center gap-[5px] rounded-full border-2 px-[15px] py-2 font-card text-[9px] font-bold',
-                      isSelected
-                        ? 'border-dips-card-ingredient-hl-border bg-[rgba(55,22,41,0.15)] text-white'
-                        : 'border-dips-bundle-light-border bg-white text-dips-text-purple-deep'
-                    )}
-                  >
-                    <Diamond />
-                    {t(bundle.discountKey)}
-                  </span>
-                  <span
-                    className={cn(
-                      'font-card text-[18px] font-bold leading-[1.2]',
-                      isSelected ? 'text-white' : 'text-dips-text-purple-deep'
-                    )}
-                  >
-                    ${bundle.totalPrice.toFixed(2)}
-                  </span>
-                </div>
+              {/* Row 2 (mobile) / right group (desktop): discount pill +
+                  total. Mobile (RESP-04): full-width row with the pill at
+                  the left and the total at the right (Figma mobile spec),
+                  was always a right-aligned column -- lg reverts to that. */}
+              <div className="flex w-full items-center justify-between gap-[10px] lg:w-auto lg:flex-col lg:items-end">
+                <span
+                  className={cn(
+                    'inline-flex shrink-0 items-center gap-[5px] rounded-full border-2 px-[15px] py-2 font-card text-[9px] font-bold',
+                    isSelected
+                      ? 'border-dips-card-ingredient-hl-border bg-[rgba(55,22,41,0.15)] text-white'
+                      : 'border-dips-bundle-light-border bg-white text-dips-text-purple-deep'
+                  )}
+                >
+                  <Diamond />
+                  {t(bundle.discountKey)}
+                </span>
+                {/* Mobile (RESP-04): total 18->16px. */}
+                <span
+                  className={cn(
+                    'font-card text-[16px] font-bold leading-[1.2] lg:text-[18px]',
+                    isSelected ? 'text-white' : 'text-dips-text-purple-deep'
+                  )}
+                >
+                  ${bundle.totalPrice.toFixed(2)}
+                </span>
               </div>
 
               {isMostPopular && (
@@ -181,22 +191,25 @@ export default function ProductPurchaseBox({
         })}
       </div>
 
-      {/* ── Summary panel — 2 columns (Figma: unit price | shipping) ──────── */}
-      <div className="flex items-center justify-between rounded-card border-2 border-dips-bundle-light-border bg-dips-bundle-summary px-[25px] py-5">
+      {/* ── Summary panel — 2 columns (Figma: unit price | shipping).
+            Mobile (RESP-04): p-5 (was px-[25px] py-5, Figma mobile spec is
+            20px), labels 12px (Figma mobile spec literal), values 16px
+            (18->16, one step below). ──────────────────────────────────── */}
+      <div className="flex items-center justify-between rounded-card border-2 border-dips-bundle-light-border bg-dips-bundle-summary p-5 lg:px-[25px] lg:py-5">
         <div className="flex flex-col gap-[5px]">
-          <span className="font-card text-[13px] text-[#96838f]">{t('unitPrice')}</span>
-          <span className="font-card text-[18px] font-bold text-dips-text-purple-deep">
+          <span className="font-card text-[12px] text-[#96838f] lg:text-[13px]">{t('unitPrice')}</span>
+          <span className="font-card text-[16px] font-bold text-dips-text-purple-deep lg:text-[18px]">
             ${selectedBundle.unitPrice.toFixed(2)}
           </span>
         </div>
         <div className="flex flex-col items-end gap-[5px]">
-          <span className="font-card text-[13px] text-[#96838f]">{t('shipping')}</span>
+          <span className="font-card text-[12px] text-[#96838f] lg:text-[13px]">{t('shipping')}</span>
           {selectedBundle.shipping === 'free' ? (
-            <span className="font-card text-[18px] font-bold text-green-600">
+            <span className="font-card text-[16px] font-bold text-green-600 lg:text-[18px]">
               {t('freeShipping')}
             </span>
           ) : (
-            <span className="font-card text-[18px] font-bold text-dips-text-purple-deep">
+            <span className="font-card text-[16px] font-bold text-dips-text-purple-deep lg:text-[18px]">
               $6.97
             </span>
           )}
