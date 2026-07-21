@@ -146,15 +146,20 @@ export default function LandingHeader() {
             <Link href={`/${locale}#bundle`} className={navLinkClass}>
               {t("order")}
             </Link>
+            <Link href={`/${locale}/affiliates/join`} className={navLinkClass}>
+              {t("affiliates")}
+            </Link>
             <Link href={`/${locale}#footer-contact`} className={navLinkClass}>
               {t("contact")}
             </Link>
           </nav>
 
-          {/* Shop Now CTA (desktop) */}
+          {/* Shop Now CTA (desktop) — h-[44px]/px-7/text-[14px] to match the
+              Hero's own CTA size (see Hero.tsx's ctaPrimary anchor), was
+              h-[50px]/text-cta-button (16px), noticeably larger than Hero's. */}
           <Link
             href={`/${locale}#bundle`}
-            className="hidden h-[50px] items-center justify-center rounded-full bg-brand-orange px-6 text-cta-button text-white transition-opacity duration-200 hover:opacity-90 md:flex"
+            className="hidden h-[44px] items-center justify-center rounded-full bg-brand-orange px-7 text-[14px] font-cta font-semibold text-white transition-opacity duration-200 hover:opacity-90 md:flex"
           >
             {t("shopNow")}
           </Link>

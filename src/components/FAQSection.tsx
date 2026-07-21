@@ -52,7 +52,7 @@ export default function FAQSection() {
                 <AccordionItem
                   key={q}
                   value={q}
-                  className="rounded-card border-2 bg-dips-card-ingredient border-dips-card-ingredient-border p-card-padding data-[state=open]:border-brand-orange"
+                  className="rounded-card border-2 bg-dips-card-ingredient border-dips-card-ingredient-border p-card-padding transition-colors duration-200 hover:border-brand-orange/60 data-[state=open]:border-brand-orange data-[state=open]:hover:border-brand-orange"
                 >
                   <AccordionTrigger className="text-[16px] font-heading text-white hover:no-underline py-0 [&>svg]:h-6 [&>svg]:w-6 [&>svg]:text-white [&>svg]:stroke-[2.5]">
                     {t(q)}
