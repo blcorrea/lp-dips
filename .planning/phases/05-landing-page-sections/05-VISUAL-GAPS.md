@@ -450,7 +450,19 @@ Usuário apontou (com setas vermelhas) resíduos finos nas bordas da caixa/plata
 
 **Halo de borda:** a zona de transição suave (feather) ainda deixava pixels de mistura produto+fundo com alpha baixo-mas-não-zero bem na borda real, visíveis como um contorno claro fino contra o fundo escuro da página. Trocado pra alpha binário (sem gradiente) + erosão de 2px do contorno opaco (dilatando a máscara de fundo duas vezes) pra eliminar esse resíduo por completo. Commit `6096f5d`.
 
-**Triângulo laranja:** não é resíduo do corte de fundo — é o **blob decorativo grande da própria Hero** (`blob-vector-1.svg`, z-0, posicionado dentro do mesmo canvas) aparecendo por trás da imagem do produto. Como a imagem foi reduzida na rodada anterior (57%→52%), sua borda esquerda recuou (ela é ancorada por `right`), expondo uma fatia do blob que antes ficava coberta. **Não mexi nisso ainda** — é uma decisão de layout (encolher o blob, mover a imagem, ou aceitar o blob aparecendo), não um bug de processamento de imagem. Perguntei ao usuário como prefere resolver.
+**Triângulo laranja:** não é resíduo do corte de fundo — é o **blob decorativo grande da própria Hero** (`blob-vector-1.svg`, z-0, posicionado dentro do mesmo canvas) aparecendo por trás da imagem do produto. Como a imagem foi reduzida na rodada anterior (57%→52%), sua borda esquerda recuou (ela é ancorada por `right`), expondo uma fatia do blob que antes ficava coberta. **Não mexi nisso ainda** — é uma decisão de layout (encolher o blob, mover a imagem, ou aceitar o blob aparecendo), não um bug de processamento de imagem. Perguntei ao usuário como prefere resolver — ainda em aberto (o usuário confirmou manter o tamanho da imagem como está, mas não respondeu especificamente sobre o blob).
+
+Build + 71 testes verdes.
+
+## Addendum 2026-07-20 (11ª rodada) — specks brancos isolados no farelo de cacau
+
+Usuário mandou um crop ampliado da área do farelo mostrando specks brancos ainda visíveis entre os grãos. Causa: o flood-fill a partir da borda só limpa fundo **conectado à borda** — os bolsões de fundo branco entre grãos individuais de cacau nunca tocam a borda da imagem, então ficavam opacos.
+
+| # | Item | Correção | Commit |
+|---|---|---|---|
+| — | Specks brancos isolados entre os grãos do farelo | Adicionada uma 2ª passada: encontra todo componente conectado esbranquiçado **independente de tocar a borda**, e limpa qualquer um abaixo de ~600px (bolsão entre grãos), preservando os maiores (o texto branco "Dips" impresso na caixa, cujos traços de letra ficam bem acima desse corte). Verificado que a logo continua opaca | `f840ae8` |
+
+Tamanho da imagem mantido como estava (52%/750px), por pedido do usuário.
 
 Build + 71 testes verdes.
 
