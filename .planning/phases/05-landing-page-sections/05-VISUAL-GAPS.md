@@ -493,4 +493,12 @@ Reflexos da plataforma e do disco reconfirmados intactos. Commit `5448df0`.
 
 Build + 71 testes verdes.
 
+## Addendum 2026-07-21 (14ª rodada) — dois consertos pontuais: mancha cinza residual + borda da plataforma mordida
+
+Usuário apontou (2 prints anotados) dois pontos finos restantes: (1) uma manchinha cinza no meio do farelo — o GPT deixou um resquício de sombra ali que ficou cinza em vez de branco, escapando do limiar de cor; usuário autorizou apagar tudo ali (farelo incluso, é pouco). (2) A borda esquerda da plataforma roxa com uma "mordida" desde a **primeira** rodada de remoção desta imagem — um limiar agressivo comeu uma transição suave roxo→branco bem na borda real.
+
+**Correção:** script pontual comparando com a imagem original: (1) forçar transparência total numa caixa pequena ao redor da mancha cinza (2.860px); (2) recalcular, só numa faixa estreita da borda esquerda, com limiar bem mais conservador (60 em vez de 190) usando os pixels da imagem original — restaura a cor real onde é claramente produto, mantendo transparente só o que é inequivocamente fundo (20.755px reavaliados). Verificado visualmente: sem costura na fronteira do patch, curva da plataforma lisa de novo. Commit `3cb3268`.
+
+Build + 71 testes verdes.
+
 **Próximo passo:** novo walkthrough a **1440px real** (`localhost:3001`) + Stripe click-through para fechar o checkpoint do 05-05 → merge → completar a fase. E me diz o veredito do GAP-21.
