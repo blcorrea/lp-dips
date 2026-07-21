@@ -544,3 +544,21 @@ Implementação (`a403cdc`):
 Build + 71 testes verdes.
 
 **Próximo passo:** novo walkthrough a **1440px real** (`localhost:3001`) + Stripe click-through para fechar o checkpoint do 05-05 → merge → completar a fase. E me diz o veredito do GAP-21.
+
+## Addendum 2026-07-21 — Seção 4 (Buy/Bundle) reconstruída (GAP-37)
+
+Análise feita separadamente no Fable a partir do Copy-as-CSS da seção inteira + print, plano commitado em `.planning/phases/05-landing-page-sections/GAP-37-BUY-SECTION-PLAN.md` antes da execução (troca de modelo pro Sonnet no meio do processo — ver conversa pra contexto de custo/token).
+
+**Estrutura:** nossa seção era um card arredondado com sombra dentro de container roxo — Figma é **full-bleed 50/50** (mesmo padrão de Story/Ingredients). Corrigido.
+
+**Painel da foto:** era tudo empilhado no rodapé; virou coluna `justify-between` (badge+título+subtítulo no topo-direita, 3 badges de benefício no rodapé-direita). `BuySection.subtitle` (removida numa rodada antiga) foi recriada nas 3 línguas. Overlay virou preto flat 20% (era gradiente). Título forçado em 2 linhas via `<br></br>` (mesmo padrão Hero/Story).
+
+**Cards de bundle:** thumbnail virou a foto real do produto (transparente, espelhada) em vez de ícone genérico numa caixa branca. Labels no formato Figma "1x Box/2x Boxes/3x Boxes". Pills de desconto com losango. **Bug real corrigido:** "Most Popular" seguia a seleção do usuário (errado semanticamente — é atributo do produto) — agora fixo no card 2x sempre. Summary virou 2 colunas lado a lado. Total do botão em branco (era roxo).
+
+**Overrides funcionais mantidos (não copiados do Figma):** preços reais do Stripe (2x=$55.78, 3x=$75.57 — Figma usa placeholder $59.99/$89.99 iguais em todos); frete real ($6.97, cobrado no 1x/2x) — o Figma mostra "Free Shipping" no card 1x, que seria enganoso com o dado real.
+
+**Bônus:** `ProductPurchaseBox.tsx` tinha várias strings hardcoded em inglês ("Most Popular", "Unit Price", "Shipping" etc.) violando a invariante i18n do projeto — migradas pra chaves novas em `BuySection` (en/es/pt). `BuyNowButton.tsx` trocou o merge de className de template literal cru pra `cn()`/tailwind-merge, pra garantir que os overrides (cor branca, altura) realmente vençam.
+
+Interatividade (seleção → resumo/total/checkout) mantida intocada, só reestilizada.
+
+Commit `6b36f35`. Build + 71 testes verdes.
