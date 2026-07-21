@@ -150,13 +150,17 @@ export default function IngredientsSection() {
                     onClick={() => setSelectedIndex(index)}
                     aria-pressed={isSelected}
                     className={cn(
-                      // Hover = a pure visual "lift" (scale + shadow), same on
-                      // every card regardless of selection -- the highlight
-                      // COLOR only ever changes on click (isSelected below),
-                      // never on hover, per user request. hover:z-10 keeps the
-                      // lifted card above its neighbors instead of being
-                      // clipped underneath them while scaled up.
-                      'relative flex w-full items-center gap-[10px] rounded-card border-2 text-left transition-all duration-200 hover:z-10 hover:scale-[1.03] hover:shadow-[0_12px_32px_rgba(0,0,0,0.35)]',
+                      // Hover = a pure visual "lift" (scale + upward
+                      // translate + glow), same on every card regardless of
+                      // selection -- the highlight COLOR only ever changes on
+                      // click (isSelected below), never on hover, per user
+                      // request. hover:z-10 keeps the lifted card above its
+                      // neighbors instead of being clipped underneath them
+                      // while scaled up. Shadow uses a warm glow (not black)
+                      // because a black shadow is invisible against this
+                      // section's own near-black background -- a plain
+                      // scale-only version read as "no animation" to the user.
+                      'relative flex w-full items-center gap-[10px] rounded-card border-2 text-left transition-all duration-200 ease-out hover:z-10 hover:-translate-y-1 hover:scale-[1.05] hover:shadow-[0_16px_36px_rgba(242,117,33,0.25)]',
                       isSelected
                         ? 'border-dips-card-ingredient-hl-border bg-dips-card-ingredient-hl p-card-padding'
                         : 'border-dips-card-ingredient-border bg-dips-card-ingredient px-card-padding py-5 hover:border-dips-card-ingredient-hl-border/60'

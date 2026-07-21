@@ -98,9 +98,12 @@ export default function StorySection() {
                     </div>
                 </ScrollReveal>
 
-                {/* Right column: dark panel, top-aligned, "Our Story" + 3 paragraphs */}
+                {/* Right column: dark panel, "Our Story" + 3 paragraphs vertically
+                    centered against the section's full height (matches the
+                    left photo panel's height via the grid's default
+                    items-stretch) -- user request, was top-aligned. */}
                 <ScrollReveal direction="right" delay={0.2} duration={0.8}>
-                    <div className="flex h-full flex-col gap-6 bg-dips-purple-deepest p-6 py-12 lg:p-10">
+                    <div className="flex h-full flex-col justify-center gap-6 bg-dips-purple-deepest p-6 py-12 lg:p-10">
                         <h2 className="font-heading text-[48px] font-bold leading-[1.2] text-dips-text-lavender">
                             {t('ourStoryTitle')}
                         </h2>
