@@ -90,11 +90,16 @@ export default function Hero() {
             the cards' right edge at any width, since the cards share the
             canvas. Figma clips it with the fixed 1054px frame on the
             bottom/right; we recreate that frame as a full-canvas-width band
-            ending at the frame bottom (canvas-y 937), with the blob at its
-            exact box: right 4.49% + native 341px reproduces left 71.81%; top
-            659-117=542; rotate 53.34deg. The browser then trims the rotated
-            shape along the band's straight right/bottom edges exactly the way
-            Figma's frame does. Desktop only. See 05-VISUAL-GAPS.md GAP-30. */}
+            ending at the frame bottom (canvas-y 937), with the blob near its
+            Figma box (top 659-117=542; rotate 53.34deg). The browser then
+            trims the rotated shape along the band's straight right/bottom
+            edges exactly the way Figma's frame does. Desktop only.
+
+            right: Figma-exact was 4.49% (~65px); the user then asked (with a
+            marked screenshot) for the right-side cut to land ~150px further
+            into the shape, i.e. the vector pushed ~150px rightward past the
+            clip edge -- hence right:-90px (65-155). See 05-VISUAL-GAPS.md
+            GAP-30 + user-requested refinement. */}
         <div className="pointer-events-none absolute inset-x-0 top-0 z-0 hidden h-[937px] overflow-hidden lg:block">
           <Image
             src="/images/redesign/blob-vector-1.svg"
@@ -102,7 +107,7 @@ export default function Hero() {
             aria-hidden="true"
             width={341}
             height={511}
-            className="absolute right-[4.49%] top-[542px] rotate-[53.34deg]"
+            className="absolute right-[-90px] top-[542px] rotate-[53.34deg]"
           />
         </div>
 
