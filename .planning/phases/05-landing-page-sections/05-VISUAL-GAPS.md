@@ -564,3 +564,21 @@ Interatividade (seleção → resumo/total/checkout) mantida intocada, só reest
 Commit `6b36f35`. Build + 71 testes verdes.
 
 **Correção (mesma sessão, `9eb3a6c`):** usuário apontou 3 ajustes finos: (1) tag "Most Popular" deveria ficar em cima do card, não embaixo — movida (`mt-[14px]` no card 2x pra dar espaço acima em vez de abaixo, mantendo o espaçamento entre os 3 cards uniforme); (2) usuário criou 3 imagens dedicadas por quantidade (`buy-1/2/3.png`) — fundo branco removido com o mesmo script border-seeded do `hero-product.png`, uma por card em vez do único `hero-product.png` espelhado reaproveitado.
+
+## Addendum 2026-07-21 — Seção 5 (Reviews) reconstruída (GAP-38)
+
+Análise no Fable a partir do Copy-as-CSS da seção inteira + print, plano commitado em `.planning/phases/05-landing-page-sections/GAP-38-REVIEWS-PLAN.md` antes da execução (Sonnet).
+
+**Conteúdo:** os 12 reviews placeholder (o próprio `reviews.ts` se documentava como placeholder) foram substituídos pelos **6 reviews reais do Figma** (Marcus, Liam, Elena R., Jessica T., David K., Tyson W.) — aqui o Figma vence o override "dados reais vencem", porque o dado "real" que tínhamos era só um placeholder mesmo, não conteúdo genuíno de cliente. Campos traduzíveis (role, país, data relativa, quote) viraram chaves i18n (`Reviews.{id}_role/_country/_date/_quote`) nas 3 línguas; `reviews.ts` ficou só com id/nome/bandeira/foto/estrelas.
+
+**Anatomia do card invertida:** autor foi pro **topo** (avatar 60px + nome/role à esquerda, estrelas+país à direita) — era rodapé + bloco de mídia de produto (nenhum card do Figma tem mídia, `MediaBlock` removido). Quote no meio, data embaixo à direita. Borda 1px→2px. Estrelas viraram amarelas `#FFCD00` do Figma (reaproveitavam a laranja do Hero, que é certa lá mas errada aqui).
+
+**Grid:** trocado `columns-2/3` (CSS columns preenche de forma imprevisível com alturas variáveis) por **3 colunas explícitas** com os pares fixos do Figma (Marcus+Liam / Elena+Jessica / David+Tyson).
+
+**Carrossel novo:** setas prev (#2B1543)/next (brand-orange) 60px, canto inferior direito — **desabilitadas por enquanto** (os 6 reviews já cabem todos de uma vez, não há nada pra paginar ainda; preferi não carregar estado morto de paginação sem necessidade real).
+
+**Fontes** (padrão das seções anteriores): título 54→48, subtítulo 24→21, nome 24→21, quote 18→16, role/país/data 14→13.
+
+**Aviso ao usuário:** o Figma usa fotos de perfil redondas que não temos — mantido o fallback de iniciais (`photoUrl` pronto pra receber fotos reais, como as imagens de produto que o usuário gerou nas seções anteriores).
+
+Commit `1708e3f`. Build + 71 testes verdes.
