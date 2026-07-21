@@ -50,10 +50,9 @@ function LanguageSwitcher() {
   }, []);
 
   return (
-    // h-[44px] + flex items-center matches the Shop Now button's own height
-    // exactly, so the switcher centers vertically in its reserved space
-    // instead of relying on the parent row's cross-axis centering (which
-    // left it looking top-aligned next to the taller CTA).
+    // h-[44px] matches the Shop Now button's own height, for vertical
+    // centering. Horizontal centering is handled by the parent gutter strip
+    // in LandingHeader (this wrapper just shrinks to fit its own content).
     <div ref={ref} className="relative flex h-[44px] items-center">
       <button
         type="button"
@@ -168,7 +167,7 @@ export default function LandingHeader() {
             circled the empty gutter left of the logo and the seam between
             the trust bar and this nav, asking for slightly more breathing
             room in both. */}
-        <div className="flex h-[76px] w-full items-center justify-between px-5 md:px-[48px]">
+        <div className="relative flex h-[76px] w-full items-center justify-between px-5 md:px-[48px]">
           {/* Logo — two SVG layers, each preserveAspectRatio="none" and sized/
               positioned to their OWN sub-region of the 59x36 logo box (per Figma
               Dev Mode: purple layer left:0 top:9.47% w:100% h:90.53%; orange layer
@@ -223,27 +222,38 @@ export default function LandingHeader() {
             </Link>
           </nav>
 
-          {/* Shop Now CTA + language switcher, grouped so justify-between on
-              the outer row still spreads logo / nav / [this group] /
-              mobile-toggle evenly across the bar. */}
-          <div className="hidden items-center gap-4 md:flex">
-            {/* Shop Now CTA (desktop) — h-[44px]/px-7/text-[14px] to match the
-                Hero's own CTA size (see Hero.tsx's ctaPrimary anchor), was
-                h-[50px]/text-cta-button (16px), noticeably larger than Hero's.
+          {/* Shop Now CTA (desktop) — h-[44px]/px-7/text-[14px] to match the
+              Hero's own CTA size (see Hero.tsx's ctaPrimary anchor), was
+              h-[50px]/text-cta-button (16px), noticeably larger than Hero's.
+              Back to being a direct flex item (not grouped with the language
+              switcher) so its position is exactly what it was before the
+              switcher existed -- the switcher lives in the row's own right
+              padding gutter instead (see below), it doesn't share space
+              with this button.
 
-                transform-gpu (+ will-change-transform) forces this onto its
-                own GPU compositing layer from first paint -- without it,
-                Chrome shows faint antialiasing seams on the rounded-full
-                edge until the hover pseudo-class forces a repaint (user-
-                reported: hairline cracks on load, gone on hover). */}
-            <Link
-              href={`/${locale}#bundle`}
-              className="flex h-[44px] transform-gpu items-center justify-center rounded-full bg-brand-orange px-7 text-[14px] font-cta font-semibold text-white transition-opacity duration-200 will-change-transform hover:opacity-90"
-            >
-              {t("shopNow")}
-            </Link>
+              transform-gpu (+ will-change-transform) forces this onto its
+              own GPU compositing layer from first paint -- without it,
+              Chrome shows faint antialiasing seams on the rounded-full
+              edge until the hover pseudo-class forces a repaint (user-
+              reported: hairline cracks on load, gone on hover). */}
+          <Link
+            href={`/${locale}#bundle`}
+            className="hidden h-[44px] transform-gpu items-center justify-center rounded-full bg-brand-orange px-7 text-[14px] font-cta font-semibold text-white transition-opacity duration-200 will-change-transform hover:opacity-90 md:flex"
+          >
+            {t("shopNow")}
+          </Link>
 
-            <LanguageSwitcher />
+          {/* Language switcher — lives in the row's own right padding gutter
+              (the md:px-[48px] strip), centered between Shop Now's right
+              edge and the page's true right margin, rather than sharing
+              space with Shop Now (which would have pushed it left of its
+              original position). absolute + inset-y-0 right-0 spans exactly
+              that padding width; flex items-center justify-center centers
+              the switcher within it regardless of locale label width. */}
+          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 hidden w-[48px] items-center justify-center md:flex">
+            <div className="pointer-events-auto">
+              <LanguageSwitcher />
+            </div>
           </div>
 
           {/* Mobile toggle (scaffold only, no drawer yet — see TODO above) */}
