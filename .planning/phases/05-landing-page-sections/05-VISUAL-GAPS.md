@@ -523,4 +523,6 @@ O usuário mandou o Copy-as-CSS da seção inteira (frame "Ingredients" no Figma
 
 Build + 71 testes verdes.
 
+**Correção (mesma sessão, `1c1e1b9`):** usuário substituiu a foto (`story-couple-photo.png`, commit `c832912`) e apontou que título+subtítulo tinham ficado embaixo junto das feature badges, quando no Figma ficam junto do badge "10,000+ Happy Couples" no **topo** (grupo `justify-between` #1, 645×249). Reestruturado em dois filhos diretos: grupo de cima (badge+título+subtítulo) e grupo de baixo (só a fileira de feature badges, empurrada pro rodapé).
+
 **Próximo passo:** novo walkthrough a **1440px real** (`localhost:3001`) + Stripe click-through para fechar o checkpoint do 05-05 → merge → completar a fase. E me diz o veredito do GAP-21.
