@@ -109,16 +109,22 @@ export default function LandingFooter() {
             </div>
           </div>
 
-          {/* RIGHT: link columns (row 1) + Contact Us (row 2, right-aligned) */}
-          <div className="flex flex-col items-end gap-[50px]">
-            <div className="grid w-full grid-cols-2 gap-8 sm:grid-cols-3">
-              {/* ORDERS */}
+          {/* RIGHT: link columns (row 1) + Contact Us (row 2).
+              Mobile (RESP-07): left-aligned (Figma mobile spec), was
+              items-end/text-right -- lg reverts to that right-aligned
+              treatment. */}
+          <div className="flex flex-col items-start gap-[50px] lg:items-end">
+            {/* Mobile (RESP-07): single stacked column (Figma mobile spec),
+                gap 15px; sm+ keeps the existing 2/3-col grid untouched. */}
+            <div className="grid w-full grid-cols-1 gap-[15px] sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
+              {/* ORDERS. Mobile (RESP-07): heading 20->16px, links 16->13px/
+                  gap 2px (one step below the Figma mobile spec, 18px/14px). */}
               <div>
-                <h3 className="mb-[10px] text-[20px] font-bold text-white font-heading">
+                <h3 className="mb-[10px] text-[16px] font-bold text-white font-heading lg:text-[20px]">
                   {t("ordersTitle")}
                 </h3>
 
-                <ul className="space-y-[5px] text-[16px] text-dips-text-footer-secondary">
+                <ul className="space-y-[2px] text-[13px] text-dips-text-footer-secondary lg:space-y-[5px] lg:text-[16px]">
                   <li>
                     <Link href={`/${locale}/orders`} className={linkClass}>
                       {t("trackOrder")}
@@ -147,11 +153,11 @@ export default function LandingFooter() {
 
               {/* QUICK LINKS */}
               <div>
-                <h3 className="mb-[10px] text-[20px] font-bold text-white font-heading">
+                <h3 className="mb-[10px] text-[16px] font-bold text-white font-heading lg:text-[20px]">
                   {t("quickLinksTitle")}
                 </h3>
 
-                <ul className="space-y-[5px] text-[16px] text-dips-text-footer-secondary">
+                <ul className="space-y-[2px] text-[13px] text-dips-text-footer-secondary lg:space-y-[5px] lg:text-[16px]">
                   <li>
                     <a href={`/${locale}#faq`} className={linkClass}>
                       {t("faqs")}
@@ -177,11 +183,11 @@ export default function LandingFooter() {
 
               {/* CUSTOMER CARE */}
               <div>
-                <h3 className="mb-[10px] text-[20px] font-bold text-white font-heading">
+                <h3 className="mb-[10px] text-[16px] font-bold text-white font-heading lg:text-[20px]">
                   {t("customerCareTitle")}
                 </h3>
 
-                <ul className="space-y-[5px] text-[16px] text-dips-text-footer-secondary">
+                <ul className="space-y-[2px] text-[13px] text-dips-text-footer-secondary lg:space-y-[5px] lg:text-[16px]">
                   <li>
                     <Link href={`/${locale}/terms`} className={linkClass}>
                       {t("terms")}
@@ -203,9 +209,11 @@ export default function LandingFooter() {
               </div>
             </div>
 
-            {/* CONTACT US — right-aligned, under Customer Care. Nav anchor
-                (#footer-contact) lives here now, not on Customer Care. */}
-            <div id="footer-contact" className="scroll-mt-[72px] text-right">
+            {/* CONTACT US. Mobile (RESP-07): left-aligned (Figma mobile
+                spec), was right-aligned under Customer Care -- lg reverts.
+                Nav anchor (#footer-contact) lives here, not on Customer
+                Care. */}
+            <div id="footer-contact" className="scroll-mt-[72px] text-left lg:text-right">
               <h3 className="mb-[10px] text-[20px] font-bold text-white font-heading">
                 {t("contactUsTitle")}
               </h3>
@@ -220,8 +228,9 @@ export default function LandingFooter() {
           </div>
         </div>
 
-        {/* LEGAL TEXT — full-width strip, no divider (Figma) */}
-        <div className="mt-14 text-[13px] italic leading-[1.2] text-dips-text-footer-fine">
+        {/* LEGAL TEXT — full-width strip, no divider (Figma). Mobile
+            (RESP-07): 12px (Figma mobile spec literal), was 13px. */}
+        <div className="mt-14 text-[12px] italic leading-[1.2] text-dips-text-footer-fine lg:text-[13px]">
           <p>© {currentYear} – Dips Chocolate. {t("rightsReserved")}</p>
           <p>{t("fdaDisclaimer")}</p>
         </div>
