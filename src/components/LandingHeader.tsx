@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import Image from "next/image";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
+import { Link as LocaleLink, usePathname, routing } from "@/i18n/routing";
+import { cn } from "@/lib/utils";
 
 const TRUST_BAR_KEYS = [
   "trustBar1",
@@ -16,12 +18,69 @@ const TRUST_BAR_KEYS = [
   "trustBar6",
 ] as const;
 
+const LOCALE_LABELS: Record<string, string> = { en: "EN", es: "ES", pt: "PT" };
+
 function TrustBarDiamond() {
   return (
     <span
       aria-hidden="true"
       className="inline-block h-[6px] w-[6px] shrink-0 rotate-[43deg] bg-brand-orange"
     />
+  );
+}
+
+// Language switcher — shows the CURRENT locale only (e.g. "EN") with a small
+// chevron hinting it's switchable, not all 3 languages spelled out -- user
+// asked for something discreet, not a loud 3-way toggle. Desktop only for
+// now (next to Shop Now); the mobile drawer doesn't exist yet (RESP-01/02
+// TODO above), so mobile language switching stays out of scope here.
+function LanguageSwitcher() {
+  const pathname = usePathname(); // locale-agnostic path, from next-intl's own routing
+  const params = useParams();
+  const currentLocale = (params.locale as string) || routing.defaultLocale;
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-haspopup="true"
+        aria-expanded={open}
+        className="flex items-center gap-1 text-nav-link text-dips-text-lavender-muted transition-colors duration-200 hover:text-brand-orange"
+      >
+        {LOCALE_LABELS[currentLocale] ?? currentLocale.toUpperCase()}
+        <ChevronDown className={cn("h-3.5 w-3.5 transition-transform duration-200", open && "rotate-180")} />
+      </button>
+
+      {open && (
+        <div className="absolute right-0 top-full z-10 mt-2 flex flex-col overflow-hidden rounded-xl border border-dips-card-tint-border bg-dips-purple-hero-start py-1 shadow-lg">
+          {routing.locales.map((l) => (
+            <LocaleLink
+              key={l}
+              href={pathname}
+              locale={l}
+              onClick={() => setOpen(false)}
+              className={cn(
+                "px-4 py-2 text-left text-nav-link transition-colors duration-200 hover:text-brand-orange",
+                l === currentLocale ? "text-white" : "text-dips-text-lavender-muted"
+              )}
+            >
+              {LOCALE_LABELS[l] ?? l.toUpperCase()}
+            </LocaleLink>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -160,15 +219,22 @@ export default function LandingHeader() {
             </Link>
           </nav>
 
-          {/* Shop Now CTA (desktop) — h-[44px]/px-7/text-[14px] to match the
-              Hero's own CTA size (see Hero.tsx's ctaPrimary anchor), was
-              h-[50px]/text-cta-button (16px), noticeably larger than Hero's. */}
-          <Link
-            href={`/${locale}#bundle`}
-            className="hidden h-[44px] items-center justify-center rounded-full bg-brand-orange px-7 text-[14px] font-cta font-semibold text-white transition-opacity duration-200 hover:opacity-90 md:flex"
-          >
-            {t("shopNow")}
-          </Link>
+          {/* Shop Now CTA + language switcher, grouped so justify-between on
+              the outer row still spreads logo / nav / [this group] /
+              mobile-toggle evenly across the bar. */}
+          <div className="hidden items-center gap-4 md:flex">
+            {/* Shop Now CTA (desktop) — h-[44px]/px-7/text-[14px] to match the
+                Hero's own CTA size (see Hero.tsx's ctaPrimary anchor), was
+                h-[50px]/text-cta-button (16px), noticeably larger than Hero's. */}
+            <Link
+              href={`/${locale}#bundle`}
+              className="flex h-[44px] items-center justify-center rounded-full bg-brand-orange px-7 text-[14px] font-cta font-semibold text-white transition-opacity duration-200 hover:opacity-90"
+            >
+              {t("shopNow")}
+            </Link>
+
+            <LanguageSwitcher />
+          </div>
 
           {/* Mobile toggle (scaffold only, no drawer yet — see TODO above) */}
           <button
