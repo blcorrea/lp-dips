@@ -562,3 +562,5 @@ Análise feita separadamente no Fable a partir do Copy-as-CSS da seção inteira
 Interatividade (seleção → resumo/total/checkout) mantida intocada, só reestilizada.
 
 Commit `6b36f35`. Build + 71 testes verdes.
+
+**Correção (mesma sessão, `9eb3a6c`):** usuário apontou 3 ajustes finos: (1) tag "Most Popular" deveria ficar em cima do card, não embaixo — movida (`mt-[14px]` no card 2x pra dar espaço acima em vez de abaixo, mantendo o espaçamento entre os 3 cards uniforme); (2) usuário criou 3 imagens dedicadas por quantidade (`buy-1/2/3.png`) — fundo branco removido com o mesmo script border-seeded do `hero-product.png`, uma por card em vez do único `hero-product.png` espelhado reaproveitado.
