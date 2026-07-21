@@ -62,7 +62,8 @@ function Stars({ count }: { count: number }) {
       {Array.from({ length: 5 }).map((_, i) => (
         <svg
           key={i}
-          className="h-[18px] w-[18px]"
+          // Mobile (RESP-05): 16px (Figma mobile spec), was 18px.
+          className="h-4 w-4 lg:h-[18px] lg:w-[18px]"
           style={{ color: i < count ? '#ffcd00' : 'rgba(255,255,255,0.15)' }}
           fill="currentColor"
           viewBox="0 0 20 20"
@@ -90,10 +91,12 @@ function ReviewCard({
   quote: string;
 }) {
   return (
-    <div className="flex flex-col gap-[25px] rounded-card-lg border-2 border-dips-card-review-border bg-dips-card-review p-card-padding transition-colors duration-300 hover:bg-white/[0.06]">
-      {/* Header — avatar + name/role (left), stars + country (right) */}
-      <div className="flex items-center gap-[15px]">
-        <div className="relative h-[60px] w-[60px] shrink-0">
+    // Mobile (RESP-05): gap-[15px] (Figma mobile spec), was 25px -- lg keeps 25px.
+    <div className="flex flex-col gap-[15px] rounded-card-lg border-2 border-dips-card-review-border bg-dips-card-review p-card-padding transition-colors duration-300 hover:bg-white/[0.06] lg:gap-[25px]">
+      {/* Header — avatar + name/role (left), stars + country (right).
+          Mobile (RESP-05): avatar 44px (was 60px), gap-[10px] (was 15px). */}
+      <div className="flex items-center gap-[10px] lg:gap-[15px]">
+        <div className="relative h-11 w-11 shrink-0 lg:h-[60px] lg:w-[60px]">
           {review.photoUrl ? (
             <Image
               src={review.photoUrl}
@@ -104,7 +107,7 @@ function ReviewCard({
             />
           ) : (
             <div
-              className={`flex h-[60px] w-[60px] items-center justify-center rounded-full text-[18px] font-bold text-white ${avatarColor(review.id)}`}
+              className={`flex h-11 w-11 items-center justify-center rounded-full text-[18px] font-bold text-white lg:h-[60px] lg:w-[60px] ${avatarColor(review.id)}`}
             >
               {initials(review.name)}
             </div>
@@ -112,16 +115,20 @@ function ReviewCard({
         </div>
 
         <div className="flex flex-1 items-center justify-between gap-[10px]">
+          {/* Mobile (RESP-05): name 21->16px, one step below the Figma
+              mobile spec (18px); role stays literal at 12/13px. */}
           <div className="flex flex-col gap-[5px]">
-            <span className="font-heading text-[21px] font-bold leading-[1.2] text-white">
+            <span className="font-heading text-[16px] font-bold leading-[1.2] text-white lg:text-[21px]">
               {review.name}
             </span>
-            <span className="text-[13px] text-[#9499a9]">{role}</span>
+            <span className="text-[12px] text-[#9499a9] lg:text-[13px]">{role}</span>
           </div>
 
+          {/* Mobile (RESP-05): stars 16px (was 18px); country 10px (Figma
+              mobile spec literal, was 13px). */}
           <div className="flex flex-col items-end gap-[10px]">
             <Stars count={review.stars} />
-            <span className="flex items-center gap-[5px] text-[13px] text-white">
+            <span className="flex items-center gap-[5px] text-[10px] text-white lg:text-[13px]">
               <span aria-hidden="true">{review.flag}</span>
               {country}
             </span>
@@ -129,13 +136,14 @@ function ReviewCard({
         </div>
       </div>
 
-      {/* Quote */}
-      <p className="font-body text-[16px] leading-[1.25] text-[#9499a9]">
+      {/* Quote. Mobile (RESP-05): 12px/14 leading (Figma mobile spec
+          literal), was 16px/1.25. */}
+      <p className="font-body text-[12px] leading-[14px] text-[#9499a9] lg:text-[16px] lg:leading-[1.25]">
         &ldquo;{quote}&rdquo;
       </p>
 
-      {/* Date */}
-      <p className="text-right text-[13px] text-dips-text-lavender">{date}</p>
+      {/* Date. Mobile (RESP-05): 10px (Figma mobile spec literal), was 13px. */}
+      <p className="text-right text-[10px] text-dips-text-lavender lg:text-[13px]">{date}</p>
     </div>
   );
 }
@@ -145,16 +153,20 @@ function ReviewCard({
 export default function ReviewsSection() {
   const t = useTranslations('Reviews');
 
+  // Mobile (RESP-05): py-10 (Figma mobile spec is ~40px vertical), was
+  // py-20 -- sm:py-28 (tablet/desktop, unchanged) already takes over from
+  // 640px up, so no lg: prefix is needed here.
   return (
-    <section id="reviews" className="scroll-mt-[72px] bg-dips-purple-reviews px-6 py-20 sm:py-28">
+    <section id="reviews" className="scroll-mt-[72px] bg-dips-purple-reviews px-6 py-10 sm:py-28">
       <div className="mx-auto max-w-7xl">
 
-        {/* Header */}
+        {/* Header. Mobile (RESP-05): title 48->40px, subtitle 21->16px, one
+            step below the Figma mobile spec (44px/18px). */}
         <div className="mx-auto mb-12 max-w-3xl text-center sm:mb-16">
-          <h2 className="font-heading text-[48px] font-bold leading-[1.2] text-white">
+          <h2 className="font-heading text-[40px] font-bold leading-[1.2] text-white lg:text-[48px]">
             {t('title')}
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-[21px] leading-[1.35] text-dips-text-lavender">
+          <p className="mx-auto mt-4 max-w-2xl text-[16px] leading-[1.35] text-dips-text-lavender lg:text-[21px]">
             {t('subtitle')}
           </p>
         </div>
@@ -185,14 +197,17 @@ export default function ReviewsSection() {
             all 6 reviews already render at once, so there's nothing to page
             to yet; wire up real pagination once there are enough reviews to
             need it, instead of carrying dead state today. */}
-        <div className="mt-8 flex items-center justify-end gap-[14px]">
+        {/* Mobile (RESP-05): arrows spread across the full width
+            (justify-between) at 50px each, matching the Figma mobile spec --
+            was already justify-end/60px, which is the lg-only treatment now. */}
+        <div className="mt-8 flex w-full items-center justify-between lg:w-auto lg:justify-end lg:gap-[14px]">
           <button
             type="button"
             disabled
             aria-label={t('prev')}
-            className="flex h-[60px] w-[60px] items-center justify-center rounded-full bg-[#2b1543] opacity-50"
+            className="flex h-[50px] w-[50px] items-center justify-center rounded-full bg-[#2b1543] opacity-50 lg:h-[60px] lg:w-[60px]"
           >
-            <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none">
+            <svg className="h-5 w-5 lg:h-6 lg:w-6" viewBox="0 0 24 24" fill="none">
               <path d="M15 5l-7 7 7 7" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
@@ -200,9 +215,9 @@ export default function ReviewsSection() {
             type="button"
             disabled
             aria-label={t('next')}
-            className="flex h-[60px] w-[60px] items-center justify-center rounded-full bg-brand-orange opacity-50"
+            className="flex h-[50px] w-[50px] items-center justify-center rounded-full bg-brand-orange opacity-50 lg:h-[60px] lg:w-[60px]"
           >
-            <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none">
+            <svg className="h-5 w-5 lg:h-6 lg:w-6" viewBox="0 0 24 24" fill="none">
               <path d="M9 5l7 7-7 7" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
