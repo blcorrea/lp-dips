@@ -122,20 +122,31 @@ export default function IngredientsSection() {
       className="scroll-mt-[72px] bg-dips-purple-section"
     >
       <div className="mx-auto grid max-w-[1440px] grid-cols-1 lg:grid-cols-2">
-        {/* LEFT PANEL: badge + eyebrow + title + interactive ingredient list */}
-        <div className="flex flex-col justify-center p-6 py-12 lg:p-10">
-          <ScrollReveal direction="up" delay={0.1} duration={0.8}>
-            <span className="inline-flex w-fit items-center gap-2 rounded-card border-2 border-dips-card-tint-2-border bg-dips-card-tint-2 px-[15px] py-3 text-[14px] font-bold text-[#eadae4]">
+        {/* LEFT PANEL: badge + eyebrow + title + interactive ingredient list.
+            Mobile (RESP-03): p-6 (was p-6 py-12, the extra py-12 doubled the
+            Figma mobile spec's ~25px breathing room); lg keeps py-12. */}
+        <div className="flex flex-col justify-center p-6 lg:py-12 lg:p-10">
+          {/* className="flex flex-col" here so order-* below (title before
+              eyebrow on mobile, per RESP-03) actually applies -- order only
+              works between flex/grid siblings, and ScrollReveal's own
+              wrapper div has no display set otherwise. */}
+          <ScrollReveal direction="up" delay={0.1} duration={0.8} className="flex flex-col">
+            {/* Mobile (RESP-03): p-3/12px, was px-[15px] py-3/14px. */}
+            <span className="order-0 inline-flex w-fit items-center gap-2 rounded-card border-2 border-dips-card-tint-2-border bg-dips-card-tint-2 p-3 text-[12px] font-bold text-[#eadae4] lg:px-[15px] lg:py-3 lg:text-[14px]">
               <Diamond />
               {t('socialProof')}
             </span>
 
-            <p className="mb-1 mt-6 font-body text-[18px] italic leading-[1.2] text-dips-text-lavender">
-              {t('eyebrow')}
-            </p>
-            <h2 className="mb-8 font-heading text-[44px] font-bold leading-[1.2] text-white">
+            {/* Mobile (RESP-03): Figma's mobile frame shows the TITLE first
+                and the eyebrow AFTER it (inverted vs. desktop) -- order-*
+                swaps them without duplicating markup. Sizes: title 44->40px,
+                eyebrow 18->14px (one step below the Figma mobile spec). */}
+            <h2 className="order-1 mt-6 font-heading text-[40px] font-bold leading-[1.2] text-white lg:order-2 lg:mb-8 lg:mt-0 lg:text-[44px]">
               {t('sectionTitle')}
             </h2>
+            <p className="order-2 mb-6 mt-1 font-body text-[14px] italic leading-[1.2] text-dips-text-lavender lg:order-1 lg:mb-1 lg:mt-6 lg:text-[18px]">
+              {t('eyebrow')}
+            </p>
           </ScrollReveal>
 
           <ScrollReveal direction="up" delay={0.15} duration={0.6}>
@@ -160,10 +171,14 @@ export default function IngredientsSection() {
                       // because a black shadow is invisible against this
                       // section's own near-black background -- a plain
                       // scale-only version read as "no animation" to the user.
-                      'relative flex w-full items-center gap-[10px] rounded-card border-2 text-left transition-all duration-200 ease-out hover:z-10 hover:-translate-y-1 hover:scale-[1.05] hover:shadow-[0_16px_36px_rgba(242,117,33,0.25)]',
+                      // Mobile (RESP-03): tighter padding/radius matching the
+                      // Figma mobile spec (15px padding, 12px/10px radius
+                      // selected/unselected) -- lg keeps the existing
+                      // desktop values (25px padding, 15px radius both).
+                      'relative flex w-full items-center gap-[10px] border-2 text-left transition-all duration-200 ease-out hover:z-10 hover:-translate-y-1 hover:scale-[1.05] hover:shadow-[0_16px_36px_rgba(242,117,33,0.25)]',
                       isSelected
-                        ? 'border-dips-card-ingredient-hl-border bg-dips-card-ingredient-hl p-card-padding'
-                        : 'border-dips-card-ingredient-border bg-dips-card-ingredient px-card-padding py-5 hover:border-dips-card-ingredient-hl-border/60'
+                        ? 'rounded-[12px] border-dips-card-ingredient-hl-border bg-dips-card-ingredient-hl p-[15px] lg:rounded-card lg:p-card-padding'
+                        : 'rounded-[10px] border-dips-card-ingredient-border bg-dips-card-ingredient p-[15px] hover:border-dips-card-ingredient-hl-border/60 lg:rounded-card lg:px-card-padding lg:py-5'
                     )}
                   >
                     <div
@@ -183,16 +198,21 @@ export default function IngredientsSection() {
 
                     <div className="flex min-w-0 flex-col gap-[5px]">
                       <span className="flex flex-wrap items-center gap-[10px]">
-                        <span className="font-card text-[14px] font-bold leading-[22px] text-white">
+                        {/* Mobile (RESP-03): 12px matches the Figma mobile
+                            spec literally -- text this small doesn't get the
+                            "one step below" treatment (would hurt
+                            legibility for no visual gain). lg keeps 14px. */}
+                        <span className="font-card text-[12px] font-bold leading-[22px] text-white lg:text-[14px]">
                           {t(ingredient.nameKey)}
                         </span>
                         <KeywordPill label={t(ingredient.keywordKey)} />
                       </span>
 
                       {/* Short description — selected row only (Figma keeps it
-                          display:none on the others). */}
+                          display:none on the others). Mobile (RESP-03): 12px
+                          (Figma mobile spec literal), lg keeps 13px. */}
                       {isSelected && (
-                        <span className="font-card text-[13px] font-normal leading-[19px] text-[#96838f]">
+                        <span className="font-card text-[12px] font-normal leading-[19px] text-[#96838f] lg:text-[13px]">
                           {t(ingredient.descKey)}
                         </span>
                       )}
@@ -204,20 +224,28 @@ export default function IngredientsSection() {
           </ScrollReveal>
         </div>
 
-        {/* RIGHT PANEL: intro + detail card for the selected ingredient */}
-        <div className="flex flex-col gap-12 p-6 py-12 lg:p-10">
+        {/* RIGHT PANEL: intro + detail card for the selected ingredient.
+            Mobile (RESP-03): gap-6/p-6 (was gap-12/p-6 py-12 -- matches the
+            Figma mobile spec's tighter 25px rhythm); lg keeps the existing
+            desktop spacing. */}
+        <div className="flex flex-col gap-6 p-6 lg:gap-12 lg:py-12 lg:p-10">
           <ScrollReveal direction="up" delay={0.1} duration={0.8}>
-            <p className="font-card text-[21px] font-normal leading-[1.35] text-dips-text-lavender-muted">
+            {/* Mobile (RESP-03): 18->16px, one step below the Figma mobile
+                spec (18px). */}
+            <p className="font-card text-[16px] font-normal leading-[1.35] text-dips-text-lavender-muted lg:text-[21px]">
               {t('subtitle')}
             </p>
           </ScrollReveal>
 
           <ScrollReveal direction="up" delay={0.2} duration={0.7}>
             {/* Detail card — re-renders from the selection state; icon is the
-                same asset as the selected left-hand row. */}
-            <div className="flex flex-col gap-[25px] rounded-card border-2 border-[rgba(57,41,76,0.5)] bg-[rgba(49,34,89,0.15)] p-card-padding">
+                same asset as the selected left-hand row. Mobile (RESP-03):
+                p-5 (was p-card-padding/25px, Figma mobile spec is 20px). */}
+            <div className="flex flex-col gap-[25px] rounded-card border-2 border-[rgba(57,41,76,0.5)] bg-[rgba(49,34,89,0.15)] p-5 lg:p-card-padding">
               <div className="flex items-center gap-[10px]">
-                <div className="relative h-11 w-11 shrink-0">
+                {/* Mobile (RESP-03): h-10 w-10 (40px, Figma mobile spec),
+                    lg keeps 44px. */}
+                <div className="relative h-10 w-10 shrink-0 lg:h-11 lg:w-11">
                   <Image
                     src={selected.image}
                     alt=""
@@ -229,26 +257,36 @@ export default function IngredientsSection() {
 
                 <div className="flex min-w-0 flex-col gap-[5px]">
                   <span className="flex flex-wrap items-center gap-[10px]">
-                    <h3 className="font-card text-[21px] font-bold leading-[1.35] text-white">
+                    {/* Mobile (RESP-03): 12px (Figma mobile spec literal --
+                        text this small doesn't get the "one step below"
+                        treatment), lg keeps 21px. */}
+                    <h3 className="font-card text-[12px] font-bold leading-[1.35] text-white lg:text-[21px]">
                       {t(selected.nameKey)}
                     </h3>
                     <KeywordPill label={t(selected.keywordKey)} />
                   </span>
-                  <p className="font-card text-[13px] font-normal leading-[19px] text-[#96838f]">
+                  {/* Mobile (RESP-03): 10px/14px leading (Figma mobile spec
+                      literal), lg keeps 13px/19px. */}
+                  <p className="font-card text-[10px] font-normal leading-[14px] text-[#96838f] lg:text-[13px] lg:leading-[19px]">
                     {t(selected.descKey)}
                   </p>
                 </div>
               </div>
 
-              {/* Origins & Curiosities inner card */}
-              <div className="flex flex-col gap-[10px] rounded-card border-2 border-[rgba(91,47,45,0.4)] bg-[rgba(55,22,41,0.4)] p-card-padding">
+              {/* Origins & Curiosities inner card. Mobile (RESP-03): p-[15px]
+                  (Figma mobile spec), lg keeps p-card-padding/25px. */}
+              <div className="flex flex-col gap-[10px] rounded-card border-2 border-[rgba(91,47,45,0.4)] bg-[rgba(55,22,41,0.4)] p-[15px] lg:p-card-padding">
                 <span className="flex items-center gap-[10px]">
                   <Diamond />
-                  <h4 className="font-card text-[14px] font-bold leading-[22px] text-white">
+                  {/* Mobile (RESP-03): 12px (Figma mobile spec literal), lg
+                      keeps 14px. */}
+                  <h4 className="font-card text-[12px] font-bold leading-[22px] text-white lg:text-[14px]">
                     {t(selected.originsTitleKey)}
                   </h4>
                 </span>
-                <p className="font-card text-[13px] font-normal leading-[19px] text-[#96838f]">
+                {/* Mobile (RESP-03): 10px/14px leading (Figma mobile spec
+                    literal), lg keeps 13px/19px. */}
+                <p className="font-card text-[10px] font-normal leading-[14px] text-[#96838f] lg:text-[13px] lg:leading-[19px]">
                   {t(selected.originsKey)}
                 </p>
               </div>
