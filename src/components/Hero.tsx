@@ -234,16 +234,18 @@ export default function Hero() {
             {/* Buy Now only (not How It Works?, not the header's Shop Now):
                 h-[44px] + explicit text-[14px], smaller than the shared
                 text-cta-button (16px)/h-[50px] used elsewhere, per user
-                request scoped specifically to this button. */}
+                request scoped specifically to this button. Hover adds a
+                "jump" (scale + upward lift) only -- no color/border
+                highlight change, per user request. */}
             <a
               href="#bundle"
-              className="inline-flex h-[44px] items-center justify-center rounded-full bg-brand-orange px-7 text-[14px] font-cta font-semibold text-white transition-opacity duration-200 hover:opacity-90"
+              className="inline-flex h-[44px] items-center justify-center rounded-full bg-brand-orange px-7 text-[14px] font-cta font-semibold text-white transition-all duration-200 ease-out hover:-translate-y-1 hover:scale-[1.05] hover:opacity-90"
             >
               {t("ctaPrimary")}
             </a>
             <a
               href="#ingredients"
-              className="inline-flex h-[50px] items-center justify-center rounded-full border border-[#58477e] bg-dips-card-tint px-8 text-cta-button font-cta font-semibold text-white transition-colors duration-200 hover:bg-white/5"
+              className="inline-flex h-[50px] items-center justify-center rounded-full border border-[#58477e] bg-dips-card-tint px-8 text-cta-button font-cta font-semibold text-white transition-all duration-200 ease-out hover:-translate-y-1 hover:scale-[1.05] hover:bg-white/5"
             >
               {t("ctaSecondary")}
             </a>
@@ -296,7 +298,11 @@ export default function Hero() {
                     RESP-01/02.) justify-start keeps every title pinned to the
                     same y regardless of how tall the stretched card ends up.
                     See 05-VISUAL-GAPS.md GAP-34 (5th refinement). */}
-                <div className="flex h-full flex-col justify-start gap-[5px] rounded-card border-2 border-dips-card-tint-border bg-dips-card-tint p-card-padding">
+                {/* Hover = a "jump" (scale + upward lift) only -- no color/
+                    border highlight change, per user request. relative +
+                    hover:z-10 keeps the lifted card above its neighbors
+                    instead of being clipped underneath them while scaled up. */}
+                <div className="relative flex h-full flex-col justify-start gap-[5px] rounded-card border-2 border-dips-card-tint-border bg-dips-card-tint p-card-padding transition-all duration-200 ease-out hover:z-10 hover:-translate-y-1 hover:scale-[1.05]">
                   <div className="flex items-center gap-2">
                     <span
                       aria-hidden="true"
