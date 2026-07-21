@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import AffiliateJoinForm from './AffiliateJoinForm';
 
@@ -22,23 +21,6 @@ export default async function AffiliateJoinPage({ params }: Props) {
   return (
     <main className="min-h-screen bg-gradient-to-br from-brand-purple to-[#3b1c5a] py-20 px-6">
       <div className="mx-auto max-w-5xl">
-
-        {/* Already-an-affiliate link — affiliates were reporting they
-            couldn't find where to log in from this page (they'd only see
-            it after re-applying and hitting the email-conflict error).
-            Mirrors the reverse link already on the login page
-            (AffiliateDashboard.loginNoAccount / loginJoinLink). */}
-        <div className="flex justify-center sm:justify-end mb-6">
-          <Link
-            href={`/${locale}/affiliates/login`}
-            className="text-white/80 text-[14px] hover:text-white transition-colors"
-          >
-            {t('alreadyAffiliate')}{' '}
-            <span className="font-semibold text-brand-orange underline underline-offset-2">
-              {t('alreadyAffiliateCta')}
-            </span>
-          </Link>
-        </div>
 
         {/* Header */}
         <div className="text-center mb-12">
