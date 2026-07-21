@@ -478,4 +478,19 @@ Verificado com zoom nas duas áreas exatas que o usuário marcou como danificada
 
 Build + 71 testes verdes.
 
+## Addendum 2026-07-21 (13ª rodada) — specks do farelo voltaram; correção por região + ordem do pipeline
+
+Usuário mostrou (print ampliado) que os specks do farelo ainda apareciam, mesmo com a nova imagem de fundo limpo. Dois achados:
+
+1. **Os bolsões de fundo entre os grãos formam uma região conectada GRANDE** (não pequenas ilhas isoladas) — o filtro de tamanho (600px) da rodada anterior deixava passar sem querer. Como textura de cacau fosca não tem risco de reflexo genuíno, troquei por uma passada de **limiar de cor direto, restrita a uma caixa delimitadora** (`ISLAND_REGION`) cobrindo só a área do farelo — qualquer pixel esbranquiçado ali vira transparente, tamanho irrelevante, sem tocar plataforma/caixa/discos fora da caixa.
+2. **A erosão de 2px (que limpa a franja de borda) precisa rodar por ÚLTIMO**, sobre a máscara final combinada — rodá-la antes da passada de região deixava cada bolsãozinho do farelo com sua própria franja de mistura de cor não tratada.
+
+**Falso alarme na verificação:** um crop de conferência redimensionado 2x ainda mostrava specks — mas era **artefato de interpolação do redimensionamento** (ringing em bordas de alto contraste), não dado real. Confirmado lendo o alpha bruto dos pixels (0 pixels claros-e-opacos na faixa do farelo) e reconferindo em crop 1:1 sem redimensionar.
+
+Reflexos da plataforma e do disco reconfirmados intactos. Commit `5448df0`.
+
+**Pergunta do usuário respondida:** ele perguntou se fundo preto ou a cor roxa do site facilitaria (mesmo que sobre resíduo, camuflaria). Resposta: **não** — o produto já tem várias cores escuras (roxo da caixa, chocolate marrom), então um fundo escuro/roxo tornaria a separação muito mais arriscada nos dois sentidos (comer produto ou deixar fundo). Branco continua sendo a cor mais distante de todas as cores do produto, logo a mais segura pro processo automático.
+
+Build + 71 testes verdes.
+
 **Próximo passo:** novo walkthrough a **1440px real** (`localhost:3001`) + Stripe click-through para fechar o checkpoint do 05-05 → merge → completar a fase. E me diz o veredito do GAP-21.
