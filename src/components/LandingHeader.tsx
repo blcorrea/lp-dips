@@ -225,10 +225,16 @@ export default function LandingHeader() {
           <div className="hidden items-center gap-4 md:flex">
             {/* Shop Now CTA (desktop) — h-[44px]/px-7/text-[14px] to match the
                 Hero's own CTA size (see Hero.tsx's ctaPrimary anchor), was
-                h-[50px]/text-cta-button (16px), noticeably larger than Hero's. */}
+                h-[50px]/text-cta-button (16px), noticeably larger than Hero's.
+
+                transform-gpu (+ will-change-transform) forces this onto its
+                own GPU compositing layer from first paint -- without it,
+                Chrome shows faint antialiasing seams on the rounded-full
+                edge until the hover pseudo-class forces a repaint (user-
+                reported: hairline cracks on load, gone on hover). */}
             <Link
               href={`/${locale}#bundle`}
-              className="flex h-[44px] items-center justify-center rounded-full bg-brand-orange px-7 text-[14px] font-cta font-semibold text-white transition-opacity duration-200 hover:opacity-90"
+              className="flex h-[44px] transform-gpu items-center justify-center rounded-full bg-brand-orange px-7 text-[14px] font-cta font-semibold text-white transition-opacity duration-200 will-change-transform hover:opacity-90"
             >
               {t("shopNow")}
             </Link>
