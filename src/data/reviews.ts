@@ -5,10 +5,10 @@
 // identical across locales: id, display name, country flag emoji, star
 // rating, and an optional avatar photo.
 //
-// photoUrl: set to a public image path (e.g. '/reviews/marcus.jpg') or leave
-// '' to render an initials avatar automatically. Figma's mock uses round
-// profile photos we don't have real assets for yet -- initials fallback
-// covers this until real photos are provided.
+// photoUrl: set to a public image path or leave '' to render an initials
+// avatar automatically. Figma's mock uses round profile photos; the user
+// provided review-avatar-1..6.png (public/images/redesign), mapped
+// sequentially to the 6 reviews in their established order.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export type Review = {
@@ -20,10 +20,10 @@ export type Review = {
 };
 
 export const reviews: Review[] = [
-  { id: 'marcus',  name: 'Marcus',    flag: '🇺🇸', photoUrl: '', stars: 5 },
-  { id: 'liam',    name: 'Liam',      flag: '🇩🇪', photoUrl: '', stars: 5 },
-  { id: 'elena',   name: 'Elena R.',  flag: '🇨🇭', photoUrl: '', stars: 5 },
-  { id: 'jessica', name: 'Jessica T.', flag: '🇺🇸', photoUrl: '', stars: 5 },
-  { id: 'david',   name: 'David K.',  flag: '🇨🇭', photoUrl: '', stars: 5 },
-  { id: 'tyson',   name: 'Tyson W.',  flag: '🇮🇹', photoUrl: '', stars: 5 },
+  { id: 'marcus',  name: 'Marcus',    flag: '🇺🇸', photoUrl: '/images/redesign/review-avatar-1.png', stars: 5 },
+  { id: 'liam',    name: 'Liam',      flag: '🇩🇪', photoUrl: '/images/redesign/review-avatar-2.png', stars: 5 },
+  { id: 'elena',   name: 'Elena R.',  flag: '🇨🇭', photoUrl: '/images/redesign/review-avatar-3.png', stars: 5 },
+  { id: 'jessica', name: 'Jessica T.', flag: '🇺🇸', photoUrl: '/images/redesign/review-avatar-4.png', stars: 5 },
+  { id: 'david',   name: 'David K.',  flag: '🇨🇭', photoUrl: '/images/redesign/review-avatar-5.png', stars: 5 },
+  { id: 'tyson',   name: 'Tyson W.',  flag: '🇮🇹', photoUrl: '/images/redesign/review-avatar-6.png', stars: 5 },
 ];
