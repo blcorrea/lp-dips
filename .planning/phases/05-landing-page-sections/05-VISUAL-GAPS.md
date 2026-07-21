@@ -466,4 +466,16 @@ Tamanho da imagem mantido como estava (52%/750px), por pedido do usuário.
 
 Build + 71 testes verdes.
 
+## Addendum 2026-07-20 (12ª rodada) — bug real: a passada de "ilhas pequenas" comia reflexos do produto
+
+Usuário apontou (com prints ampliados) que a passada de limpeza de "ilhas brancas pequenas" da 11ª rodada tinha um efeito colateral real: **reflexos genuínos** na plataforma e nos discos de chocolate (manchas de luz pequenas e isoladas, sem conexão com a borda — exatamente como os bolsões de fundo entre grãos de farelo) foram apagados por engano, virando marcas pretas tipo "risco" na composição.
+
+**Solução do usuário:** gerou a foto de novo via GPT com fundo **branco sólido e uniforme** de propósito, especificamente pra facilitar a remoção. Confirmei a uniformidade (~254,253,254 em todos os cantos) — com um fundo tão limpo, o flood-fill simples a partir da borda já é suficiente, então **desativei a passada de ilhas pequenas** (ela não consegue distinguir "bolsão de fundo entre grãos" de "reflexo pequeno no produto" — são estruturalmente idênticos do ponto de vista do algoritmo). Script ganhou uma flag `SKIP_ISLAND_PASS`.
+
+Verificado com zoom nas duas áreas exatas que o usuário marcou como danificadas (borda da plataforma, aresta do disco de cima) — reflexos intactos, e sem specks de farelo tampouco (essa nova foto não tem os bolsões finos que a anterior tinha). Commit `05a0cb7`.
+
+**Lição:** heurísticas de "ilha pequena = fundo" não distinguem semanticamente entre "buraco no fundo" e "brilho no produto" — ambos são manchas claras pequenas e isoladas. Fundo de entrada uniforme (sem sombra/vinheta) simplifica o problema o bastante pra não precisar dessa heurística arriscada.
+
+Build + 71 testes verdes.
+
 **Próximo passo:** novo walkthrough a **1440px real** (`localhost:3001`) + Stripe click-through para fechar o checkpoint do 05-05 → merge → completar a fase. E me diz o veredito do GAP-21.
