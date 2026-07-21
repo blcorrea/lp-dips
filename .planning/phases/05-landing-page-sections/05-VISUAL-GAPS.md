@@ -626,3 +626,28 @@ Análise no Fable a partir do Copy-as-CSS da seção + print, plano commitado em
 Commit `efefb0e`. Build + 71 testes verdes.
 
 **Esta era a última seção da Fase 5** (GAP-35 a GAP-40 cobriram Story, Ingredients, Buy, Reviews, FAQ e Footer). Falta official fechamento: novo walkthrough completo a 1440px real + Stripe click-through pra fechar o checkpoint human-verify do 05-05 → merge do worktree → fase completa.
+
+## Addendum 2026-07-21 — Início da responsividade mobile (RESP-01, Hero)
+
+Fase 5 (desktop) fechada; começou a Fase 6 (responsividade), mesmo esquema de sempre: Copy-as-CSS do frame mobile (375×1656, Figma node `281:22`) + 2 prints, análise no Fable, plano commitado em `.planning/phases/05-landing-page-sections/RESP-01-HERO-MOBILE-PLAN.md` antes da execução (Sonnet).
+
+O Figma agora TEM versão mobile própria (375px, 7 seções) — descoberto e documentado anteriormente em `FIGMA-MOBILE-EXTRACTION.md`. Isso muda a premissa original do RESP-01 (que previa decisões próprias por falta de referência): agora dá pra ser fiel ao Figma mobile, com os mesmos overrides funcionais já estabelecidos no desktop.
+
+**Hero mobile — diferenças reais corrigidas** (só `Hero.tsx`, canvas desktop `lg:` intocado):
+
+| Item | Antes (mobile) | Depois (Figma mobile) |
+|---|---|---|
+| Alinhamento do bloco de texto | centralizado | **alinhado à esquerda** (badge, H1, subtítulo, trust items, CTAs) |
+| H1 | 58px fixo (token desktop) | **36px** (Figma 40px, um passo abaixo — mesma convenção do desktop 64→58) |
+| Subtítulo | 21px fixo | **17px** (Figma 19px, um passo abaixo) |
+| Mini trust items | linha centralizada, cor muted | **coluna empilhada** (gap 15), cor lavanda cheia (não muted) |
+| Imagem do produto | dentro do gutter `px-6` | **full-bleed** (borda a borda, `-mx-6`) |
+| Feature cards (gap) | 15px (herdado do desktop) | **25px** no mobile (Figma), mantém 15px em `lg:` (refinamento GAP-34 preservado) |
+| Blob pequeno | mesma posição do desktop (top 4px) | reposicionado (~26% da seção) e reduzido (110px) |
+| Blob grande | `hidden` abaixo de `lg` | **nova instância mobile**, atrás do último feature card (canto inferior direito) — elemento separado do blob desktop pra não arriscar a posição já aprovada (GAP-30) |
+
+**Overrides mantidos (vencem o Figma mobile):** botão Buy Now `h-[44px]`/14px (pedido explícito do usuário, não é do Figma); marquee da trust bar (o Figma mobile só mostra o grupo desktop de 1440px clipado, artefato de reuso); badge de social proof mantido no token atual (o dump mobile tinha um bg vinho divergente do desktop, não aplicado); efeitos de hover "jump" dos CTAs/cards (irrelevantes em touch, não removidos).
+
+Commit `232c525`. Build + 71 testes verdes.
+
+**Pendente:** Header mobile (hambúrguer com drawer real) fica fora de escopo desta rodada — o estado fechado já bate com o Figma, o drawer funcional é tarefa própria. Próximas seções mobile a fazer: Story, Ingredients, Bundle, Reviews, FAQ, Footer.
