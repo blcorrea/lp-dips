@@ -503,4 +503,24 @@ Build + 71 testes verdes.
 
 **Revertido na mesma rodada** (`cba5570`): o limiar conservador do conserto #2 trouxe de volta alguns pontos brancos de fundo em outros lugares da mesma borda — o usuário preferiu a versão anterior (`5448df0`, com a mordida na borda) a essa troca. A mordida na lateral da plataforma continua como imperfeição conhecida, não resolvida.
 
+## Addendum 2026-07-21 — Seção 2 (Story) alinhada ao Figma via dump + prints (GAP-35)
+
+O usuário mandou o Copy-as-CSS da seção inteira (frame "Ingredients" no Figma, 1440×699 — na verdade é a Story) + prints lado a lado, e pediu também o mesmo tratamento de fontes da Hero. Tudo em `2d36c35`:
+
+**Layout:**
+| Item | Figma | Nosso (antes) |
+|---|---|---|
+| Badge "10,000+ Happy Couples" | **topo** do painel da foto (coluna justify-between), retângulo 15px c/ losango, Inter 700 #EADAE4 | embaixo junto do título, pill sem losango |
+| Badges inferiores | retângulo 15px c/ losango, Satoshi 700 branco; copy "100% Natural / 6 Active Ingredients / Satisfaction Guaranteed" | pill sem losango; copy errada ("Made in the USA" / "Aphrodisiac Blend") |
+| Split de colunas | ~50/50 (723/717) | 45/55 |
+| Gradiente da foto | vertical `#F15A22/20 → #39165E/20` | diagonal, cores diferentes |
+| Padding painéis | 40px; painel direito alinhado ao topo | 48–64px; centralizado |
+| Título | 2 linhas fixas ("Made to be" / "Savoured by Two", camadas separadas) | quebrava em 3 linhas |
+
+**Copy (en/es/pt):** p1 ganhou a frase de abertura do Figma ("Before love became poetry, it was impulse."); "We blend technical precision..." migrou de p3 pra p2 (divisão de parágrafos do Figma); p3 reduzido à frase final — a frase "Each piece is an invitation..." não existe no Figma e foi removida.
+
+**Fontes (tratamento da Hero, 1 passo abaixo do spec):** título 64→58, "Our Story" 54→48, corpo 24→21, subtítulo 24→21, badge social 16→14, badges 14→13.
+
+Build + 71 testes verdes.
+
 **Próximo passo:** novo walkthrough a **1440px real** (`localhost:3001`) + Stripe click-through para fechar o checkpoint do 05-05 → merge → completar a fase. E me diz o veredito do GAP-21.
