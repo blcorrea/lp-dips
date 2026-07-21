@@ -697,3 +697,29 @@ Mesmo esquema: Copy-as-CSS do frame mobile (375×1097, Figma node `281:209`) + 2
 Todas as mudanças só na base; `lg:` mantém os valores desktop já aprovados. Interatividade de seleção e hover-lift intocados.
 
 Commit `1c2dba2`. Build + 71 testes verdes.
+
+## Addendum 2026-07-21 — Buy/Bundle mobile (RESP-04)
+
+Mesmo esquema: Copy-as-CSS do frame mobile (375×1429, Figma node `281:373`) + 2 prints, análise no Fable, plano commitado em `.planning/phases/05-landing-page-sections/RESP-04-BUY-MOBILE-PLAN.md` antes da execução (Sonnet).
+
+**Duas mudanças estruturais** (não só medidas):
+
+1. **Ordem dos painéis invertida:** no mobile a FOTO vem primeiro, o painel creme de compra vem depois — o oposto do desktop (compra à esquerda). Resolvido com `order-1`/`order-2` nos dois filhos diretos do grid em `BuySection.tsx`.
+2. **Anatomia do bundle card muda:** no mobile cada card vira **coluna de 2 linhas** — imagem+nome/preço em cima, pill de desconto (esquerda) + total (direita) embaixo, largura cheia. No desktop continua a linha única (imagem+nome à esquerda, pill/total empilhados à direita). Reestruturado só com classes responsivas em `ProductPurchaseBox.tsx`, sem duplicar JSX.
+
+| Item | Antes (mobile) | Depois (Figma mobile) |
+|---|---|---|
+| Altura da foto | `min-h-[420px]` | **`min-h-[699px]`** |
+| Título da foto | 58px fixo | **40px** (Figma 44, um passo abaixo) |
+| Subtítulo da foto | 21px fixo | **14px** (Figma 16) |
+| Badges de benefício | linha, wrap, à direita | **coluna empilhada à esquerda** (gap 15) |
+| Padding dos cards/summary | 25px | **20px** (Figma mobile) |
+| Nome do bundle | 18px | **14px** (Figma 16, um passo abaixo) |
+| Total do card / valores do summary | 18px | **16px** |
+| Labels do summary | 13px | **12px** (spec mobile literal) |
+
+**Overrides mantidos (vencem o Figma mobile):** preços reais da Stripe (nunca os placeholders $59.99/$89.99 "todos $29.99/box" do mock); **"Most Popular" continua na borda SUPERIOR** do card 2x — o Figma mobile o desenha na borda inferior, mas prevalece o pedido explícito do usuário (com screenshot, sessão anterior) de manter no topo; pill de desconto em 9px (Figma pede 8px, mesma decisão de legibilidade do RESP-03); copy "Ingredients" corrigida (Figma tem o typo "Igredients").
+
+Todas as mudanças só na base; `lg:` mantém os valores desktop já aprovados. A reestruturação do card foi só de className (nenhuma mudança de `onClick`/estado) — vale conferir manualmente no browser que a seleção de bundle e o Buy Now continuam funcionando.
+
+Commit `ce98ce0`. Build + 71 testes verdes.
