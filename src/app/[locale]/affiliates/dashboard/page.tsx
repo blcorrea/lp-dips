@@ -4,6 +4,7 @@ import { getAffiliateSessionId } from '@/lib/affiliate-auth';
 import { getAffiliateDashboardData } from '@/lib/affiliates';
 import { listCreatives } from '@/lib/creatives';
 import LandingHeader from '@/components/LandingHeader';
+import LandingFooter from '@/components/LandingFooter';
 import CopyLinkButton from './CopyLinkButton';
 import LogoutButton from './LogoutButton';
 import AffiliateCreativesGallery from './AffiliateCreativesGallery';
@@ -190,6 +191,7 @@ export default async function AffiliateDashboardPage({ params }: Props) {
 
       </div>
       </main>
+      <LandingFooter />
     </>
   );
 }
