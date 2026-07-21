@@ -2,40 +2,47 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import BuyNowButton from './BuyNowButton';
+import { cn } from '@/lib/utils';
 
 // ── Bundle definitions ────────────────────────────────────────────────────────
+// Prices are the REAL Stripe-backed values -- NOT the Figma mock's
+// placeholder $29.99/$59.99/$89.99 (all "$29.99/box"). Copying those would
+// misrepresent what the customer is actually charged. discountKey/shipping
+// drive the pill copy and the summary math; labelKey drives the visible
+// bundle name (Figma format: "1x Box"/"2x Boxes"/"3x Boxes").
 
 const BUNDLES = [
   {
-    id:         '1x',
-    label:      '1 Box',
-    priceId:    'price_1TZZWfGwnxe7ZLlEHKAy4rkm',
-    unitPrice:  29.99,
-    totalPrice: 29.99,
-    quantity:   1,
-    badge:      null,
-    shipping:   'standard',
+    id:          '1x',
+    labelKey:    'box1',
+    priceId:     'price_1TZZWfGwnxe7ZLlEHKAy4rkm',
+    unitPrice:   29.99,
+    totalPrice:  29.99,
+    quantity:    1,
+    discountKey: 'discount0',
+    shipping:    'standard',
   },
   {
-    id:         '2x',
-    label:      '2 Boxes',
-    priceId:    'price_1TZZJnGwnxe7ZLlElHcai2IT',
-    unitPrice:  27.89,
-    totalPrice: 55.78,
-    quantity:   2,
-    badge:      'Save 7%',
-    shipping:   'standard',
+    id:          '2x',
+    labelKey:    'box2',
+    priceId:     'price_1TZZJnGwnxe7ZLlElHcai2IT',
+    unitPrice:   27.89,
+    totalPrice:  55.78,
+    quantity:    2,
+    discountKey: 'discount2',
+    shipping:    'standard',
   },
   {
-    id:         '3x',
-    label:      '3 Boxes',
-    priceId:    'price_1TZZLGGwnxe7ZLlEp1x6vZYb',
-    unitPrice:  25.19,
-    totalPrice: 75.57,
-    quantity:   3,
-    badge:      'Save 16% + Free Shipping',
-    shipping:   'free',
+    id:          '3x',
+    labelKey:    'box3',
+    priceId:     'price_1TZZLGGwnxe7ZLlEp1x6vZYb',
+    unitPrice:   25.19,
+    totalPrice:  75.57,
+    quantity:    3,
+    discountKey: 'discount3',
+    shipping:    'free',
   },
 ] as const;
 
@@ -51,16 +58,26 @@ type ProductPurchaseBoxProps = {
   locale?:          string;
 };
 
+function Diamond() {
+  return (
+    <span
+      aria-hidden="true"
+      className="inline-block h-[5px] w-[5px] shrink-0 rotate-[43deg] bg-brand-orange"
+    />
+  );
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function ProductPurchaseBox({
   currencyCode  = 'USD',
-  buttonLabel   = 'Buy now',
   buttonClassName = '',
   productId,
   productName,
   locale        = 'en',
 }: ProductPurchaseBoxProps) {
+  const t = useTranslations('BuySection');
+
   // Default selection: 2x (anchoring — middle option)
   const [selectedId, setSelectedId] = useState<'1x' | '2x' | '3x'>('2x');
 
@@ -68,107 +85,128 @@ export default function ProductPurchaseBox({
   const total = selectedBundle.totalPrice + (selectedBundle.shipping === 'free' ? 0 : 6.97);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-[25px]">
 
-      {/* ── Bundle cards ──────────────────────────────────────────────────── */}
-      <div className="space-y-3">
+      {/* ── Bundle cards (Figma: Frame 13, gap 10) ───────────────────────── */}
+      <div className="flex flex-col gap-[10px]">
         {BUNDLES.map((bundle) => {
           const isSelected = bundle.id === selectedId;
+          // "Most Popular" is a fixed attribute of the 2x bundle in Figma,
+          // not tied to which card is currently selected.
+          const isMostPopular = bundle.id === '2x';
+
           return (
             <button
               key={bundle.id}
               type="button"
               onClick={() => setSelectedId(bundle.id)}
-              className={`relative w-full text-left rounded-card border-2 px-4 py-3.5 transition-all duration-150
-                ${isSelected
-                  ? 'bg-dips-card-ingredient-hl border-brand-orange shadow-sm'
-                  : 'bg-dips-bundle-light border-dips-bundle-light-border hover:border-brand-orange/40'
-                }`}
-            >
-              {/* Floating "Most Popular" badge — selected (2x default) card only */}
-              {isSelected && (
-                <span className="absolute -top-2.5 right-4 rounded-full bg-brand-orange px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
-                  Most Popular
-                </span>
+              className={cn(
+                'relative flex w-full items-center gap-[10px] rounded-card border-2 px-[25px] py-5 text-left transition-colors duration-150',
+                isSelected
+                  ? 'border-brand-orange bg-dips-card-ingredient-hl'
+                  : 'border-dips-bundle-light-border bg-dips-bundle-light hover:border-brand-orange/40',
+                isMostPopular && 'mb-[14px]'
               )}
+            >
+              {/* Thumbnail — the actual (transparent) product photo, mirrored,
+                  per Figma (matrix(-1,...) = horizontal flip), no boxed bg */}
+              <div className="relative h-[74px] w-[110px] shrink-0">
+                <Image
+                  src="/images/redesign/hero-product.png"
+                  alt=""
+                  fill
+                  className="scale-x-[-1] object-contain"
+                  sizes="110px"
+                />
+              </div>
 
-              <div className="flex items-center gap-3">
-                {/* Thumbnail */}
-                <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-white/90">
-                  <Image
-                    src="/images/redesign/product-box-small.png"
-                    alt=""
-                    fill
-                    className="object-contain"
-                    sizes="48px"
-                  />
-                </div>
-
+              <div className="flex flex-1 items-center justify-between gap-[10px]">
                 {/* Label + unit price */}
-                <div className="flex-1">
-                  <p className={`font-semibold text-[14px] leading-tight
-                    ${isSelected ? 'text-white' : 'text-dips-text-purple-deep'}`}>
-                    {bundle.label}
-                  </p>
-                  <p className={`text-[12px] ${isSelected ? 'text-white/70' : 'text-dips-text-purple-deep/60'}`}>
-                    ${bundle.unitPrice.toFixed(2)} / box
-                  </p>
+                <div className="flex flex-col gap-[5px]">
+                  <span
+                    className={cn(
+                      'font-card text-[18px] font-bold leading-[1.2]',
+                      isSelected ? 'text-white' : 'text-dips-text-purple-deep'
+                    )}
+                  >
+                    {t(bundle.labelKey)}
+                  </span>
+                  <span className="font-card text-[13px] text-[#96838f]">
+                    ${bundle.unitPrice.toFixed(2)} / {t('perBox')}
+                  </span>
                 </div>
 
-                {/* Right: discount badge + total */}
-                <div className="text-right shrink-0">
-                  {bundle.badge && (
-                    <span className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-bold mb-0.5
-                      ${bundle.shipping === 'free'
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-brand-orange/10 text-brand-orange'
-                      }`}>
-                      {bundle.badge}
-                    </span>
-                  )}
-                  <p className={`font-bold text-[15px] ${isSelected ? 'text-white' : 'text-dips-text-purple-deep'}`}>
+                {/* Right: discount pill + total */}
+                <div className="flex flex-col items-end gap-[10px]">
+                  <span
+                    className={cn(
+                      'inline-flex shrink-0 items-center gap-[5px] rounded-full border-2 px-[15px] py-2 font-card text-[9px] font-bold',
+                      isSelected
+                        ? 'border-dips-card-ingredient-hl-border bg-[rgba(55,22,41,0.15)] text-white'
+                        : 'border-dips-bundle-light-border bg-white text-dips-text-purple-deep'
+                    )}
+                  >
+                    <Diamond />
+                    {t(bundle.discountKey)}
+                  </span>
+                  <span
+                    className={cn(
+                      'font-card text-[18px] font-bold leading-[1.2]',
+                      isSelected ? 'text-white' : 'text-dips-text-purple-deep'
+                    )}
+                  >
                     ${bundle.totalPrice.toFixed(2)}
-                  </p>
+                  </span>
                 </div>
               </div>
+
+              {isMostPopular && (
+                <span className="absolute -bottom-[17px] left-1/2 -translate-x-1/2 rounded-full bg-brand-orange px-[15px] py-2.5 font-body text-[12px] font-bold text-white">
+                  {t('mostPopular')}
+                </span>
+              )}
             </button>
           );
         })}
       </div>
 
-      {/* ── Summary panel ─────────────────────────────────────────────────── */}
-      <div className="rounded-card border border-dips-bundle-light-border bg-dips-bundle-summary px-5 py-4 space-y-2">
-        <div className="flex items-center justify-between text-sm text-dips-text-purple-deep/70">
-          <span>Unit Price</span>
-          <span className="font-medium text-dips-text-purple-deep">
+      {/* ── Summary panel — 2 columns (Figma: unit price | shipping) ──────── */}
+      <div className="flex items-center justify-between rounded-card border-2 border-dips-bundle-light-border bg-dips-bundle-summary px-[25px] py-5">
+        <div className="flex flex-col gap-[5px]">
+          <span className="font-card text-[13px] text-[#96838f]">{t('unitPrice')}</span>
+          <span className="font-card text-[18px] font-bold text-dips-text-purple-deep">
             ${selectedBundle.unitPrice.toFixed(2)}
           </span>
         </div>
-        <div className="flex items-center justify-between text-sm text-dips-text-purple-deep/70">
-          <span>Shipping</span>
+        <div className="flex flex-col items-end gap-[5px]">
+          <span className="font-card text-[13px] text-[#96838f]">{t('shipping')}</span>
           {selectedBundle.shipping === 'free' ? (
-            <span className="font-semibold text-green-600">Free</span>
+            <span className="font-card text-[18px] font-bold text-green-600">
+              {t('freeShipping')}
+            </span>
           ) : (
-            <span className="font-medium text-dips-text-purple-deep">$6.97</span>
+            <span className="font-card text-[18px] font-bold text-dips-text-purple-deep">
+              $6.97
+            </span>
           )}
         </div>
       </div>
 
-      {/* ── Buy button — total folded into the same pill (right-aligned overlay,
-            keeps BuyNowButton.tsx itself byte-for-byte untouched) ──────────── */}
+      {/* ── Buy button — total folded into the same pill (right-aligned
+            overlay); label + total both white per Figma. ─────────────────── */}
       <div className="relative">
         <BuyNowButton
           priceId={selectedBundle.priceId}
           quantity={selectedBundle.quantity}
-          label={buttonLabel}
-          className={`w-full justify-between pl-10 pr-28 ${buttonClassName}`}
+          label={t('buyNow')}
+          className={cn('h-[50px] w-full justify-between pl-10 pr-28 font-cta text-[14px] font-semibold text-white', buttonClassName)}
           productId={productId}
           productName={productName}
           productPrice={selectedBundle.totalPrice}
           currency={currencyCode}
           locale={locale}
         />
-        <span className="pointer-events-none absolute inset-y-0 right-10 flex items-center text-lg font-bold text-brand-purple">
+        <span className="pointer-events-none absolute inset-y-0 right-10 flex items-center font-cta text-[14px] font-semibold text-white">
           ${total.toFixed(2)}
         </span>
       </div>

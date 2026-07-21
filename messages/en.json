@@ -488,12 +488,25 @@
     },
     "BuySection": {
         "eyebrow": "The Dips Experience",
-        "title": "Bring the experience home.",
-        "benefit1": "Natural ingredients",
-        "benefit2": "Secure checkout",
-        "benefit3": "Made to share",
+        "title": "Bring the<br></br>Experience home.",
+        "subtitle": "A Chocolate crafted for connection.",
+        "benefit1": "100% Natural Ingredients",
+        "benefit2": "Secure Checkout",
+        "benefit3": "Made To Share",
         "startingAt": "Starting at",
-        "perBox": "box"
+        "perBox": "box",
+
+        "box1": "1x Box",
+        "box2": "2x Boxes",
+        "box3": "3x Boxes",
+        "discount0": "0% Discount",
+        "discount2": "7% Discount",
+        "discount3": "16% Discount + Free Shipping",
+        "mostPopular": "Most Popular",
+        "unitPrice": "Unit Price",
+        "shipping": "Shipping",
+        "freeShipping": "Free",
+        "buyNow": "Buy Now"
     },
     "AffiliateJoin": {
         "eyebrow": "Partner Program",

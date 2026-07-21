@@ -488,12 +488,25 @@
     },
     "BuySection": {
         "eyebrow": "A Experiência Dips",
-        "title": "Leve a experiência para casa.",
-        "benefit1": "Ingredientes naturais",
-        "benefit2": "Checkout seguro",
-        "benefit3": "Feito para compartilhar",
+        "title": "Leve a<br></br>Experiência para casa.",
+        "subtitle": "Um Chocolate feito para a conexão.",
+        "benefit1": "100% Ingredientes Naturais",
+        "benefit2": "Checkout Seguro",
+        "benefit3": "Feito Para Compartilhar",
         "startingAt": "A partir de",
-        "perBox": "caixa"
+        "perBox": "caixa",
+
+        "box1": "1x Caixa",
+        "box2": "2x Caixas",
+        "box3": "3x Caixas",
+        "discount0": "0% de Desconto",
+        "discount2": "7% de Desconto",
+        "discount3": "16% de Desconto + Frete Grátis",
+        "mostPopular": "Mais Popular",
+        "unitPrice": "Preço Unitário",
+        "shipping": "Frete",
+        "freeShipping": "Grátis",
+        "buyNow": "Comprar Agora"
     },
     "AffiliateJoin": {
         "eyebrow": "Programa de Parceiros",
