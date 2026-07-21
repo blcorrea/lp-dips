@@ -72,6 +72,7 @@
         "poeticLine2": "poesia, era impulso."
     },
     "Ingredients": {
+        "socialProof": "Mais de 10.000 Casais Felizes",
         "eyebrow": "Os ingredientes",
         "sectionTitle": "Por trás da experiência.",
         "subtitle": "Cada ingrediente é cuidadosamente selecionado por suas propriedades afrodisíacas e qualidade premium. Seis botânicos, uma experiência inesquecível.",
@@ -79,37 +80,37 @@
         "cocoa_name": "Nibs de Cacau Arriba Premium",
         "cocoa_desc": "Sabor rico e intenso do cacau Arriba de origem única – a base gourmet definitiva.",
         "cocoa_keyword": "RITUAL",
-        "cocoa_originsTitle": "Origens & Curiosidades:",
+        "cocoa_originsTitle": "Origens & Curiosidades",
         "cocoa_origins": "O cacau já foi consumido em bebidas cerimoniais por culturas antigas, simbolizando abundância, calor e momentos compartilhados de conexão.",
 
         "maca_name": "Maca Peruana em Pó",
         "maca_desc": "Raiz ancestral peruana conhecida por aumentar vitalidade, energia e libido, intensificando o desejo.",
         "maca_keyword": "RESISTÊNCIA",
-        "maca_originsTitle": "Origens & Curiosidades:",
+        "maca_originsTitle": "Origens & Curiosidades",
         "maca_origins": "Nativa dos altos Andes, a maca era tradicionalmente consumida como raiz nutritiva para sustentar resistência e resiliência.",
 
         "ginger_name": "Gengibre em Pó",
         "ginger_desc": "Especiaria quente que estimula a circulação e intensifica naturalmente as sensações.",
         "ginger_keyword": "FAÍSCA",
-        "ginger_originsTitle": "Origens & Curiosidades:",
+        "ginger_originsTitle": "Origens & Curiosidades",
         "ginger_origins": "Utilizado há séculos em diversas culturas, o gengibre é conhecido por sua natureza aquecedora e por sua ligação com vitalidade e energia.",
 
         "theanine_name": "L-Teanina",
         "theanine_desc": "Aminoácido do “bom humor” que melhora foco e relaxamento, ajudando você a aproveitar plenamente o momento.",
         "theanine_keyword": "PRESENÇA",
-        "theanine_originsTitle": "Origens & Curiosidades:",
+        "theanine_originsTitle": "Origens & Curiosidades",
         "theanine_origins": "Tradicionalmente associada aos rituais do chá, a L-Teanina é valorizada há muito tempo por promover calma, foco e presença atenta.",
 
         "blend_name": "Blend Herbal Afrodisíaco",
         "blend_desc": "Uma combinação botânica proprietária criada para aprofundar conexão, prazer e experiência compartilhada.",
         "blend_keyword": "UNIÃO",
-        "blend_originsTitle": "Origens & Curiosidades:",
+        "blend_originsTitle": "Origens & Curiosidades",
         "blend_origins": "Misturas herbais são usadas há muito tempo em rituais tradicionais e preparações íntimas para apoiar calor, presença e desejo.",
 
         "fenugreek_name": "Feno-grego em Pó",
         "fenugreek_desc": "Tradicionalmente associado à vitalidade e ao equilíbrio hormonal natural, ampliando o desejo com calor sutil.",
         "fenugreek_keyword": "EQUILÍBRIO",
-        "fenugreek_originsTitle": "Origens & Curiosidades:",
+        "fenugreek_originsTitle": "Origens & Curiosidades",
         "fenugreek_origins": "O feno-grego aparece em antigas tradições alimentares e herbais, valorizado por nutrir, aquecer e restaurar o equilíbrio natural.",
 
         "viewPdf": "Ver Informação Nutricional"
