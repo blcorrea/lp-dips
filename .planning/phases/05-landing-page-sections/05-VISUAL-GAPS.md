@@ -582,3 +582,27 @@ Análise no Fable a partir do Copy-as-CSS da seção inteira + print, plano comm
 **Aviso ao usuário:** o Figma usa fotos de perfil redondas que não temos — mantido o fallback de iniciais (`photoUrl` pronto pra receber fotos reais, como as imagens de produto que o usuário gerou nas seções anteriores).
 
 Commit `1708e3f`. Build + 71 testes verdes.
+
+**Correção (mesma sessão, `a836165`):** usuário forneceu as 6 fotos de perfil (`review-avatar-1..6.png`), mapeadas em ordem sequencial pra ordem já estabelecida dos reviews (Marcus, Liam, Elena R., Jessica T., David K., Tyson W.).
+
+## Addendum 2026-07-21 — Seção 6 (FAQ) reconstruída (GAP-39)
+
+Análise no Fable a partir do Copy-as-CSS da seção + print, plano commitado em `.planning/phases/05-landing-page-sections/GAP-39-FAQ-PLAN.md` antes da execução (Sonnet).
+
+Os tokens do card já batiam exatos (bg `#231435`, borda `#39294C`, raio 15, padding 25) — só precisava ajustar header, largura/espaçamento do acordeão, indicador de aberto, e tipografia:
+
+| Item | Antes | Depois |
+|---|---|---|
+| Subtítulo | não existia | novo, reaproveitando as traduções exatas de `Reviews.subtitle` (o Figma repete a mesma frase nas duas seções) |
+| Título | lavanda, 54px | branco, 48px |
+| Largura do acordeão | 1024px | **807px** (Figma) |
+| Gap entre itens | 16px | **10px** |
+| Indicador "aberto" | barra lateral laranja (`border-l-4`) | **borda completa laranja** (`border-2` + `border-brand-orange`) |
+| Item inicial | tudo fechado | **q1 aberto por padrão** (`defaultValue="q1"`, igual o mock do Figma) |
+| Pergunta | 18px, lavanda | 16px, branca |
+| Chevron | 16px (padrão shadcn) | 24px branco traço 2.5 (sobrescrito via seletor arbitrário no `AccordionTrigger`, sem editar `ui/accordion.tsx`) |
+| Resposta | 18px, sem quebra de linha | 16px + `whitespace-pre-line` (a5 finalmente quebra a lista de ingredientes como pretendido) |
+
+**Copy das 6 perguntas/respostas mantida intocada** — é override funcional documentado; o Figma diverge em detalhes finos ("Is this product safe?" vs. o nosso "Is the product safe?") e a copy real vence.
+
+Commit `8e11d5f`. Build + 71 testes verdes.
