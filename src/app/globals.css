@@ -39,6 +39,35 @@
   font-display: swap;
 }
 
+/* Satoshi (self-hosted, from Fontshare) — the real card font per Figma.
+   Earlier phases substituted Plus Jakarta Sans because the files weren't in
+   the repo; different font metrics at the same declared size were making the
+   card text read as oversized. Regular (400) = card body, Bold (700) = card
+   titles. */
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ============================= */
 /* THEME VARIABLES */
 /* ============================= */
@@ -54,6 +83,8 @@
   --radius-xl: 1rem;
   --radius-2xl: 2rem;
   --radius-3xl: 3rem;
+  --radius-card: 0.9375rem;
+  --radius-card-lg: 1.125rem;
 
   /* ============================= */
   /* BRAND COLORS */
@@ -73,6 +104,116 @@
   --color-brand-dark: #1A1A1A;
 
   --color-brand-gray-light: #f5f0ed;
+
+  /* ============================= */
+  /* DIPS REDESIGN COLORS (landing-only, additive) */
+  /* ============================= */
+  /* CTA orange stays --color-brand-orange above (DSGN-03) -- no new orange token added here. */
+
+  --color-dips-purple-hero-start: #18012d;
+  --color-dips-purple-hero-mid: #200635;
+  --color-dips-purple-hero-end: #250246;
+  --color-dips-purple-deepest: #0a0519;
+  --color-dips-purple-section: #1a0a2e;
+  --color-dips-purple-reviews: #2d1a69;
+  --color-dips-cream: #fff8f0;
+  --color-dips-card-tint: rgba(49,34,89,0.25);
+  --color-dips-card-tint-border: #392a61;
+  --color-dips-card-tint-2: rgba(38,23,77,0.15);
+  --color-dips-card-tint-2-border: rgba(82,64,130,0.5);
+  --color-dips-card-lavender: rgba(166,145,221,0.15);
+  --color-dips-card-lavender-border: rgba(212,201,244,0.25);
+  --color-dips-card-ingredient: #231435;
+  --color-dips-card-ingredient-border: #39294c;
+  --color-dips-card-ingredient-hl: #371629;
+  --color-dips-card-ingredient-hl-border: #5b2f2d;
+  --color-dips-card-review: rgba(35,20,53,0.4);
+  --color-dips-card-review-border: rgba(57,41,76,0.4);
+  --color-dips-bundle-light: #ffffff;
+  --color-dips-bundle-light-border: #eee6df;
+  --color-dips-bundle-summary: #f6efe9;
+  --color-dips-text-lavender: #ebd9fe;
+  --color-dips-text-lavender-muted: #ae9bda;
+  --color-dips-text-mauve: #96838f;
+  --color-dips-text-gray-review: #9499a9;
+  --color-dips-text-footer: #706c7b;
+  --color-dips-text-footer-secondary: #656170;
+  --color-dips-text-footer-tertiary: #74707f;
+  --color-dips-text-footer-fine: #464253;
+  --color-dips-text-purple-deep: #39165e;
+  --color-dips-text-headline-lilac: #cfa9f6;
+
+  /* ============================= */
+  /* SPACING SCALE (named, additive) */
+  /* ============================= */
+  /* --spacing-{xs..3xl} intentionally NOT declared here (moved to :root below).
+     Tailwind v4 auto-generates named utilities (max-w-xl, w-lg, p-sm, ...) from
+     ANY token registered under the --spacing-* namespace inside @theme, and that
+     silently overrides the framework's own --container-* scale for max-w-* --
+     e.g. max-w-xl became 32px instead of Tailwind's default 36rem, collapsing
+     every max-w-xs/sm/md/lg/xl/2xl/3xl usage across the app (14 sites, including
+     checkout/success and legal pages) to a few pixels. See 05-VISUAL-GAPS.md RC-1. */
+  --spacing-card-padding: 25px;
+
+  /* ============================= */
+  /* TYPOGRAPHY SCALE (extended, additive) */
+  /* ============================= */
+
+  --text-display-hero: 58px;
+  --text-display-hero--line-height: 1.05;
+  --text-heading-lg: 54px;
+  --text-heading-lg--line-height: 1.15;
+  --text-heading-md: 48px;
+  --text-heading-md--line-height: 1.15;
+  --text-heading-side: 64px;
+  --text-heading-side--line-height: 1.05;
+  --text-subtitle-italic-lg: 24px;
+  --text-subtitle-italic-lg--line-height: 1.4;
+  --text-subtitle-italic-sm: 20px;
+  --text-subtitle-italic-sm--line-height: 1.4;
+  --text-body-lg: 24px;
+  --text-body-lg--line-height: 1.5;
+  --text-body-md: 18px;
+  --text-body-md--line-height: 1.6;
+  --text-card-title-lg: 24px;
+  --text-card-title-lg--line-height: 1.2;
+  --text-card-title-sm: 18px;
+  --text-card-title-sm--line-height: 1.2;
+  --text-card-body: 14px;
+  --text-card-body--line-height: 1.5;
+  --text-cta-button: 16px;
+  --text-cta-button--line-height: 1.1;
+  --text-nav-link: 13px;
+  --text-nav-link--line-height: 1.2;
+  --text-trust-bar: 12px;
+  --text-trust-bar--line-height: 1.2;
+  --text-footer-heading: 22px;
+  --text-footer-heading--line-height: 1.2;
+  --text-footer-fine: 14px;
+  --text-footer-fine--line-height: 1.5;
+
+  /* ============================= */
+  /* FONT FAMILY TOKENS (redesign, additive) */
+  /* ============================= */
+
+  --font-card: 'Satoshi', var(--font-plus-jakarta-sans), sans-serif;
+  --font-cta: var(--font-dm-sans), sans-serif;
+}
+
+/* ============================= */
+/* SPACING SCALE (reference tokens, non-utility-generating) */
+/* ============================= */
+/* Plain CSS custom properties -- NOT inside @theme, so Tailwind does not turn
+   these into named utilities (max-w-xl, p-lg, ...). Use via arbitrary values,
+   e.g. p-[var(--space-lg)], if this named scale is ever needed directly. */
+:root {
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
 }
 
 /* ============================= */
@@ -167,4 +308,20 @@
 
 .legal-content a {
   color: var(--color-brand-orange);
+}
+
+/* ============================= */
+/* MARQUEE (trust bar) */
+/* ============================= */
+
+/* Content is rendered twice back-to-back (LandingHeader.tsx) and this
+   translates by exactly -50% -- since both halves are identical, the loop
+   is seamless with no visible jump/reset. */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }

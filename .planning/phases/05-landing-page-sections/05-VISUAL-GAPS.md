@@ -1,0 +1,789 @@
+# Phase 5 — Visual Gaps vs Figma (análise pós-walkthrough)
+
+**Gerado:** 2026-07-17 (madrugada, após walkthrough do usuário)
+**Status:** ✅ Todos os itens objetivos (RC-1..4, GAP-03/05/07/09/12/14/16/20) corrigidos autonomamente no worktree do 05-05 enquanto o usuário estava fora — ver "Addendum — Correções aplicadas" no fim deste arquivo. Itens de decisão (RESP-01, mobile nav, blobs, footer 4-col, FAQ prefixes, etc.) continuam em aberto para discussão.
+**Fonte:** 14 screenshots comparativos (esquerda = nosso site, direita = Figma) + inspeção de código por 4 agentes paralelos (workflow `phase5-visual-gap-rootcause`)
+
+## Estado da execução (contexto para retomar)
+
+- Plano 05-05 está **pausado no checkpoint human-verify** (task 3 de 3). Tasks 1-2 commitadas no worktree.
+- O trabalho do 05-05 vive no worktree `C:/dev/dips/lp-dips/.claude/worktrees/agent-a647a13d3da177a22` (branch `worktree-agent-a647a13d3da177a22`) — **ainda NÃO mesclado** em `feature/layout-updates`.
+- Waves 1-2 (planos 05-01..05-04) já estão mescladas na branch principal.
+- Dev server rodando no worktree em `http://localhost:3000` (background task; morre se a máquina reiniciar).
+
+## ⚠ Aviso metodológico importante — viewport do teste
+
+Os screenshots foram tirados com a janela do browser em **~985px de largura** (metade da tela, lado a lado com o Figma). Os splits de Story/Ingredients/Bundle estão implementados com `lg:` (ativa em **≥1024px**) — ou seja, **abaixo de 1024px eles empilham por design**. Parte do "tudo empilhado" observado é efeito da janela estreita, não bug. **Re-testar com janela maximizada (1440px+)** antes de julgar os splits dessas 3 seções. O Hero, porém, está errado em QUALQUER largura (ver GAP-02).
+
+---
+
+## Causas-raiz confirmadas por inspeção de código
+
+### RC-1 (CRÍTICO, regressão app-wide da Fase 4): tokens `--spacing-{xs..3xl}` sombreiam `max-w-*` do Tailwind v4
+
+No Tailwind v4, `max-w-xl` resolve do namespace `--spacing-*` com prioridade sobre `--container-*`. A Fase 4 definiu `--spacing-xs..3xl` (4-64px) no `@theme` de `globals.css` (linhas 121-128), então **todo `max-w-xs/sm/md/lg/xl/2xl/3xl` do app inteiro virou 4-64px** em vez de 20-48rem. Verificado empiricamente compilando com o tailwindcss 4.1.17 do projeto: `.max-w-xl { max-width: var(--spacing-xl); }` = 32px.
+
+**Blast radius (14 usos, incluindo páginas protegidas por FUNC-03):**
+
+| Arquivo | Classe | Efeito real |
+|---|---|---|
+| `src/components/LandingFooter.tsx:47,161` | `max-w-xl` | 32px → colapso do footer (uma palavra por linha, input minúsculo) |
+| `src/app/[locale]/checkout/success/page.tsx:44` | `max-w-3xl` | 64px — **página de confirmação de pedido (FUNC-03!)** |
+| `src/components/LegalPageLayout.tsx:26` | `max-w-3xl` | 64px — privacy/terms/shipping/returns |
+| `src/components/AgeVerificationModal.tsx:32` | `max-w-md` | 16px — modal de idade |
+| `src/app/admin/login/LoginForm.tsx:47` | `max-w-sm` | 8px — login admin |
+| `src/app/admin/account/page.tsx:12`, `wishlist:51`, `orders:48`, `affiliates/login:30`, `affiliates/join:34` (`max-w-xl`), `AffiliateJoinForm:106`, `products:59` (`max-w-2xl`), `Footer.tsx:143` (`max-w-xl`) | vários | todos colapsados |
+
+**Esta regressão existe desde a Fase 4** (quando os tokens entraram) — a verificação da Fase 4 checou build/tokens mas não abriu essas páginas. O footer novo só a expôs.
+
+**Direção de fix (root-cause, não paliativo):** renomear os 7 tokens colidentes no `@theme` (ex.: `--spacing-gap-xs`... ou aliases sem colisão) e atualizar os usos `p-xl/gap-lg/etc.` das seções novas; NÃO trocar os `max-w-*` legítimos um a um.
+
+### RC-2: Trust bar translúcida sobre fundo claro
+
+`LandingHeader` usa `bg-[rgba(45,26,105,0.4)]` (conforme spec), mas a trust bar é irmã ANTERIOR do `<header>` escuro, e o `<main>` em `page.tsx:18` ainda tem `bg-brand-cream` (#f3e9e3). 40% de roxo sobre creme = lavanda claro (~rgb(164,150,178)) com texto #ae9bda ilegível. No Figma a barra translúcida está sobre página roxa escura.
+
+**Direção de fix:** dar backdrop escuro opaco à trust bar (envolvê-la num container `bg-dips-purple-deepest` junto com o header, ou usar a cor pré-composta opaca). Avaliar também trocar o `bg-brand-cream` do `<main>` — a home redesenhada é toda dark.
+
+### RC-3: Hero construído como coluna única centralizada (errado em qualquer largura)
+
+`Hero.tsx:65`: `flex flex-col items-center text-center` sem NENHUMA variante de breakpoint. A imagem do produto (`hero-product.png`, 822×548) é o ÚLTIMO filho, abaixo de todo o texto. Figma 1440px: composição duas colunas — texto à esquerda (alinhado à esquerda), produto à direita. Blobs têm `overflow-hidden` no section (não vazam), mas tamanho/posição não batem com o Figma (Figma: blob menor no canto sup. esquerdo + blob atrás do produto).
+
+### RC-4 (pré-existente, desde 2026-05-28): mojibake + BOM em `messages/en.json`
+
+Entrou no commit `c0d8b25` (maio), muito antes da Fase 5 — o redesign só tornou visível. Arquivo tem BOM UTF-8 (es/pt não têm). 4 valores corrompidos (double-encoding cp1252):
+
+| Key | Corrompido | Correto |
+|---|---|---|
+| `Ingredients.cocoa_desc` | `cocoa â€“ the` | `cocoa – the` (en dash) — **visível na home nova** |
+| `Ingredients.theanine_desc` | `â€œGood moodâ€` + U+009D invisível | `“Good mood”` — **visível na home nova** |
+| `ShippingPolicy.shippingOptionsDesc1` | `2â€“5 day` | `2–5 day` |
+| `ReturnPolicy.initiatingDesc` | `backâ€”returns` | `back—returns` |
+
+es.json e pt.json estão limpos. **Fix:** corrigir os 4 valores (atenção ao U+009D invisível no theanine_desc) e regravar en.json como UTF-8 sem BOM.
+
+---
+
+## Gaps por seção (esperado = Figma/UI-SPEC · observado = screenshots · evidência = código)
+
+### GAP-01 · Trust bar — fundo claro/ilegível — **ALTA** → RC-2
+Copy dos 6 itens difere do Figma, mas isso foi **decisão travada** (nossos 6 itens aprovados) — não é bug.
+
+### GAP-02 · Hero — sem composição em duas colunas — **ALTA** → RC-3
+- Texto centralizado full-width; produto abaixo em vez de ao lado. Errado em qualquer breakpoint.
+- H1 centralizado vs Figma alinhado à esquerda (consequência do layout).
+
+### GAP-03 · Hero — subtítulo com copy antiga — **MÉDIA**
+Renderiza `Hero.subtitle` = "Pleasure in its purest form." (copy antiga). Figma: **"A Chocolate crafted for connection."** A UI-SPEC não travou a string do subtítulo (lacuna da spec). Trocar valor em en/es/pt.
+
+### GAP-04 · Hero — mini trust items sem losango e copy diferente — **BAIXA**
+Ours: texto puro "100% Natural Ingredients / Made in the USA / Secure Checkout". Figma: losango laranja + "100% Natural · Satisfaction Guaranteed · 100% Discreet Shipping" (corrigindo o typo "Gauranteed" do Figma, FUNC-04).
+
+### GAP-05 · Hero — feature cards: formato e arranjo — **MÉDIA**
+- Implementado `grid sm:grid-cols-2 lg:grid-cols-4` — em 1440px vira 1 linha de 4 (ok); no teste a 985px mostrou 2x2 (efeito viewport).
+- Formato do card difere: Figma tem losango laranja + TÍTULO curto + descrição ("Natural Aphrodisiac / Botanically sourced…"). Nosso card usa frases longas do `Product.feature1..4` (decisão travada de reuso de copy — **rediscutir**: o reuso literal não bate com o formato título+descrição do Figma).
+
+### GAP-06 · Hero — blobs decorativos — **MÉDIA** (verificar a 1440px)
+420px/380px em offsets fixos; composição não bate com o Figma. Não vazam (overflow-hidden ok).
+
+### GAP-07 · Story — split lg: implementado; conferir a 1440px — **VERIFICAR**
+`grid lg:grid-cols-[0.9fr_1.1fr]` existe (StorySection.tsx:14). Aparência empilhada nos prints = viewport 985px. Pontos reais vs Figma:
+- Falta badge pill "10,000+ Happy Couples" no topo da foto e o subtítulo itálico "A Chocolate crafted for connection." sob o heading (Figma tem; nosso overlay tem só heading embaixo + 3 badges).
+
+### GAP-08 · Ingredients — split lg: implementado; conferir a 1440px — **VERIFICAR**
+`grid grid-cols-1 lg:grid-cols-2` existe (IngredientsSection.tsx:80).
+
+### GAP-09 · Ingredients — heading errado — **ALTA (copy da spec)**
+Renderiza `Ingredients.sectionTitle` = **"The Art of Temptation"** (key antiga — deviation documentada do executor 05-03 para não hardcodear inglês). Spec/Figma exige: eyebrow itálico **"The ingredients"** (20px) + **"Behind the experience."** (48px). Fix: criar keys novas com a copy do Figma traduzida nos 3 locales.
+
+### GAP-10 · Ingredients — formato dos cards — **MÉDIA**
+Figma: 6 linhas compactas horizontais (ícone + nome + badge na mesma linha, coluna única). Ours: tiles maiores em `sm:grid-cols-2`. Rediscutir fidelidade.
+
+### GAP-11 · Ingredients — mojibake visível — **ALTA** → RC-4
+`cocoa_desc` ("â€“") na card expandida; `theanine_desc` também corrompida.
+
+### GAP-12 · Ingredients — intro incompleta — **BAIXA**
+Figma acrescenta "Six botanicals, one unforgettable experience." — nossa `Ingredients.subtitle` só tem a 1ª frase.
+
+### GAP-13 · Bundle — split lg: implementado; conferir a 1440px — **VERIFICAR**
+`grid lg:grid-cols-[1.2fr_1fr]` existe (BuySection.tsx:28). Preços reais (não os do Figma) = **correto por contrato** (FUNC-01).
+
+### GAP-14 · Bundle — header extra no painel creme — **BAIXA (decisão)**
+"THE DIPS EXPERIENCE / Choose your quantity…" não existe no painel do Figma (só cards+resumo+CTA). Manter ou remover?
+
+### GAP-15 · Bundle — ícones sociais sob o Buy Now — **BAIXA (decisão)**
+IG/TikTok sob o botão; não existem no Figma.
+
+### GAP-16 · Reviews — eyebrow extra + heading + subtítulo — **MÉDIA**
+- Eyebrow "REAL PEOPLE. REAL RESULTS." não existe no Figma **e está hardcoded em inglês no JSX** (ReviewsSection.tsx:131-136, sem i18n — viola invariante en/es/pt). Heading "What people are saying" também hardcoded.
+- Figma tem subtítulo-parágrafo sob o heading ("We care about what we put in our products…"); nós não temos.
+- Cards com avatar-inicial/sem role/flag/data = **decisão travada** (dados reais, não placeholder) — ok, confirmar amanhã.
+
+### GAP-17 · FAQ — heading e prefixos — **MÉDIA (decisão)**
+- `FAQ.title` = "Frequently Asked Questions (F.A.Q.s)"; Figma = "FAQs" (+ subtítulo). Spec deixou em aberto ("either acceptable") — decidir.
+- `q1..q6` embutem prefixos literais "Q1:"…"Q6:" nos valores (nos 3 locales); Figma não tem prefixo. Conteúdo é travado, prefixo é formatação — decidir se remove.
+- Borda laranja/chevron do item aberto: não verificado nos prints (todos fechados). Testar.
+
+### GAP-18 · Footer — colapso total do layout — **CRÍTICA** → RC-1
+`max-w-xl` (=32px) em LandingFooter.tsx:47 (bloco newsletter) e :161 (bloco legal/endereço). Explica exatamente: subtítulo uma-palavra-por-linha, input 46px² minúsculo (w-[362px] esmagado por flex dentro de container de 32px), copyright e endereço colapsados. Grid de links (`max-w-5xl`, sem colisão) renderizou normal — consistente.
+
+### GAP-19 · Footer — estrutura vs Figma — **MÉDIA**
+Implementado: tudo empilhado e centralizado (logo → newsletter → grid 3 colunas → legal). Figma: logo+endereço à esquerda com 3 colunas de links à direita na mesma faixa; newsletter em outra zona. Restruturar após RC-1.
+
+### GAP-20 · Footer — "© 2025 – Dips Chocolate" hardcoded — **BAIXA**
+JSX tem `© 2025 –` literal; Figma mostra © 2026. Usar ano dinâmico + revisar copy.
+
+**Conteúdo do footer (links reais, email `info@dipschocolate.com`, endereço real, Affiliates presente) = conforme spec travada — não é bug.**
+
+---
+
+## Itens que NÃO são bugs (decisões travadas, confirmar amanhã se mantêm)
+
+1. Preços reais do Stripe (não os $59.99/$89.99 do Figma) — FUNC-01, invariante do milestone.
+2. Copy da trust bar (nossos 6 itens aprovados ≠ 6 do Figma).
+3. Reviews com dados reais (12 reviews de `src/data/reviews.ts`, sem foto/role/flag/data) vs placeholders do Figma.
+4. Links/email/endereço reais no footer (Figma tem links inexistentes e email errado).
+5. Conteúdo Q&A do FAQ mantido verbatim.
+
+## Pendências de verificação (não testadas ainda)
+
+- Splits de Story/Ingredients/Bundle e feature cards 1x4 em janela **1440px real**.
+- Âncoras do header (scroll suave + offset de 72px sob o header sticky).
+- Click-through do checkout Stripe (FUNC-01) — checkpoint do 05-05 continua aberto.
+- Página compartilhada (ex. `/en/product/dips-chocolate`) intacta — diff de `Header.tsx`/`Footer.tsx`/`BuyNowButton.tsx` já confirmado zero via git, falta olho humano.
+
+## Addendum 2026-07-17 — Figma agora tem versão MOBILE
+
+O designer adicionou o frame **"Dips Chocolate Website // Mobile Responsive" (281:21, 375×9587px)** — extração parcial em `FIGMA-MOBILE-EXTRACTION.md` (5 de 7 seções capturadas; FAQs/Footer pendentes por rate limit). Consequências:
+
+- **RESP-01 muda de premissa** — mobile agora é "fiel ao Figma", não mais "decisão própria". O hambúrguer do header mobile já tem design.
+- **Vários gaps saíram de "a discutir" para "confirmados pelo Figma":** GAP-03 (subtítulo hero = "A Chocolate crafted for connection."), GAP-04 (mini trust com losangos), GAP-05 (feature cards têm copy própria do Figma — título curto + descrição, NÃO o `Product.feature1..4` atual; a decisão de reuso verbatim precisa ser revertida), GAP-09 ("The ingredients / Behind the experience."), GAP-10 (cards compactos horizontais), GAP-12 (intro completa), GAP-16 (Reviews com subtítulo-parágrafo, sem eyebrow).
+- **GAP-14 esclarecido:** "THE DIPS EXPERIENCE" existe no Figma como badge sobre a foto do bundle (não como header do painel creme).
+
+## Proposta de ordem de ataque (para discutir)
+
+1. **RC-1** (rename dos tokens colidentes) — destrava GAP-18 e conserta regressão FUNC-03 em 12+ telas.
+2. **RC-4** (mojibake + BOM) — 4 strings, risco zero.
+3. **RC-2** (trust bar backdrop) + **RC-3/GAP-02** (hero duas colunas) — os dois maiores gaps visuais reais.
+4. Copy pack: GAP-03/09/12/16/17 (novas keys i18n ×3 locales numa passada só).
+5. Re-walkthrough a 1440px → decidir GAP-05/06/07/08/10/13/14/15/19/20.
+
+---
+
+## Addendum 2026-07-17 (madrugada) — Correções aplicadas autonomamente
+
+Enquanto o usuário estava fora, todo item **objetivamente confirmado** (bug de código ou confirmado pelo Figma mobile) foi corrigido diretamente no worktree do 05-05 (`C:/dev/dips/lp-dips/.claude/worktrees/agent-a647a13d3da177a22`, branch `worktree-agent-a647a13d3da177a22`) — **ainda não mesclado** em `feature/layout-updates`. `npm run build` (exit 0) e `npm test` (71/71) passam após cada mudança; `git diff` contra a base do plano confirma `Header.tsx`/`Footer.tsx`/`BuyNowButton.tsx` com zero diff (FUNC-03 intacto).
+
+| Item | Commit (worktree) | O que mudou |
+|---|---|---|
+| RC-1 | `a314008` | `--spacing-{xs..3xl}` movidos para fora do `@theme` (viravam `:root` puro) — `max-w-*` volta ao padrão do Tailwind em todo o app |
+| RC-4 | `a314008` | 4 strings mojibake + BOM corrigidos em `messages/en.json` |
+| RC-2 | `3d3e018` | Trust bar ganhou backdrop opaco `bg-dips-purple-deepest` |
+| RC-3 | `1a79a74` | Hero reconstruído como grid 2 colunas em `lg+` (produto à direita, texto à esquerda) |
+| GAP-14 | `1390064` | Removido header extra do painel creme; eyebrow "THE DIPS EXPERIENCE" movido pro lado da foto |
+| GAP-07 | `1390064` | Adicionado badge "10,000+ Happy Couples" + subtítulo faltando no overlay da Story |
+| GAP-03 | `fd4641b` | `Hero.subtitle` → "A Chocolate crafted for connection." (en/es/pt) |
+| GAP-05 | `fd4641b` | Feature cards ganharam copy própria (`Hero.feature1..4_title/_desc`) em vez de reusar `Product.feature1..4_*`; formato losango+título+descrição |
+| GAP-09 | `0361a9f` | Ingredients: eyebrow "The ingredients" + heading "Behind the experience." (era "The Art of Temptation") |
+| GAP-12 | `0361a9f` | Intro da Ingredients completada com "Six botanicals, one unforgettable experience." |
+| GAP-16 | `0c5e3a1` | Reviews virou i18n (`Reviews.title`/`Reviews.subtitle`); removido eyebrow hardcoded em inglês que não existe no Figma |
+| GAP-20 | `28f3a1f` | Ano do copyright do footer: hardcoded "2025" → `new Date().getFullYear()` |
+
+**Deliberadamente NÃO tocado (decisão sua):** GAP-04 (mini trust items com losango — cosmético, baixo risco mas é decisão de estilo), GAP-06 (blobs — tamanho/posição, gosto), GAP-08/GAP-13 (splits de Ingredients/Bundle — provavelmente OK a 1440px real, só viewport estreito no teste), GAP-10 (formato dos cards de ingrediente — mudança estrutural maior), GAP-15 (ícones sociais no bundle), GAP-17 (heading/prefixos do FAQ — spec já dizia "either acceptable"), GAP-19 (reestruturação do footer em 4 colunas — mudança estrutural maior, sem screenshot do footer mobile ainda), RESP-01/RESP-02 (escopo da Fase 6).
+
+Detalhes completos de cada commit em `.planning/phases/05-landing-page-sections/05-05-SUMMARY.md` (seção "Addendum 2026-07-17").
+
+## Addendum 2026-07-20 — 2ª leva (itens de fidelidade restantes, aprovados pelo usuário)
+
+O usuário confirmou o **princípio-guia: o Figma é a fonte da verdade visual; implementar fielmente sem perguntar sobre fidelidade** (só os overrides funcionais documentados — preços/reviews/links/copy do FAQ reais — sobrepõem o Figma). Sob esse princípio, os gaps que estavam "a discutir" foram resolvidos em direção ao Figma:
+
+| Item | Commit (worktree) | O que mudou |
+|---|---|---|
+| GAP-15 | `930823d` | Removidos os ícones sociais (Instagram/TikTok) do painel do bundle — não existem no Figma |
+| GAP-17 | `fba6155` | Título FAQ → "FAQs" (en) / "Preguntas Frecuentes" / "Perguntas Frequentes"; removidos prefixos "Q1:".."Q6:" do en |
+| GAP-04 | `be4d30e` | Mini trust items do Hero com copy do Figma ("100% Natural / Satisfaction Guaranteed / 100% Discreet Shipping") + losango laranja |
+| GAP-10 | `f369205` | Cards de ingrediente → lista de coluna única, linhas compactas (ícone \| nome \| badge na mesma linha); badge virou pill outline com losango |
+| GAP-19 | `fd4f758` | Footer reestruturado no layout 2-zonas do Figma (marca+endereço+newsletter à esquerda, colunas de links à direita, faixa legal full-width) |
+
+**Ainda decisão sua / fora de escopo da Fase 5:** RESP-01/RESP-02 (responsivo — Fase 6, agora que o Figma tem mobile), e a captura de FAQs/Footer mobile (quota).
+
+## Addendum 2026-07-20 (2ª rodada) — 5 diferenças do walkthrough a 1440px real
+
+O usuário rodou o walkthrough de verdade (janela maximizada) e achou mais 5 diferenças pontuais, todas resolvidas com CSS exato tirado do Figma:
+
+| # | Item | Causa raiz | Commit |
+|---|---|---|---|
+| GAP-22 | Trust bar não distribuída na largura toda | Era `justify-center` + gap fixo; Figma é `justify-content:space-between` na largura cheia (1390px, padding 25px) | `adeacf1` |
+| GAP-23 | Linha visível entre o header e o gradiente do Hero | O nav "Frame 4" no Figma **não tem fill nenhum** — flutua transparente sobre o gradiente. Removido o `bg-dips-purple-deepest` do `<header>` | `adeacf1` |
+| GAP-24 | Logo deformada | `logo-purple-part.svg` e `logo-orange-part.svg` são `preserveAspectRatio="none"` e cada um cobre uma **sub-região própria** da caixa 59×36 (não a caixa inteira). O `fill+object-contain` forçava as duas a esticar pra caixa toda, distorcendo a camada laranja (proporção nativa ~21×34, retrato). Corrigido com o tamanho/posição exatos de cada camada (extraídos do próprio dump grande que o usuário já tinha colado) | `adeacf1` |
+| GAP-06 (refinamento) | Blob inferior-direito ainda errado após a 1ª correção | A 1ª correção usou **pixels fixos** calculados sobre a tela de referência 1440px do Figma, mas nossa seção é fluida (não trava em 1440px) — qualquer diferença de largura desloca o blob grande (maior, mais perto da borda) proporcionalmente mais que o pequeno. Trocado para **porcentagem** direta (a mesma unidade que o Figma exporta), que escala certo em qualquer largura | `70c6f1f` |
+| GAP-25 | H1 em 3 linhas em vez de 2 | Achado no dump: no Figma, "The Chocolate" e "that changes the night." são **duas camadas de texto separadas** — quebra de linha manual do designer, não wrap automático por largura. Corrigido com 2 mudanças: (1) layout do Hero trocado de grid 50/50 pra imagem em overlay absoluto + coluna de texto com ~54% de largura; (2) `<br></br>` forçado depois de "Chocolate" no `Hero.h1` (só en; es/pt sem o marcador, mantêm wrap natural) | `70c6f1f` |
+
+Build + 71 testes verdes depois de cada commit.
+
+## Addendum 2026-07-20 (3ª rodada) — 2 dos 5 acima não fecharam de primeira
+
+Re-teste do usuário mostrou: trust bar (GAP-22) e logo (GAP-24) corretos. Header ("pérola"), blob e H1 continuavam errados — com causas mais profundas do que a 1ª tentativa resolveu.
+
+| # | Item | Causa raiz real | Commit |
+|---|---|---|---|
+| GAP-27 | Header virou uma faixa clara ("pérola") entre duas faixas escuras | O nav do Figma não tem fill porque, no design, ele é parte do MESMO frame do Hero, desenhado sobre o gradiente. No nosso código, `LandingHeader` é renderizado **antes** da seção Hero no DOM — não sobreposto ao gradiente dela. "Transparente de verdade" mostrava o fundo cru da página (`bg-brand-cream`) atrás. Corrigido dando ao header (e à trust bar) a cor exata do início do gradiente do Hero (`#18012d`, `--color-dips-purple-hero-start`) em vez de transparente — mesma cor no ponto de encontro = sem costura, e continua opaco/legível ao rolar pra seções mais abaixo | `0bdd59f` |
+| GAP-26 | Blob inferior-direito ainda com "quina" exposta | O Figma usa `bottom:-11.01%` pra vazar o blob pra fora de um frame **fixo de 1054px** e cortar exatamente nesse ponto via overflow-hidden. Nossa seção Hero é fluida e bem mais alta que 1054px (H1+subtítulo+badges+CTA+cards), então ancorar pela borda inferior corta o blob num ponto totalmente diferente, expondo uma fatia errada da silhueta. Corrigido ancorando os dois blobs pelo **topo** (referência estável, não muda com a altura da seção), com tamanho fixo em pixels nativos, sem depender de corte | `e579ab1` |
+| GAP-25 (refinamento) | H1 ainda em 3 linhas mesmo com o `<br/>` forçado | O `<br/>` corrigiu a linha 1 ("The Chocolate" isolado), mas "that changes the night." ainda quebrava em 2 porque a coluna de texto (54%) continuava estreita demais — essa frase sozinha, em 64px AllRoundGothic Bold, precisa de uns 750-850px pra caber numa linha. Troquei o split por porcentagem por uma largura fixa `max-w-[1040px]` (perto do próprio box de 1062px do Figma) e estreitei a imagem (34%/480px) | `e579ab1` |
+
+Build + 71 testes verdes depois de cada commit.
+
+## Addendum 2026-07-20 (4ª rodada) — blob (causa real!) + respiro do topo + imagem pequena
+
+O usuário mandou um print anotado com um traço azul mostrando **exatamente** qual parte do blob deveria aparecer (o corpo arredondado) e qual não (a cauda pontiaguda) — isso resolveu de vez a investigação do blob.
+
+| # | Item | Causa raiz real | Commit |
+|---|---|---|---|
+| GAP-26 (3ª tentativa, resolvida) | Blob ainda com "quina"/cauda visível | O frame do Hero no Figma é uma caixa **fixa de 1054px** que corta o blob (rotacionado) via overflow-hidden num ponto exato — a caixa local do blob fica em top:659/altura:511, então só os primeiros 395px (1054-659) dela ficam dentro do frame; o resto é cortado. Nossa seção é fluida e bem mais alta que 1054px, então o overflow-hidden da seção nunca chega a cortar essa cauda — a forma inteira aparece, incluindo a parte que o Figma sempre esconde. Corrigido dando ao blob sua **própria janela de corte fixa** (341×395px, com overflow-hidden), independente da altura real da página abaixo dela, com a imagem rotacionada 341×511 dentro na mesma posição relativa que tem no Figma | `bf9cbbd` |
+| GAP-28 (novo) | Falta "respiro" no topo da seção + imagem da caixa pequena demais | No Figma, a imagem do produto começa em y:200 enquanto o título começa em y:384 (medido do topo do frame) — um vão de 184px onde só aparecem o blob + o início da imagem antes de qualquer texto. Minha tentativa de centralizar verticalmente a imagem contra o texto eliminou esse vão. Além disso, eu tinha encolhido a imagem pra 34%/480px enquanto ainda perseguia o bug do H1 quebrando em 3 linhas — bem menor que o tamanho real do Figma (57%/822px). Corrigido: imagem ancorada perto do topo (`top-[60px]`, `52%/780px`, bem mais perto do tamanho real) em vez de centralizada, e a coluna de texto ganhou `mt-[180px]` pra reproduzir o vão | `bf9cbbd` |
+
+Build + 71 testes verdes.
+
+**Pendente:** o usuário também apontou diferença nos 4 feature-cards, mas o CSS que ele colou (2x) foi só o wrapper "Hero Section" repetido, não o card específico — os valores exatos dos cards (301/311px, `rgba(49,34,89,.25)`, borda 2px `#392A61`, radius 15px, Satoshi 18px) já foram implementados a partir do dump grande anterior. Aguardando confirmação/novo print após esta rodada, ou o CSS de um card individual se a diferença persistir.
+
+## Addendum 2026-07-20 (fim) — GAP-06 FECHADO via extração manual do Dev Mode
+
+**Descoberta metodológica:** não dependemos de MCP. O usuário puxou o Hero inteiro do Figma "Dev Ready" com **botão direito → Copy as CSS** e colou aqui — isso dá exatamente o que o `get_design_context` daria (medidas, cores, espaçamentos), a custo zero de quota. Fica como o caminho padrão pra especificações exatas.
+
+**GAP-06 (blobs) — RESOLVIDO exato** (commit `e436b0a`):
+- Os 2 SVGs estavam com nome trocado vs. posição: `blob-vector-2.svg` = vetor pequeno 193×308 (sup-esq, `left:-54 top:121 rotate(-167.8deg)`); `blob-vector-1.svg` = vetor grande 341×511 (inf-dir, `right:65 bottom:-116 rotate(53.34deg)`). SVGs são `preserveAspectRatio="none"` e não-rotacionados → box dimensionado ao vetor do Figma + rotação aplicada no CSS. Removido o dimming `opacity-70` (Figma não tem).
+
+**Bônus do mesmo dump** (mesmo commit): feature cards do Hero corrigidos de 14-15px → **18px** (Satoshi/font-card; título 700 branco, desc 400 #EBD9FE), losango 8px, borda 2px; botão "How It Works?" ganhou fill `dips-card-tint`. Confirmado já-correto pelo dump: gradiente do hero, bg/borda/raio dos cards, subtítulo, e a laranja normalizada #f27521 (DSGN-03) vs. a #FB6C04 do Figma.
+
+### GAP-21 — H1 "Chocolate" lilás — RESOLVIDO (sem mudança de código)
+O CSS do Dev Mode mostrava o H1 todo branco (#FFFFFF), mas o usuário confirmou **visualmente no Figma (Dev Ready, desktop E mobile): "Chocolate" continua lilás** (#cfa9f6). O dump de "Copy as CSS" foi pego no nó de texto **pai** e **achatou a cor do sub-range** (o lilás aplicado só na palavra "Chocolate" se perdeu). Nossa implementação já usa lilás → **nada a mudar**.
+**Lição:** pra estilo por-palavra/sub-range, confiar no print/olho, não no Copy-as-CSS do nó pai (que reporta uma cor única).
+
+## Addendum 2026-07-20 (5ª rodada) — causa raiz do offset: frame do Figma inclui o nav
+
+O usuário reportou 4 problemas no novo print: imagem da caixa demorando pra aparecer, blob superior-esquerdo longe da navbar, cards + blob inferior-direito "ainda incorretos", fonte dos cards parecendo maior que deveria.
+
+| # | Item | Causa raiz real | Commit |
+|---|---|---|---|
+| GAP-29 | Blob superior-esquerdo longe da navbar; blob inferior-direito na posição errada | Todas as coordenadas Y tiradas do dump do Figma (blob pequeno top:121, blob grande top:659, imagem top:200, H1 top:384) são medidas a partir do topo do frame **completo de 1054px**, que no Figma inclui o nav (72px) + trust bar (45px) = 117px desenhados por cima do próprio gradiente. Nosso `LandingHeader` é um componente separado, renderizado **antes** da seção Hero — o topo da nossa seção já corresponde a frame-y:117, não frame-y:0. Cada offset usado direto do dump ficava 117px mais baixo (e proporcionalmente mais longe do nav) do que deveria. Corrigido subtraindo 117px de cada um: blob pequeno 121→4px, blob grande (janela de corte) 659→542px, imagem 200→83px, coluna de texto ajustada pra 187px de margem (mantendo o alvo de 267px pro H1) | `39774b7` |
+| GAP-28 (refinamento) | Imagem da caixa não aparecia "logo no início ao lado do H1" | Não era só posição — o `delay` da animação de fade-in da imagem era 0.85s contra 0.15s do H1 (e outros elementos de texto ainda mais cedo). Na prática a imagem ficava invisível por ~1.65s depois do H1 já estar totalmente visível, lendo como "a caixa nunca aparece". Reduzido pra 0.1s, aparecendo primeiro/junto com o texto | `39774b7` |
+| Cards — fonte "maior" | Investigado, não é bug | Conferido: 18px/24px line-height batem exatamente com o dump do Figma (Satoshi 700/400 18px); bg `rgba(49,34,89,.25)`, borda 2px `#392a61`, radius 15px (`--radius-card: 0.9375rem`), padding 25px — todos os tokens em `globals.css` batem com o spec. A percepção de "maior" é o efeito esperado da substituição Satoshi→Plus Jakarta Sans (DSGN, decisão já aceita na Fase 4): métricas de fonte diferentes no mesmo tamanho declarado. Não há ajuste de tamanho a fazer sem contradizer o próprio spec extraído — nenhuma mudança de código | — |
+
+Build + 71 testes verdes depois do commit.
+
+## Addendum 2026-07-20 (6ª rodada) — CSS por-camada individual, geometria refeita do zero
+
+Blob superior confirmado resolvido. Pedimos ao usuário CSS individual (não mais o wrapper "Hero Section" inteiro) de: blob inferior, imagem do produto, e um card — isso deu números exatos sem precisar inferir offsets aninhados.
+
+| # | Item | Causa raiz real | Commit |
+|---|---|---|---|
+| GAP-29 (2º refinamento) | Blob inferior-direito ainda com artefato tipo "pipa"/seta | A janela de corte anterior (341×395) tinha o tamanho da caixa **não-rotacionada**. Rotacionar uma caixa 341×511 em 53.34° produz uma caixa delimitadora de **~614×579** — bem maior — e é ESSA silhueta rotacionada que o frame 1440×1054 do Figma corta, tanto embaixo **quanto à direita** (não só embaixo, como eu assumia). A janela antiga cortava nas linhas erradas. Recalculei os 4 cantos rotacionados a partir do CSS exato da camada (`left:71.81% right:4.49% top:62.52% bottom:-11.01%`, `rotate(53.34deg)`), cruzei com o retângulo de corte do frame, e reconstruí como uma janela externa (542×429px, encostada na borda direita) contendo uma div interna sem corte (614×579) com a imagem real centralizada e rotacionada dentro | `58ec330` |
+| Imagem do produto — tamanho | Largura implementada em 52%/780px quando o CSS exato (`width:821.74px` num frame de 1440px) dá **57.06%/822px** — uma aproximação de "olho" de antes de ter o CSS da camada, visivelmente menor que o real | `58ec330` |
+| Cards — estrutura (não só fonte) | O CSS exato do card ("Frame 8": 301×127px) mostra `flex-direction: row`, não coluna — o losango fica **ao lado** de um bloco título+descrição empilhado, não numa linha acima de uma descrição de largura total. Isso deixa o texto numa coluna mais estreita (~233px em vez de ~251px), quebrando mais linhas do que o layout em coluna assumia — e lia como "fonte grande demais". Reestruturado pra `flex-row items-center gap-[10px]`, com losango + `flex-col` (título+descrição) dentro | `58ec330` |
+
+Build + 71 testes verdes.
+
+**Metodologia confirmada:** CSS de camada individual (clique na camada específica → Copy as CSS) é muito mais confiável que o dump do frame pai inteiro — elimina a necessidade de inferir offsets aninhados manualmente, que foi a fonte dos erros anteriores.
+
+## Addendum 2026-07-20 (7ª rodada) — dump da SEÇÃO INTEIRA (aninhamento preservado) corrige estrutura do card
+
+O usuário mandou o Copy-as-CSS da **Hero Section inteira** com o aninhamento completo (pai→filho). Isso é o formato ideal — melhor que camadas isoladas, porque o aninhamento diz como os elementos se compõem. Revelou que a "correção" do card na 6ª rodada (`58ec330`) estava **errada na direção oposta**.
+
+| # | Item | Verdade do aninhamento | Commit |
+|---|---|---|---|
+| GAP-29 (3º refinamento, cards) | Estrutura do card invertida | O card (`Frame 8`, 301×127, padding 25) tem **um único filho**: a pilha de texto (`Frame 5`, 251px). Dentro dela, a linha do título (`Frame 10`, flex-row gap:8px) = `[losango][título]` fica **acima** da descrição (251px, largura cheia, 2 linhas), gap 5px. Ou seja: losango ao lado **só do título**, descrição embaixo em largura cheia — não losango ao lado do bloco título+descrição inteiro (o que a 6ª rodada fez, enganada por um dump de camada isolada). Revertido pro layout em coluna com o losango aninhado na linha do título. Gap entre cards também ajustado pro 25px exato do Figma (era 24px) | `64e08e6` |
+
+**Lição metodológica final:** o dump da **seção inteira com aninhamento** > camadas isoladas > dump do wrapper pai achatado. O aninhamento é o que desambigua a composição. Camadas com nome de texto (`The Chocolate`, `Natural Aphrodisiac`, `Shop Now`) se auto-identificam; só as decorativas genéricas (`Vector`, `Rectangle`, `Group`) precisam de um rótulo entre parênteses.
+
+**Observação (fora do escopo dos 4 pontos atuais):** o dump mostra a navbar (`Frame 4`, 1360×72, `left:40 top:67 border-radius:20px`) como uma **barra flutuante arredondada, recuada 40px das bordas**, começando 22px abaixo da trust bar — a nossa é full-width, encostada, sem raio. Não faz parte das queixas atuais e o usuário não reclamou do header; anotado pra eventual ajuste de fidelidade.
+
+## Addendum 2026-07-20 (8ª rodada) — a assimetria dos dois blobs (por que um foi fácil e o outro não)
+
+O usuário perguntou: se os dois blobs funcionam igual (só uma parte do vetor aparece), por que o de cima foi acertado rápido e o de baixo não? A pergunta expôs que eu vinha usando a abordagem errada.
+
+**Resposta:** os dois são cortados em **bordas diferentes**.
+- Blob **superior**: cortado na borda **esquerda** (sangra pra fora pela esquerda). Nossa página e o Figma têm a **mesma largura** (ambos ancorados em x=0), então o corte horizontal cai no mesmo lugar **de graça** — o `overflow-hidden` da seção resolve sozinho. + a rotação (-167.8°, quase meia-volta) quase não inclina a bounding box. Por isso `absolute + rotate` bastou.
+- Blob **inferior**: cortado na borda de **baixo/direita** pelo frame **fixo de 1054px** do Figma. Nossa seção é **mais alta que 1054px**, então o `overflow-hidden` da seção fica muito abaixo do corte do Figma e nunca apara a cauda.
+
+Ou seja: **corte horizontal é de graça (larguras batem); corte vertical não é (alturas diferem).** Essa é a assimetria inteira — não a rotação em si.
+
+| # | Item | Correção | Commit |
+|---|---|---|---|
+| GAP-29 (4º refinamento, blob) | Blob inferior com abordagem frágil (janela 614×579 calculada na mão) | Trocado por um retângulo de corte explícito que **recria o frame do Figma**: uma faixa de largura cheia do topo da seção até o fundo do frame (1054 − 117px header = **937px**), com o blob dentro na caixa exata dele (`right:4.49%` + 341px nativo reproduz `left:71.81%`, `top:542px`, `rotate 53.34deg`). O navegador corta a forma rotacionada nas bordas retas da faixa **igual o Figma faz** — mesmo mecanismo do blob de cima, sem conta de canto | `5db12ab` |
+
+Build + 71 testes verdes.
+
+## Addendum 2026-07-20 (9ª rodada) — reconstrução do hero desktop como CANVAS ABSOLUTO 1440 (causa raiz de tudo)
+
+O usuário mandou **screenshots do próprio Figma** (não do browser) como referência. Comparando com o dump, ficou claro que o problema era **estrutural**, não ajuste fino: a composição desktop do Figma é um **frame absoluto de 1440×1054** com tudo posicionado em pixels, e nós vínhamos tentando reproduzir isso com layout fluido/porcentagem — que deriva assim que a viewport passa de 1440 (a tela do usuário é mais larga).
+
+Sintomas que isso explicava de uma vez:
+- **Imagem da caixa**: estava dentro de um `container` que trava em 1280px → encolhia e não alcançava a direita.
+- **Blob inferior "solto"**: ancorado na viewport (right 4.49% da tela) enquanto os cards estavam no container de 1280 → o blob nunca encaixava atrás do 4º card porque as duas referências divergiam ao alargar a tela.
+- **Badge fora de ordem**: o dump mostra o badge "10.000+ Happy Couples" como **primeiro filho** do bloco de texto (acima do H1); o nosso estava depois do subtítulo.
+
+| # | Item | Correção | Commit |
+|---|---|---|---|
+| GAP-30 | Hero desktop derivando em telas largas (imagem, cards, blob) | Reconstruído o layout `lg+` como um **canvas `max-w-[1440px]` centralizado, altura fixa 937px** (1054 do frame − 117px do header que mora no `LandingHeader`), com cada elemento no seu **coordenada exata do Figma menos 117**: imagem `right 2.27% / w 57.07% / top 84`, bloco de texto `left 78 / top 267`, cards `inset-x 78 / top 743`, blob grande `right 4.49% / top 542` **dentro do canvas** (alinha com os cards em qualquer largura). Abaixo de `lg`, colapsa pro empilhamento fluido de antes. Em telas > 1440 a sobra vira gutter de gradiente em vez de conteúdo esticado | `5ab9e7d` |
+| GAP-31 | Badge de prova social depois do subtítulo | Movido pra **acima do H1** (primeiro filho do bloco de texto), na ordem do Figma: badge → H1 → subtítulo → [gap] → trust items → CTAs | `5ab9e7d` |
+
+Build + 71 testes verdes.
+
+**Por que isso deve finalmente fechar:** as três queixas (imagem, cards, blob) tinham a **mesma causa raiz** — referências de layout divergentes numa tela mais larga que o design. Unificando tudo num canvas de 1440 centralizado, todos os elementos compartilham a mesma referência e param de derivar; em ~1440 a página fica 1:1 com o Figma.
+
+## Addendum 2026-07-20 (10ª rodada) — a fonte dos cards não era Satoshi (causa da "fonte grande")
+
+O usuário sacou: os cards pareciam "com a fonte maior" não por causa do tamanho, mas porque **não estávamos usando a fonte do Figma**. O Figma usa **Satoshi** nos cards; a Fase 4 substituiu por **Plus Jakarta Sans** (`src/lib/fonts.ts` até tinha o comentário "Satoshi substitute per the Phase 4 UI-SPEC") porque os arquivos não estavam no repo. Métricas de fonte diferentes no mesmo 18px declarado = texto lendo como maior. O tamanho estava certo; a **fonte** estava errada.
+
+**Diagnóstico do usuário confirmado por teste:** antes disso, baixamos todos os textos da Hero 2 passos (só working tree, nunca commitado) pra ver se o problema era tamanho — ficou menor mas ainda "errado", o que isolou a fonte como causa real. Teste revertido.
+
+| # | Item | Correção | Commit |
+|---|---|---|---|
+| GAP-32 | Cards (e ingredient/bundle/review do site todo) na fonte errada (Plus Jakarta em vez de Satoshi) | Baixado Satoshi Regular (400) + Bold (700) da Fontshare (grátis, self-host permitido), colocado em `public/fonts/*.woff2`, `@font-face` junto de FilsonPro/AllRoundGothic, e `--font-card` trocado pra `'Satoshi'` (Plus Jakarta mantido como fallback de carregamento). Sem mudança de tamanho — o teste de tamanho foi revertido | `53aca4d` |
+
+Build + 71 testes verdes.
+
+**Mapeamento de fontes agora fiel ao Figma:** H1 = AllRoundGothic ✓, subtítulo = FilsonPro ✓, botões = DM Sans ✓, cards = **Satoshi** ✓ (era o único fora).
+
+## Addendum 2026-07-20 (11ª rodada) — TODAS as fontes destoando, não só os cards
+
+O usuário reportou que mesmo depois do fix da Satoshi, **todas as fontes** da Hero (H1, subtítulo, trust items, botões, cards) continuavam parecendo mais grossas/maiores que o Figma — não era só questão de família de fonte.
+
+**Causa:** `globals.css` não tinha nenhuma regra de font-smoothing. O Figma renderiza seu canvas com antialiasing suavizado (grayscale); navegadores no Windows usam por padrão um render mais denso (ClearType/subpixel) no mesmo peso declarado — mais perceptível em texto claro sobre fundo escuro, como a Hero inteira.
+
+| # | Item | Correção | Commit |
+|---|---|---|---|
+| GAP-33 | Todas as fontes da Hero (não só cards) lendo mais grossas/maiores que o Figma | Adicionado `-webkit-font-smoothing: antialiased`, `-moz-osx-font-smoothing: grayscale`, `text-rendering: optimizeLegibility` no `body` — normaliza o render em vez de mexer na fonte em si, efeito site-wide | `deb4e72` |
+
+Build + 71 testes verdes.
+
+**Ressalva importante (avisar o usuário sempre que isso for revisitado):** `-webkit-font-smoothing` tem efeito forte no Chrome/Safari de **macOS**, mas é **majoritariamente ignorado no Chrome/Edge do Windows** (o pipeline de texto lá é o DirectWrite do SO, que não expõe esse controle pra páginas web). Como o usuário testa em Windows, é bem possível que essa mudança não mude visivelmente nada pra ele — nesse caso a diferença de "peso" percebida é uma diferença de **rasterização entre plataformas** (Figma/Mac vs. ClearType do Windows), não um bug de CSS/fonte corrigível no código. Isso é uma limitação conhecida e aceita em handoffs de design pra web — não dá pra igualar 100% o rendering entre design tool e navegador.
+
+## Addendum 2026-07-20 (12ª rodada) — font-smoothing revertido; tracking-tight nos cards
+
+O `-webkit-font-smoothing:antialiased` da 11ª rodada **teve efeito visível** no Chrome do usuário (contrariando a ressalva acima) — só que na direção errada: texto ficou mais fino **e** com aparência menor, pior que antes. Revertido (`a9e1fdb`): alternar essa propriedade só oscila entre "grosso" e "fino" sem nunca bater exatamente no renderizador interno do Figma — são pipelines de texto diferentes, não vale a pena insistir nessa dimensão via CSS global.
+
+**Achado concreto sobre a quebra de linha dos cards (2 vs. 3 linhas):** o usuário confirmou que o print com quebra em 2 linhas é do **próprio Figma** (não do nosso site). Isso permitiu isolar a causa: peguei o card "Natural Aphrodisiac", cuja descrição tem `align-self:stretch` no dump (largura fixa 251px, sem ambiguidade de auto-size) — o Figma quebra esse texto em 2 linhas nessa largura exata; o nosso quebra em 3, na MESMA largura, com a MESMA fonte nominal (Satoshi 18px). Como a largura é idêntica, isso prova que o motor de texto interno do Figma renderiza de forma mensuravelmente mais compacta que qualquer navegador real — não é bug de implementação (descartadas: largura de janela, já que o usuário confirmou 1440px+; validade do arquivo de fonte, conferido o header woff2 e a presença no CSS buildado).
+
+| # | Item | Correção | Commit |
+|---|---|---|---|
+| — | Font-smoothing piorou a percepção de peso | Revertido — não vale insistir, é diferença de pipeline Figma-vs-browser | `a9e1fdb` |
+| GAP-34 | Descrição dos cards quebrando em 3 linhas em vez de 2 (mesma largura que o Figma) | Adicionado `tracking-tight` (-0.025em) no título e na descrição dos cards — lever legítimo pra compensar a diferença de métrica sem encolher abaixo do 18px do spec. **Não é garantia de bater 100% em toda combinação de idioma/tamanho de string** — é uma compensação de diferença de plataforma, não correção de bug | `d26af7c` |
+
+Build + 71 testes verdes.
+
+**Correção (mesma sessão):** usuário não gostou do resultado do `tracking-tight` (achou "apertado") e pediu explicitamente **tamanho menor e/ou fonte mais fina** em vez de reduzir o espaçamento entre letras. Revertido tracking-tight; título e descrição dos cards reduzidos de 18px → **16px** (mantendo Satoshi 700/400, tracking normal) — commit `f0d821c`. Build + 71 testes verdes.
+
+**Correção (3ª rodada, mesma sessão):** usuário pediu (1) fonte ainda mais fina, e (2) **os 4 cards nunca podem ter alturas diferentes entre si, em nenhuma largura de tela**. Achado importante: `min-h` + stretch do CSS grid só garante alturas iguais **dentro da mesma linha** — em `sm:grid-cols-2` os 4 cards formam 2 linhas independentes, que podem ter alturas diferentes uma da outra; e conferi que a cópia em es/pt (`messages/es.json`, `pt.json`) é longa o bastante pra precisar de uma 3ª linha de descrição nessa largura de card.
+
+| # | Item | Correção | Commit |
+|---|---|---|---|
+| GAP-34 (3º refinamento) | Cards podiam variar de altura entre si (grid stretch só vale dentro da mesma linha) + descrição ainda "grossa" | Baixado Satoshi **Light (300)** como 4º peso self-hosted; descrição trocada de `font-normal`(400)→`font-light`(300) (título continua Bold/700, batendo exato com o Figma). Altura do card trocada de `min-h-[127px]` pra **`h-[152px]` fixo** (constante, não derivado de conteúdo/grid) — dimensionado pra caber a 3ª linha da tradução mais longa (es/pt) sem cortar texto, garantindo alturas idênticas em qualquer largura de tela | `e4b7212` |
+
+Build + 71 testes verdes.
+
+**Correção (4ª rodada, mesma sessão):** print anotado com linha vermelha mostrou os títulos começando em alturas diferentes entre cards (efeito colateral do `justify-center` numa caixa de altura fixa com descrições de 2 vs. 3 linhas). Usuário também confirmou que a fonte da descrição já está visualmente parecida com o Figma — falta só caber em 2 linhas, e pediu aumentar levemente a largura dos cards.
+
+| # | Item | Correção | Commit |
+|---|---|---|---|
+| GAP-34 (4º refinamento) | Início dos títulos em alturas diferentes entre cards | `justify-center` → `justify-start` no card — título agora sempre começa no mesmo y, independente de quantas linhas a descrição daquele card específico ocupa | `931ff12` |
+| — | Cards estreitos demais pra descrição caber em 2 linhas | Gap entre cards reduzido de 25px (valor do Figma) → **15px**, ganhando ~7-8px de largura por card — fecha a diferença pro ~258px que "Crafted to deepen connection and shared pleasure" precisa pra 2 linhas, sem mexer nas margens laterais da seção nem no padding interno do card | `931ff12` |
+
+Build + 71 testes verdes.
+
+**Correção (5ª rodada, mesma sessão):** usuário esclareceu que "nunca podem ter alturas diferentes entre si" não significa um valor travado (o `h-[152px]` fixo deixava muito espaço sobrando embaixo nos cards mais curtos) — quer que todos herdem dinamicamente a altura do card com **mais** conteúdo. Também pediu pra aplicar em todos os outros textos da Hero o mesmo tratamento de "afinar" que foi feito na descrição dos cards.
+
+| # | Item | Correção | Commit |
+|---|---|---|---|
+| GAP-34 (5º refinamento) | Altura fixa (152px) deixava espaço sobrando nos cards mais curtos | Trocado `h-[152px]` fixo por `h-full` no card + `className="h-full"` no wrapper `ScrollReveal` — usa o `align-items:stretch` padrão do CSS Grid, que já estica todo item de uma linha pro tamanho do maior automaticamente, sem número mágico. Vale em `lg:grid-cols-4` (os 4 cards numa linha só); em `sm:grid-cols-2` (2 linhas independentes) só o par de cada linha se iguala entre si — igualdade cruzada entre linhas exigiria JS, e fidelidade mobile é escopo da Fase 6 (RESP-01/02) | `2d4555d` |
+| — (bug real encontrado) | Botões CTA nunca tinham a classe `font-cta` — herdavam FilsonPro (fonte do corpo) em vez do DM Sans do Figma | Adicionado `font-cta` nos dois botões; peso trocado de Bold(700)→**Semibold(600)** (peso mais fino do DM Sans, sem precisar de arquivo extra, é Google Font) | `2d4555d` |
+| — | Badge "10.000+ Happy Couples" com peso Medium(500) | Reduzido pra `font-normal`(400) — peso mais fino que já temos self-hosted pra FilsonPro | `2d4555d` |
+
+**Não alterado (limitação de arquivo de fonte, não decisão):** H1 (AllRoundGothic) e subtítulo/trust items (FilsonPro) não ficaram mais finos — só temos o corte **Bold** da AllRoundGothic, e o FilsonPro Regular(400) já É o peso mais claro que temos self-hosted pra essa família. Precisaria adquirir um peso adicional (Light, por ex.) dessas fontes comerciais pra aplicar o mesmo tratamento — não tentei baixar/substituir sem confirmar licenciamento.
+
+Build + 71 testes verdes.
+
+## Addendum 2026-07-20 (6ª rodada) — trust bar copy atualizada + ajustes de header
+
+**Trust bar:** usuário confirmou que o Figma atualizou o texto da trust bar. Substituídos os 6 itens (en/es/pt): Made in USA, Premium Arriba Cocoa, 30 Days Satisfaction Guarantee (typo "Gaurantee" corrigido), Fast & Discreet Shipping, 10,000+ Happy Couples, 100% Natural Ingredients — commit `16b2cad`.
+
+**Header (print anotado):**
+
+| # | Item | Correção | Commit |
+|---|---|---|---|
+| — | Fonte da tagline "Premium Chocolate" + links do menu grandes demais | Token compartilhado `--text-nav-link` (só usado nesses 2 lugares) reduzido de 14px → 13px | `3905cfa` |
+| — | Logo grande demais; pouco espaço à esquerda do logo e na costura trust-bar/nav | Logo escalado ~17% menor (59×36→49×30, sub-camadas na mesma proporção 5/6); padding esquerdo do nav 40px→48px; altura do nav 72px→76px | `96e027c` |
+| — | Botão "Buy Now" da Hero grande demais | Reduzido de h-50/16px pra h-44/14px (só esse botão — "How It Works?" e o "Shop Now" do header não foram tocados) | `96e027c` |
+
+Build + 71 testes verdes depois de cada commit.
+
+## Addendum 2026-07-20 (7ª rodada) — fundo da imagem do produto removido
+
+Usuário regenerou `hero-product.png` com fundo branco sólido em vez de transparente. Sem ImageMagick/Python funcional no ambiente (`convert` do Windows não é o do ImageMagick; os `python`/`python3` são só stubs da Microsoft Store), instalei `sharp` isolado numa pasta de scratchpad (não no projeto) e rodei um flood-fill a partir das bordas da imagem: só pixels **conectados à borda** através de uma cadeia branco/cinza-clara viram transparentes — impossível "furar" brilhos internos do produto (que ficariam isolados, sem conexão com a borda). Precisou de 2 passadas: a 1ª (limiar apertado) deixou uma "nuvem" de sombra cinza-clara residual perto do canto inferior direito; a 2ª (limiar mais largo, calibrado nos valores RGB reais dessa sombra) resolveu. Verificado numericamente (alpha 0 nos 4 cantos, alpha 255 no produto) e visualmente via composição sobre a cor exata do gradiente da Hero. Arquivo original (fundo branco) guardado fora do repo, no scratchpad, caso precise reverter. Commit `2333117`.
+
+Build + 71 testes verdes.
+
+## Addendum 2026-07-20 (8ª rodada) — imagem trocada de novo + causa do "não refletiu"
+
+Usuário reportou que a correção anterior não apareceu no site, e nesse meio tempo trocou a foto do produto de novo (nova imagem, 1448×1086, diferente da anterior 2368×1776).
+
+**Causa provável do "não refletiu":** `.next/cache/images` (cache do otimizador de imagem do Next.js) pode servir uma versão otimizada antiga pra um mesmo path mesmo depois do arquivo-fonte mudar. Limpei esse cache antes de rebuildar.
+
+Rodado o mesmo script de flood-fill (a partir das bordas) na imagem nova — sem sombra residual dessa vez, cantos com alpha 0-26 (praticamente zero), produto 100% opaco. Commit `5015c07`.
+
+Build + 71 testes verdes.
+
+**Se ainda não aparecer:** pedir pro usuário also fazer hard-refresh (Ctrl+Shift+R) — cache do NAVEGADOR é um fator independente do cache do Next.js.
+
+## Addendum 2026-07-20 (9ª rodada) — resíduo de "quadro" no fundo removido de vez + imagem menor
+
+Usuário apontou que ainda sobrava um "quadro" com opacidade parcial visível nas bordas da imagem (o degradê suave de sombra da foto original caía dentro da zona de transição/feather do script, em vez de virar 100% transparente).
+
+**Correção:** limiar do corte "sempre transparente" (`WHITE_THRESHOLD`) subido de 60 → **170** (cobre todo o range do degradê de sombra — as cores do produto estão muito mais longe do branco que isso, então não corre risco de comer o produto), e a zona de transição suave (`FEATHER`) reduzida de 140 → **20** (só uma faixa fina de anti-serrilhado bem na borda real do produto). Verificado com amostras em pontos confirmados como fundo puro (fora da silhueta do produto) — todos com alpha 0. Commit `44c5886`.
+
+Também reduzida a imagem do produto de 57.07%/822px → **52%/750px**, por pedido do usuário.
+
+Build + 71 testes verdes.
+
+## Addendum 2026-07-20 (10ª rodada) — halo fino de borda removido; triângulo laranja é o blob da Hero, não a imagem
+
+Usuário apontou (com setas vermelhas) resíduos finos nas bordas da caixa/plataforma/farelo, e um triângulo laranja estranho aparecendo perto do canto inferior direito.
+
+**Halo de borda:** a zona de transição suave (feather) ainda deixava pixels de mistura produto+fundo com alpha baixo-mas-não-zero bem na borda real, visíveis como um contorno claro fino contra o fundo escuro da página. Trocado pra alpha binário (sem gradiente) + erosão de 2px do contorno opaco (dilatando a máscara de fundo duas vezes) pra eliminar esse resíduo por completo. Commit `6096f5d`.
+
+**Triângulo laranja:** não é resíduo do corte de fundo — é o **blob decorativo grande da própria Hero** (`blob-vector-1.svg`, z-0, posicionado dentro do mesmo canvas) aparecendo por trás da imagem do produto. Como a imagem foi reduzida na rodada anterior (57%→52%), sua borda esquerda recuou (ela é ancorada por `right`), expondo uma fatia do blob que antes ficava coberta. **Não mexi nisso ainda** — é uma decisão de layout (encolher o blob, mover a imagem, ou aceitar o blob aparecendo), não um bug de processamento de imagem. Perguntei ao usuário como prefere resolver — ainda em aberto (o usuário confirmou manter o tamanho da imagem como está, mas não respondeu especificamente sobre o blob).
+
+Build + 71 testes verdes.
+
+## Addendum 2026-07-20 (11ª rodada) — specks brancos isolados no farelo de cacau
+
+Usuário mandou um crop ampliado da área do farelo mostrando specks brancos ainda visíveis entre os grãos. Causa: o flood-fill a partir da borda só limpa fundo **conectado à borda** — os bolsões de fundo branco entre grãos individuais de cacau nunca tocam a borda da imagem, então ficavam opacos.
+
+| # | Item | Correção | Commit |
+|---|---|---|---|
+| — | Specks brancos isolados entre os grãos do farelo | Adicionada uma 2ª passada: encontra todo componente conectado esbranquiçado **independente de tocar a borda**, e limpa qualquer um abaixo de ~600px (bolsão entre grãos), preservando os maiores (o texto branco "Dips" impresso na caixa, cujos traços de letra ficam bem acima desse corte). Verificado que a logo continua opaca | `f840ae8` |
+
+Tamanho da imagem mantido como estava (52%/750px), por pedido do usuário.
+
+Build + 71 testes verdes.
+
+## Addendum 2026-07-20 (12ª rodada) — bug real: a passada de "ilhas pequenas" comia reflexos do produto
+
+Usuário apontou (com prints ampliados) que a passada de limpeza de "ilhas brancas pequenas" da 11ª rodada tinha um efeito colateral real: **reflexos genuínos** na plataforma e nos discos de chocolate (manchas de luz pequenas e isoladas, sem conexão com a borda — exatamente como os bolsões de fundo entre grãos de farelo) foram apagados por engano, virando marcas pretas tipo "risco" na composição.
+
+**Solução do usuário:** gerou a foto de novo via GPT com fundo **branco sólido e uniforme** de propósito, especificamente pra facilitar a remoção. Confirmei a uniformidade (~254,253,254 em todos os cantos) — com um fundo tão limpo, o flood-fill simples a partir da borda já é suficiente, então **desativei a passada de ilhas pequenas** (ela não consegue distinguir "bolsão de fundo entre grãos" de "reflexo pequeno no produto" — são estruturalmente idênticos do ponto de vista do algoritmo). Script ganhou uma flag `SKIP_ISLAND_PASS`.
+
+Verificado com zoom nas duas áreas exatas que o usuário marcou como danificadas (borda da plataforma, aresta do disco de cima) — reflexos intactos, e sem specks de farelo tampouco (essa nova foto não tem os bolsões finos que a anterior tinha). Commit `05a0cb7`.
+
+**Lição:** heurísticas de "ilha pequena = fundo" não distinguem semanticamente entre "buraco no fundo" e "brilho no produto" — ambos são manchas claras pequenas e isoladas. Fundo de entrada uniforme (sem sombra/vinheta) simplifica o problema o bastante pra não precisar dessa heurística arriscada.
+
+Build + 71 testes verdes.
+
+## Addendum 2026-07-21 (13ª rodada) — specks do farelo voltaram; correção por região + ordem do pipeline
+
+Usuário mostrou (print ampliado) que os specks do farelo ainda apareciam, mesmo com a nova imagem de fundo limpo. Dois achados:
+
+1. **Os bolsões de fundo entre os grãos formam uma região conectada GRANDE** (não pequenas ilhas isoladas) — o filtro de tamanho (600px) da rodada anterior deixava passar sem querer. Como textura de cacau fosca não tem risco de reflexo genuíno, troquei por uma passada de **limiar de cor direto, restrita a uma caixa delimitadora** (`ISLAND_REGION`) cobrindo só a área do farelo — qualquer pixel esbranquiçado ali vira transparente, tamanho irrelevante, sem tocar plataforma/caixa/discos fora da caixa.
+2. **A erosão de 2px (que limpa a franja de borda) precisa rodar por ÚLTIMO**, sobre a máscara final combinada — rodá-la antes da passada de região deixava cada bolsãozinho do farelo com sua própria franja de mistura de cor não tratada.
+
+**Falso alarme na verificação:** um crop de conferência redimensionado 2x ainda mostrava specks — mas era **artefato de interpolação do redimensionamento** (ringing em bordas de alto contraste), não dado real. Confirmado lendo o alpha bruto dos pixels (0 pixels claros-e-opacos na faixa do farelo) e reconferindo em crop 1:1 sem redimensionar.
+
+Reflexos da plataforma e do disco reconfirmados intactos. Commit `5448df0`.
+
+**Pergunta do usuário respondida:** ele perguntou se fundo preto ou a cor roxa do site facilitaria (mesmo que sobre resíduo, camuflaria). Resposta: **não** — o produto já tem várias cores escuras (roxo da caixa, chocolate marrom), então um fundo escuro/roxo tornaria a separação muito mais arriscada nos dois sentidos (comer produto ou deixar fundo). Branco continua sendo a cor mais distante de todas as cores do produto, logo a mais segura pro processo automático.
+
+Build + 71 testes verdes.
+
+## Addendum 2026-07-21 (14ª rodada) — dois consertos pontuais: mancha cinza residual + borda da plataforma mordida
+
+Usuário apontou (2 prints anotados) dois pontos finos restantes: (1) uma manchinha cinza no meio do farelo — o GPT deixou um resquício de sombra ali que ficou cinza em vez de branco, escapando do limiar de cor; usuário autorizou apagar tudo ali (farelo incluso, é pouco). (2) A borda esquerda da plataforma roxa com uma "mordida" desde a **primeira** rodada de remoção desta imagem — um limiar agressivo comeu uma transição suave roxo→branco bem na borda real.
+
+**Correção:** script pontual comparando com a imagem original: (1) forçar transparência total numa caixa pequena ao redor da mancha cinza (2.860px); (2) recalcular, só numa faixa estreita da borda esquerda, com limiar bem mais conservador (60 em vez de 190) usando os pixels da imagem original — restaura a cor real onde é claramente produto, mantendo transparente só o que é inequivocamente fundo (20.755px reavaliados). Verificado visualmente: sem costura na fronteira do patch, curva da plataforma lisa de novo. Commit `3cb3268`.
+
+Build + 71 testes verdes.
+
+**Revertido na mesma rodada** (`cba5570`): o limiar conservador do conserto #2 trouxe de volta alguns pontos brancos de fundo em outros lugares da mesma borda — o usuário preferiu a versão anterior (`5448df0`, com a mordida na borda) a essa troca. A mordida na lateral da plataforma continua como imperfeição conhecida, não resolvida.
+
+## Addendum 2026-07-21 — Seção 2 (Story) alinhada ao Figma via dump + prints (GAP-35)
+
+O usuário mandou o Copy-as-CSS da seção inteira (frame "Ingredients" no Figma, 1440×699 — na verdade é a Story) + prints lado a lado, e pediu também o mesmo tratamento de fontes da Hero. Tudo em `2d36c35`:
+
+**Layout:**
+| Item | Figma | Nosso (antes) |
+|---|---|---|
+| Badge "10,000+ Happy Couples" | **topo** do painel da foto (coluna justify-between), retângulo 15px c/ losango, Inter 700 #EADAE4 | embaixo junto do título, pill sem losango |
+| Badges inferiores | retângulo 15px c/ losango, Satoshi 700 branco; copy "100% Natural / 6 Active Ingredients / Satisfaction Guaranteed" | pill sem losango; copy errada ("Made in the USA" / "Aphrodisiac Blend") |
+| Split de colunas | ~50/50 (723/717) | 45/55 |
+| Gradiente da foto | vertical `#F15A22/20 → #39165E/20` | diagonal, cores diferentes |
+| Padding painéis | 40px; painel direito alinhado ao topo | 48–64px; centralizado |
+| Título | 2 linhas fixas ("Made to be" / "Savoured by Two", camadas separadas) | quebrava em 3 linhas |
+
+**Copy (en/es/pt):** p1 ganhou a frase de abertura do Figma ("Before love became poetry, it was impulse."); "We blend technical precision..." migrou de p3 pra p2 (divisão de parágrafos do Figma); p3 reduzido à frase final — a frase "Each piece is an invitation..." não existe no Figma e foi removida.
+
+**Fontes (tratamento da Hero, 1 passo abaixo do spec):** título 64→58, "Our Story" 54→48, corpo 24→21, subtítulo 24→21, badge social 16→14, badges 14→13.
+
+Build + 71 testes verdes.
+
+**Correção (mesma sessão, `1c1e1b9`):** usuário substituiu a foto (`story-couple-photo.png`, commit `c832912`) e apontou que título+subtítulo tinham ficado embaixo junto das feature badges, quando no Figma ficam junto do badge "10,000+ Happy Couples" no **topo** (grupo `justify-between` #1, 645×249). Reestruturado em dois filhos diretos: grupo de cima (badge+título+subtítulo) e grupo de baixo (só a fileira de feature badges, empurrada pro rodapé).
+
+## Addendum 2026-07-21 — Seção 3 (Ingredients) reconstruída: layout Figma + INTERATIVIDADE (GAP-36)
+
+Usuário mandou o Copy-as-CSS da seção inteira (frame 1440×839) + print do Figma, e especificou um requisito que o Figma estático não mostra: **a seção é interativa** — clicar num ingrediente à esquerda seleciona ele (linha expande com descrição curta abaixo do nome, no estado destacado) e o card de detalhe à direita (ícone, nome, tag, descrição, Origins & Curiosities) troca junto. O ícone do card da direita é sempre o mesmo asset da linha selecionada.
+
+**Sobre a copy:** o usuário inicialmente disse que não tínhamos os textos, depois corrigiu — o site antigo (carrossel de cards de ingredientes) já os tinha. Confirmado: as chaves `*_desc`/`*_origins` de todos os 6 ingredientes já estavam migradas no i18n (en/es/pt) — nenhum texto novo foi inventado.
+
+Implementação (`a403cdc`):
+- `useState` com índice selecionado (default: Arriba Cocoa, como no mock); linhas viram `<button>` com `aria-pressed`
+- Estado selecionado = anatomia exata do Figma: cores quentes `#371629`/`#5B2F2D` (tokens ingredient-hl), ícone 44px, descrição de 1 linha `#96838F`; não-selecionado = `#231435`/`#39294C`, ícone menor, sem descrição (o Figma mantém `display:none` nelas)
+- Pills de keyword: rounded-full, borda 2px `#5B2F2D`, bg `rgba(55,22,41,.15)`, losango 5px, Satoshi 700 10px uppercase
+- Card de detalhe: cores exatas (`rgba(49,34,89,.15)` / borda `rgba(57,41,76,.5)`), card interno de curiosidades (`rgba(55,22,41,.4)` / `rgba(91,47,45,.4)`) com losango+título
+- Badge "10,000+ Happy Couples" adicionado no painel esquerdo (Figma) — nova chave `Ingredients.socialProof` nas 3 línguas
+- ":" final de "Origins & Curiosities:" removido (Figma não tem), 3 línguas
+- Tokens já batiam exatos: `dips-purple-section` = `#1A0A2E` (bg dos painéis), `dips-text-lavender-muted` = `#AE9BDA` (intro)
+- Fontes 1 passo abaixo do spec (tratamento Hero/Story): título 48→44, eyebrow 20→18, intro 24→21, nome no detalhe 24→21, nomes das linhas 16→14, descrições 14→13
+
+Build + 71 testes verdes.
+
+**Próximo passo:** novo walkthrough a **1440px real** (`localhost:3001`) + Stripe click-through para fechar o checkpoint do 05-05 → merge → completar a fase. E me diz o veredito do GAP-21.
+
+## Addendum 2026-07-21 — Seção 4 (Buy/Bundle) reconstruída (GAP-37)
+
+Análise feita separadamente no Fable a partir do Copy-as-CSS da seção inteira + print, plano commitado em `.planning/phases/05-landing-page-sections/GAP-37-BUY-SECTION-PLAN.md` antes da execução (troca de modelo pro Sonnet no meio do processo — ver conversa pra contexto de custo/token).
+
+**Estrutura:** nossa seção era um card arredondado com sombra dentro de container roxo — Figma é **full-bleed 50/50** (mesmo padrão de Story/Ingredients). Corrigido.
+
+**Painel da foto:** era tudo empilhado no rodapé; virou coluna `justify-between` (badge+título+subtítulo no topo-direita, 3 badges de benefício no rodapé-direita). `BuySection.subtitle` (removida numa rodada antiga) foi recriada nas 3 línguas. Overlay virou preto flat 20% (era gradiente). Título forçado em 2 linhas via `<br></br>` (mesmo padrão Hero/Story).
+
+**Cards de bundle:** thumbnail virou a foto real do produto (transparente, espelhada) em vez de ícone genérico numa caixa branca. Labels no formato Figma "1x Box/2x Boxes/3x Boxes". Pills de desconto com losango. **Bug real corrigido:** "Most Popular" seguia a seleção do usuário (errado semanticamente — é atributo do produto) — agora fixo no card 2x sempre. Summary virou 2 colunas lado a lado. Total do botão em branco (era roxo).
+
+**Overrides funcionais mantidos (não copiados do Figma):** preços reais do Stripe (2x=$55.78, 3x=$75.57 — Figma usa placeholder $59.99/$89.99 iguais em todos); frete real ($6.97, cobrado no 1x/2x) — o Figma mostra "Free Shipping" no card 1x, que seria enganoso com o dado real.
+
+**Bônus:** `ProductPurchaseBox.tsx` tinha várias strings hardcoded em inglês ("Most Popular", "Unit Price", "Shipping" etc.) violando a invariante i18n do projeto — migradas pra chaves novas em `BuySection` (en/es/pt). `BuyNowButton.tsx` trocou o merge de className de template literal cru pra `cn()`/tailwind-merge, pra garantir que os overrides (cor branca, altura) realmente vençam.
+
+Interatividade (seleção → resumo/total/checkout) mantida intocada, só reestilizada.
+
+Commit `6b36f35`. Build + 71 testes verdes.
+
+**Correção (mesma sessão, `9eb3a6c`):** usuário apontou 3 ajustes finos: (1) tag "Most Popular" deveria ficar em cima do card, não embaixo — movida (`mt-[14px]` no card 2x pra dar espaço acima em vez de abaixo, mantendo o espaçamento entre os 3 cards uniforme); (2) usuário criou 3 imagens dedicadas por quantidade (`buy-1/2/3.png`) — fundo branco removido com o mesmo script border-seeded do `hero-product.png`, uma por card em vez do único `hero-product.png` espelhado reaproveitado.
+
+## Addendum 2026-07-21 — Seção 5 (Reviews) reconstruída (GAP-38)
+
+Análise no Fable a partir do Copy-as-CSS da seção inteira + print, plano commitado em `.planning/phases/05-landing-page-sections/GAP-38-REVIEWS-PLAN.md` antes da execução (Sonnet).
+
+**Conteúdo:** os 12 reviews placeholder (o próprio `reviews.ts` se documentava como placeholder) foram substituídos pelos **6 reviews reais do Figma** (Marcus, Liam, Elena R., Jessica T., David K., Tyson W.) — aqui o Figma vence o override "dados reais vencem", porque o dado "real" que tínhamos era só um placeholder mesmo, não conteúdo genuíno de cliente. Campos traduzíveis (role, país, data relativa, quote) viraram chaves i18n (`Reviews.{id}_role/_country/_date/_quote`) nas 3 línguas; `reviews.ts` ficou só com id/nome/bandeira/foto/estrelas.
+
+**Anatomia do card invertida:** autor foi pro **topo** (avatar 60px + nome/role à esquerda, estrelas+país à direita) — era rodapé + bloco de mídia de produto (nenhum card do Figma tem mídia, `MediaBlock` removido). Quote no meio, data embaixo à direita. Borda 1px→2px. Estrelas viraram amarelas `#FFCD00` do Figma (reaproveitavam a laranja do Hero, que é certa lá mas errada aqui).
+
+**Grid:** trocado `columns-2/3` (CSS columns preenche de forma imprevisível com alturas variáveis) por **3 colunas explícitas** com os pares fixos do Figma (Marcus+Liam / Elena+Jessica / David+Tyson).
+
+**Carrossel novo:** setas prev (#2B1543)/next (brand-orange) 60px, canto inferior direito — **desabilitadas por enquanto** (os 6 reviews já cabem todos de uma vez, não há nada pra paginar ainda; preferi não carregar estado morto de paginação sem necessidade real).
+
+**Fontes** (padrão das seções anteriores): título 54→48, subtítulo 24→21, nome 24→21, quote 18→16, role/país/data 14→13.
+
+**Aviso ao usuário:** o Figma usa fotos de perfil redondas que não temos — mantido o fallback de iniciais (`photoUrl` pronto pra receber fotos reais, como as imagens de produto que o usuário gerou nas seções anteriores).
+
+Commit `1708e3f`. Build + 71 testes verdes.
+
+**Correção (mesma sessão, `a836165`):** usuário forneceu as 6 fotos de perfil (`review-avatar-1..6.png`), mapeadas em ordem sequencial pra ordem já estabelecida dos reviews (Marcus, Liam, Elena R., Jessica T., David K., Tyson W.).
+
+## Addendum 2026-07-21 — Seção 6 (FAQ) reconstruída (GAP-39)
+
+Análise no Fable a partir do Copy-as-CSS da seção + print, plano commitado em `.planning/phases/05-landing-page-sections/GAP-39-FAQ-PLAN.md` antes da execução (Sonnet).
+
+Os tokens do card já batiam exatos (bg `#231435`, borda `#39294C`, raio 15, padding 25) — só precisava ajustar header, largura/espaçamento do acordeão, indicador de aberto, e tipografia:
+
+| Item | Antes | Depois |
+|---|---|---|
+| Subtítulo | não existia | novo, reaproveitando as traduções exatas de `Reviews.subtitle` (o Figma repete a mesma frase nas duas seções) |
+| Título | lavanda, 54px | branco, 48px |
+| Largura do acordeão | 1024px | **807px** (Figma) |
+| Gap entre itens | 16px | **10px** |
+| Indicador "aberto" | barra lateral laranja (`border-l-4`) | **borda completa laranja** (`border-2` + `border-brand-orange`) |
+| Item inicial | tudo fechado | **q1 aberto por padrão** (`defaultValue="q1"`, igual o mock do Figma) |
+| Pergunta | 18px, lavanda | 16px, branca |
+| Chevron | 16px (padrão shadcn) | 24px branco traço 2.5 (sobrescrito via seletor arbitrário no `AccordionTrigger`, sem editar `ui/accordion.tsx`) |
+| Resposta | 18px, sem quebra de linha | 16px + `whitespace-pre-line` (a5 finalmente quebra a lista de ingredientes como pretendido) |
+
+**Copy das 6 perguntas/respostas mantida intocada** — é override funcional documentado; o Figma diverge em detalhes finos ("Is this product safe?" vs. o nosso "Is the product safe?") e a copy real vence.
+
+Commit `8e11d5f`. Build + 71 testes verdes.
+
+## Addendum 2026-07-21 — Seção 7 (Footer) reconstruída (GAP-40, fase concluída)
+
+Análise no Fable a partir do Copy-as-CSS da seção + print, plano commitado em `.planning/phases/05-landing-page-sections/GAP-40-FOOTER-PLAN.md` antes da execução (Sonnet).
+
+**Bug real encontrado (mesma família do GAP-24):** a logo do footer usava `fill+object-contain` nas duas camadas SVG — cada uma é `preserveAspectRatio="none"` cobrindo só a SUA sub-região, não a caixa toda, então esticar as duas independentemente deformava a camada laranja. Corrigido reaproveitando os mesmos assets do header (`logo-purple-part.svg`/`logo-orange-part.svg`) com posição/tamanho exatos, escalados ~1.6× (59×36 → 94×58).
+
+**Layout:** padding do container ajustado pra 50px (Figma); coluna esquerda 569/713 (era 1fr/1.4fr) e virou `justify-between` de verdade (logo+endereço em cima, newsletter embaixo — antes era tudo empilhado sem separação); zona direita reestruturada em duas linhas: fileira de colunas de links + **"Contact Us" numa segunda linha, alinhado à direita**, sob o Customer Care (antes estava dobrado dentro da própria coluna Customer Care). A âncora do nav "Contact" (`#footer-contact`) migrou pro novo bloco Contact Us dedicado.
+
+**Overrides funcionais mantidos** (dados reais vencem o Figma): `info@dipschocolate.com` (Figma mostra `help@dips.co` fictício); endereço real da Dips Wellness Corporation (só reformatado pro estilo de uma linha com pipes do Figma); "Track Order" agora **aponta pra página real** `/orders` (no Figma não tem destino real); Wholesale/Accessibility **omitidos** (não existem páginas reais pra eles).
+
+**Copy atualizada do Figma** (não é override): subtítulo da newsletter, placeholder "Your email", "Refunds and Returns"/"Terms and Conditions" por extenso, labels "Our Ingredients"/"F.A.Q.s", e uma **linha de disclaimer FDA nova** substituindo o bloco legal multi-linha antigo.
+
+**⚠️ Flag pro usuário — decisão que precisa de atenção:** removi da renderização as linhas `madeWith`, `productDesigned`, `registeredIn` (Florida) e **`ageRestriction` (18+)** — o Figma só tem © + disclaimer FDA, nenhuma dessas. A do 18+ é a mais sensível (compliance de produto adulto); as chaves continuam no JSON, é só reintroduzir uma linha se o usuário preferir manter.
+
+**Fontes** (padrão das seções anteriores): título newsletter 28→25, headings de coluna 22→20, links/endereço/email 18→16, placeholder/legal 14→13, Sign Up 16→14.
+
+Commit `efefb0e`. Build + 71 testes verdes.
+
+**Esta era a última seção da Fase 5** (GAP-35 a GAP-40 cobriram Story, Ingredients, Buy, Reviews, FAQ e Footer). Falta official fechamento: novo walkthrough completo a 1440px real + Stripe click-through pra fechar o checkpoint human-verify do 05-05 → merge do worktree → fase completa.
+
+## Addendum 2026-07-21 — Início da responsividade mobile (RESP-01, Hero)
+
+Fase 5 (desktop) fechada; começou a Fase 6 (responsividade), mesmo esquema de sempre: Copy-as-CSS do frame mobile (375×1656, Figma node `281:22`) + 2 prints, análise no Fable, plano commitado em `.planning/phases/05-landing-page-sections/RESP-01-HERO-MOBILE-PLAN.md` antes da execução (Sonnet).
+
+O Figma agora TEM versão mobile própria (375px, 7 seções) — descoberto e documentado anteriormente em `FIGMA-MOBILE-EXTRACTION.md`. Isso muda a premissa original do RESP-01 (que previa decisões próprias por falta de referência): agora dá pra ser fiel ao Figma mobile, com os mesmos overrides funcionais já estabelecidos no desktop.
+
+**Hero mobile — diferenças reais corrigidas** (só `Hero.tsx`, canvas desktop `lg:` intocado):
+
+| Item | Antes (mobile) | Depois (Figma mobile) |
+|---|---|---|
+| Alinhamento do bloco de texto | centralizado | **alinhado à esquerda** (badge, H1, subtítulo, trust items, CTAs) |
+| H1 | 58px fixo (token desktop) | **36px** (Figma 40px, um passo abaixo — mesma convenção do desktop 64→58) |
+| Subtítulo | 21px fixo | **17px** (Figma 19px, um passo abaixo) |
+| Mini trust items | linha centralizada, cor muted | **coluna empilhada** (gap 15), cor lavanda cheia (não muted) |
+| Imagem do produto | dentro do gutter `px-6` | **full-bleed** (borda a borda, `-mx-6`) |
+| Feature cards (gap) | 15px (herdado do desktop) | **25px** no mobile (Figma), mantém 15px em `lg:` (refinamento GAP-34 preservado) |
+| Blob pequeno | mesma posição do desktop (top 4px) | reposicionado (~26% da seção) e reduzido (110px) |
+| Blob grande | `hidden` abaixo de `lg` | **nova instância mobile**, atrás do último feature card (canto inferior direito) — elemento separado do blob desktop pra não arriscar a posição já aprovada (GAP-30) |
+
+**Overrides mantidos (vencem o Figma mobile):** botão Buy Now `h-[44px]`/14px (pedido explícito do usuário, não é do Figma); marquee da trust bar (o Figma mobile só mostra o grupo desktop de 1440px clipado, artefato de reuso); badge de social proof mantido no token atual (o dump mobile tinha um bg vinho divergente do desktop, não aplicado); efeitos de hover "jump" dos CTAs/cards (irrelevantes em touch, não removidos).
+
+Commit `232c525`. Build + 71 testes verdes.
+
+**Pendente:** Header mobile (hambúrguer com drawer real) fica fora de escopo desta rodada — o estado fechado já bate com o Figma, o drawer funcional é tarefa própria. Próximas seções mobile a fazer: Story, Ingredients, Bundle, Reviews, FAQ, Footer.
+
+## Addendum 2026-07-21 — Story mobile (RESP-02)
+
+Mesmo esquema: Copy-as-CSS do frame mobile (375×1090, Figma node `281:146` — o layer chama "Ingredients" no Figma mas é a seção Story) + 2 prints, análise no Fable, plano commitado em `.planning/phases/05-landing-page-sections/RESP-02-STORY-MOBILE-PLAN.md` antes da execução (Sonnet).
+
+Estrutura já batia (foto com badge+título+subtítulo no topo, badges na base, painel "Our Story" embaixo é exatamente o que o código já fazia abaixo de `lg`) — só medidas e tipografia precisavam ajustar:
+
+| Item | Antes (mobile) | Depois (Figma mobile) |
+|---|---|---|
+| Altura da foto | `min-h-[420px]` | **`min-h-[699px]`** (igual desktop) |
+| Título sobre a foto | 58px fixo | **48px** (Figma 54, um passo abaixo) |
+| Subtítulo sobre a foto | 21px fixo | **14px** (Figma 16) |
+| Badge social proof (topo) | 14px/px-15/py-3 | **12px/p-3** |
+| Gap do grupo do topo | 16px | **10px** |
+| Badges da base | linha com wrap | **coluna empilhada** (gap 15) |
+| Título "Our Story" | 48px fixo | **40px** (Figma 44) |
+| Parágrafos | 21px, gap 24px | **13px**, gap 10px (Figma 14px/10px) |
+| Padding do painel escuro | `p-6 py-12` (48px vertical) | **`p-6`** (o `py-12` dobrava o respiro do Figma) |
+
+Todas as mudanças só na base; `lg:` mantém os valores desktop já aprovados. `justify-center` do painel (pedido do usuário em 2026-07-21) mantido nas duas larguras.
+
+Commit `ed08f39`. Build + 71 testes verdes.
+
+## Addendum 2026-07-21 — Ingredients mobile (RESP-03)
+
+Mesmo esquema: Copy-as-CSS do frame mobile (375×1097, Figma node `281:209`) + 2 prints, análise no Fable, plano commitado em `.planning/phases/05-landing-page-sections/RESP-03-INGREDIENTS-MOBILE-PLAN.md` antes da execução (Sonnet).
+
+**Mudança estrutural:** no mobile o Figma inverte a ordem do header — o **título vem primeiro**, o eyebrow itálico "The ingredients" vem **depois** (no desktop é o contrário). Resolvido com `order-*` entre os dois elementos, sem duplicar JSX; foi preciso adicionar `className="flex flex-col"` no `ScrollReveal` que os envolve, já que `order` só funciona entre filhos de um container flex/grid.
+
+| Item | Antes (mobile) | Depois (Figma mobile) |
+|---|---|---|
+| Ordem header | eyebrow → título | **título → eyebrow** (via `order-*`) |
+| Título | 44px fixo | **40px** (Figma 44, um passo abaixo) |
+| Eyebrow | 18px fixo | **14px** (Figma 16) |
+| Padding dos painéis | `p-6 py-12` | **`p-6`** (o `py-12` dobrava o respiro do Figma) |
+| Rows da lista | padding 25px, radius 15px | **15px / 12px (selecionada) / 10px (demais)** |
+| Nome/desc da linha | 14px/13px | **12px** (spec mobile literal — texto pequeno não reduz mais) |
+| Intro do painel direito | 21px | **16px** |
+| Card de detalhe | padding 25px, ícone 44px, nome 21px, desc 13px | **padding 20px, ícone 40px, nome 12px, desc 10px** (todos literais do spec mobile) |
+| Card Origins & Curiosities | padding 25px, título 14px, corpo 13px | **padding 15px, título 12px, corpo 10px** (literais) |
+
+**Override flagrado ao usuário:** a pill de keyword (RITUAL/STAMINA/...) pede 8px no Figma mobile — mantive em **10px** (o valor já usado no desktop) por legibilidade/acessibilidade; 8px de texto real seria ilegível. Ainda não confirmado pelo usuário, fica registrado aqui caso quiserem revisitar.
+
+Todas as mudanças só na base; `lg:` mantém os valores desktop já aprovados. Interatividade de seleção e hover-lift intocados.
+
+Commit `1c2dba2`. Build + 71 testes verdes.
+
+## Addendum 2026-07-21 — Buy/Bundle mobile (RESP-04)
+
+Mesmo esquema: Copy-as-CSS do frame mobile (375×1429, Figma node `281:373`) + 2 prints, análise no Fable, plano commitado em `.planning/phases/05-landing-page-sections/RESP-04-BUY-MOBILE-PLAN.md` antes da execução (Sonnet).
+
+**Duas mudanças estruturais** (não só medidas):
+
+1. **Ordem dos painéis invertida:** no mobile a FOTO vem primeiro, o painel creme de compra vem depois — o oposto do desktop (compra à esquerda). Resolvido com `order-1`/`order-2` nos dois filhos diretos do grid em `BuySection.tsx`.
+2. **Anatomia do bundle card muda:** no mobile cada card vira **coluna de 2 linhas** — imagem+nome/preço em cima, pill de desconto (esquerda) + total (direita) embaixo, largura cheia. No desktop continua a linha única (imagem+nome à esquerda, pill/total empilhados à direita). Reestruturado só com classes responsivas em `ProductPurchaseBox.tsx`, sem duplicar JSX.
+
+| Item | Antes (mobile) | Depois (Figma mobile) |
+|---|---|---|
+| Altura da foto | `min-h-[420px]` | **`min-h-[699px]`** |
+| Título da foto | 58px fixo | **40px** (Figma 44, um passo abaixo) |
+| Subtítulo da foto | 21px fixo | **14px** (Figma 16) |
+| Badges de benefício | linha, wrap, à direita | **coluna empilhada à esquerda** (gap 15) |
+| Padding dos cards/summary | 25px | **20px** (Figma mobile) |
+| Nome do bundle | 18px | **14px** (Figma 16, um passo abaixo) |
+| Total do card / valores do summary | 18px | **16px** |
+| Labels do summary | 13px | **12px** (spec mobile literal) |
+
+**Overrides mantidos (vencem o Figma mobile):** preços reais da Stripe (nunca os placeholders $59.99/$89.99 "todos $29.99/box" do mock); **"Most Popular" continua na borda SUPERIOR** do card 2x — o Figma mobile o desenha na borda inferior, mas prevalece o pedido explícito do usuário (com screenshot, sessão anterior) de manter no topo; pill de desconto em 9px (Figma pede 8px, mesma decisão de legibilidade do RESP-03); copy "Ingredients" corrigida (Figma tem o typo "Igredients").
+
+Todas as mudanças só na base; `lg:` mantém os valores desktop já aprovados. A reestruturação do card foi só de className (nenhuma mudança de `onClick`/estado) — vale conferir manualmente no browser que a seleção de bundle e o Buy Now continuam funcionando.
+
+Commit `ce98ce0`. Build + 71 testes verdes.
+
+## Addendum 2026-07-21 — Reviews mobile (RESP-05)
+
+Mesmo esquema: Copy-as-CSS do frame mobile (375×2093, Figma node `281:529`) + 3 prints, análise no Fable, plano commitado em `.planning/phases/05-landing-page-sections/RESP-05-REVIEWS-MOBILE-PLAN.md` antes da execução (Sonnet).
+
+Seção tranquila — a estrutura já batia (coluna única, mesma ordem Marcus→Tyson, mesmos tokens de card). Só tipografia e tamanhos internos precisavam encolher:
+
+| Item | Antes (mobile) | Depois (Figma mobile) |
+|---|---|---|
+| Título / subtítulo | 48px / 21px | **40px / 16px** (Figma 44/18, um passo abaixo) |
+| Padding vertical da seção | `py-20` | **`py-10`** (`sm:py-28` do tablet/desktop mantido intocado) |
+| Gap interno do card | 25px | **15px** |
+| Avatar (foto e fallback de iniciais) | 60px | **44px** |
+| Nome | 21px | **16px** (Figma 18, um passo abaixo) |
+| Estrelas | 18px | **16px** |
+| Role / país / quote / data | 13px / 13px / 16px / 13px | **12px / 10px / 12px+14 leading / 10px** (specs mobile literais — texto pequeno não reduz mais) |
+| Setas do carrossel | 60px agrupadas à direita | **50px espalhadas nas duas pontas** (`justify-between`, largura cheia) |
+
+Setas continuam desabilitadas (decisão do GAP-38: os 6 reviews já renderizam todos, sem necessidade de paginação real ainda). Todas as mudanças só na base; `lg:` mantém os valores desktop já aprovados.
+
+**Nota técnica:** um comentário JSX colocado logo após `return (` (antes do elemento raiz) quebrou o build (`Expected ',', got 'id'`) — comentários `{/* */}` só são válidos como filhos de um elemento JSX, não soltos antes dele. Corrigido movendo o comentário para fora do JSX, como comentário JS normal antes do `return`.
+
+Commit `b6b0bfa`. Build + 71 testes verdes.
+
+## Addendum 2026-07-21 — FAQ mobile (RESP-06)
+
+Mesmo esquema: Copy-as-CSS do frame mobile (375×957, Figma node `281:675` — não capturado no `FIGMA-MOBILE-EXTRACTION.md` original por rate limit, este dump fechou a lacuna) + 1 print, análise no Fable, plano commitado em `.planning/phases/05-landing-page-sections/RESP-06-FAQ-MOBILE-PLAN.md` antes da execução (Sonnet).
+
+Seção mais simples até agora — estrutura, tokens, gap 10px, q1 aberta com borda laranja e chevron já batiam. Só 4 ajustes:
+
+| Item | Antes (mobile) | Depois (Figma mobile) |
+|---|---|---|
+| Padding vertical da seção | `py-20` | **`py-10`** (`lg:py-28` mantido) |
+| Título / subtítulo | 48px / 21px | **40px / 16px** (Figma 44/18, um passo abaixo) |
+| Padding do item | 25px | **20px** |
+| Pergunta / resposta | 16px / 16px | **14px / 13px** (Figma 16/14, um passo abaixo) |
+
+**Mantidos:** o hover de borda laranja nas perguntas (pedido do usuário, não existe no Figma), a copy real das perguntas/respostas (override do GAP-39), `whitespace-pre-line` da resposta de composição, e o chevron atual.
+
+**Nota técnica (mesma classe de erro do RESP-05):** um comentário `//` colocado logo após `return (` (antes do elemento JSX raiz) quebrou o build. Comentários de linha `//` só funcionam em código JS puro, nunca dentro do JSX retornado — corrigido movendo para fora do `return`.
+
+Commit `7e38df5`. Build + 71 testes verdes.
+
+## Addendum 2026-07-21 — Footer mobile (RESP-07, varredura mobile concluída)
+
+Mesmo esquema: Copy-as-CSS do frame mobile (375×1148, Figma node `281:730` — última seção não capturada no `FIGMA-MOBILE-EXTRACTION.md` original por rate limit) + 2 prints, análise no Fable, plano commitado em `.planning/phases/05-landing-page-sections/RESP-07-FOOTER-MOBILE-PLAN.md` antes da execução (Sonnet).
+
+A coluna esquerda (logo, endereço, newsletter) já batia 100% com o spec mobile do Figma, incluindo os tamanhos já mapeados no GAP-40 (logo 94×58, endereço 16px, título newsletter 25px, input/botão 46px) — nenhuma mudança lá. Só a zona direita e o legal precisaram de ajuste:
+
+| Item | Antes (mobile) | Depois (Figma mobile) |
+|---|---|---|
+| Colunas de links | grid 2 colunas | **1 coluna empilhada** (gap 15px); `sm:`/`lg:` mantêm a grade atual |
+| Alinhamento da zona direita (links + Contact Us) | à direita (`items-end`/`text-right`, herdado do desktop) | **à esquerda** |
+| Headings das colunas | 20px | **16px** (Figma 18, um passo abaixo) |
+| Links | 16px, gap 5px | **13px, gap 2px** (Figma 14, um passo abaixo) |
+| Texto legal | 13px | **12px** (spec mobile literal) |
+
+**Mantidos (overrides já documentados no GAP-40):** endereço real da Dips Wellness Corporation, `info@dipschocolate.com`, Wholesale/Accessibility omitidos, © "Dips Chocolate" + disclaimer FDA, form de newsletter client-only.
+
+Todas as mudanças só na base; `lg:` mantém os valores desktop já aprovados.
+
+Commit `7fbbb70`. Build + 71 testes verdes.
+
+**Esta era a última seção da varredura de responsividade mobile.** Todas as 7 seções da landing (Hero, Story, Ingredients, Buy/Bundle, Reviews, FAQ, Footer) agora têm um tratamento mobile (375px) fiel ao Figma mobile, com os overrides funcionais de cada seção preservados. Falta: verificação visual manual em dispositivo/DevTools real (o trabalho até aqui foi validado só por build + testes automatizados, não por inspeção visual do agente) e o checkpoint human-verify final antes do merge do worktree.

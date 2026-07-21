@@ -137,9 +137,28 @@ export default function AffiliateJoinForm() {
   // ── Form ───────────────────────────────────────────────────────────────────
   return (
     <div className="rounded-[24px] bg-white px-6 py-8 sm:px-8 sm:py-10 shadow-[0_10px_40px_rgba(86,17,110,0.10)]">
-      <h2 className="font-heading text-brand-purple text-[24px] sm:text-[28px] font-bold mb-6">
-        {t('formTitle')}
-      </h2>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+        <h2 className="font-heading text-brand-purple text-[24px] sm:text-[28px] font-bold">
+          {t('formTitle')}
+        </h2>
+
+        {/* Already-an-affiliate link — affiliates were reporting they
+            couldn't find where to log in from this page (they'd only see
+            it after re-applying and hitting the email-conflict error).
+            Placed next to the form heading (the highest-intent moment for a
+            returning affiliate to pause and look for login instead) rather
+            than up in the hero. Mirrors the reverse link already on the
+            login page (AffiliateDashboard.loginNoAccount/loginJoinLink). */}
+        <a
+          href={`/${locale}/affiliates/login`}
+          className="text-brand-charcoal/50 text-sm hover:text-brand-charcoal/70 transition-colors"
+        >
+          {t('alreadyAffiliate')}{' '}
+          <span className="font-semibold text-brand-purple hover:underline">
+            {t('alreadyAffiliateCta')}
+          </span>
+        </a>
+      </div>
 
       <div className="space-y-5">
         {/* Name */}

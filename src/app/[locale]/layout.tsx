@@ -6,6 +6,7 @@ import { routing } from '@/i18n/routing';
 
 import { CustomerProvider } from '@/contexts/CustomerContext';
 import TrackingProvider from '@/components/TrackingProvider';
+import { plusJakartaSans, dmSans } from '@/lib/fonts';
 
 import '../globals.css';
 
@@ -74,7 +75,11 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html
+      lang={locale}
+      suppressHydrationWarning
+      className={`${plusJakartaSans.variable} ${dmSans.variable} scroll-smooth`}
+    >
       <body className="antialiased bg-background text-foreground">
         <NextIntlClientProvider messages={messages} locale={locale}>
           <CustomerProvider>
