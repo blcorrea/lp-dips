@@ -77,7 +77,11 @@ export default function LandingHeader() {
           the gradient's exact start color reproduces the seamless look without
           that architecture mismatch. See 05-VISUAL-GAPS.md GAP-23/GAP-27. */}
       <header className="sticky top-0 z-50 w-full bg-dips-purple-hero-start">
-        <div className="flex h-[72px] w-full items-center justify-between px-5 md:px-[40px]">
+        {/* h-[76px] (was 72px) + wider left padding (48px, was 40px) -- user
+            circled the empty gutter left of the logo and the seam between
+            the trust bar and this nav, asking for slightly more breathing
+            room in both. */}
+        <div className="flex h-[76px] w-full items-center justify-between px-5 md:px-[48px]">
           {/* Logo — two SVG layers, each preserveAspectRatio="none" and sized/
               positioned to their OWN sub-region of the 59x36 logo box (per Figma
               Dev Mode: purple layer left:0 top:9.47% w:100% h:90.53%; orange layer
@@ -85,23 +89,27 @@ export default function LandingHeader() {
               object-contain` forced BOTH layers to fill the full 59x36 box
               independently, stretching the orange layer (native ratio ~21x34,
               portrait) into a landscape box -- the deformed logo. See
-              05-VISUAL-GAPS.md GAP-24. */}
+              05-VISUAL-GAPS.md GAP-24.
+
+              Scaled down ~17% (user request): 59x36 -> 49x30, sub-layers
+              scaled by the same 5/6 factor to keep their own proportions and
+              relative position intact. */}
           <Link href={`/${locale}#hero`} className="flex flex-shrink-0 items-center gap-2">
-            <span className="relative inline-block h-[36px] w-[59px]">
+            <span className="relative inline-block h-[30px] w-[49px]">
               <Image
                 src="/images/redesign/logo-purple-part.svg"
                 alt=""
                 aria-hidden="true"
-                width={59}
-                height={33}
-                className="absolute left-0 top-[3px]"
+                width={49}
+                height={28}
+                className="absolute left-0 top-[2px]"
               />
               <Image
                 src="/images/redesign/logo-orange-part.svg"
                 alt="Dips"
-                width={21}
-                height={34}
-                className="absolute left-[19px] top-0"
+                width={18}
+                height={28}
+                className="absolute left-[16px] top-0"
               />
             </span>
             <span className="text-nav-link text-dips-text-lavender-muted">

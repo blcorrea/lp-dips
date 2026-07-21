@@ -217,9 +217,13 @@ export default function Hero() {
                 700: same "thinner" treatment as the card description, per
                 user request, using DM Sans's own lighter weight (Google Font,
                 no extra file needed) instead of the Bold cut. */}
+            {/* Buy Now only (not How It Works?, not the header's Shop Now):
+                h-[44px] + explicit text-[14px], smaller than the shared
+                text-cta-button (16px)/h-[50px] used elsewhere, per user
+                request scoped specifically to this button. */}
             <a
               href="#bundle"
-              className="inline-flex h-[50px] items-center justify-center rounded-full bg-brand-orange px-8 text-cta-button font-cta font-semibold text-white transition-opacity duration-200 hover:opacity-90"
+              className="inline-flex h-[44px] items-center justify-center rounded-full bg-brand-orange px-7 text-[14px] font-cta font-semibold text-white transition-opacity duration-200 hover:opacity-90"
             >
               {t("ctaPrimary")}
             </a>
