@@ -422,4 +422,16 @@ Usuário regenerou `hero-product.png` com fundo branco sólido em vez de transpa
 
 Build + 71 testes verdes.
 
+## Addendum 2026-07-20 (8ª rodada) — imagem trocada de novo + causa do "não refletiu"
+
+Usuário reportou que a correção anterior não apareceu no site, e nesse meio tempo trocou a foto do produto de novo (nova imagem, 1448×1086, diferente da anterior 2368×1776).
+
+**Causa provável do "não refletiu":** `.next/cache/images` (cache do otimizador de imagem do Next.js) pode servir uma versão otimizada antiga pra um mesmo path mesmo depois do arquivo-fonte mudar. Limpei esse cache antes de rebuildar.
+
+Rodado o mesmo script de flood-fill (a partir das bordas) na imagem nova — sem sombra residual dessa vez, cantos com alpha 0-26 (praticamente zero), produto 100% opaco. Commit `5015c07`.
+
+Build + 71 testes verdes.
+
+**Se ainda não aparecer:** pedir pro usuário also fazer hard-refresh (Ctrl+Shift+R) — cache do NAVEGADOR é um fator independente do cache do Next.js.
+
 **Próximo passo:** novo walkthrough a **1440px real** (`localhost:3001`) + Stripe click-through para fechar o checkpoint do 05-05 → merge → completar a fase. E me diz o veredito do GAP-21.
