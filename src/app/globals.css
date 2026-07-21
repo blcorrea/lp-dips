@@ -265,11 +265,15 @@
 /* LEGAL PAGE TYPOGRAPHY */
 /* ============================= */
 
+/* --color-dips-text-purple-deep, not the older --color-brand-purple --
+   same light-background-safe purple the redesign uses for text on white/
+   cream (e.g. ProductPurchaseBox bundle prices), team feedback asked for
+   a single consistent purple across the site. */
 .legal-content h2,
 .legal-content h3,
 .legal-content h4,
 .legal-content strong {
-  color: var(--color-brand-purple);
+  color: var(--color-dips-text-purple-deep);
 }
 
 .legal-content h2 {
