@@ -144,7 +144,10 @@ export default function Hero() {
               {/* font-medium (500) -> font-normal (400): thinner, same
                   treatment as the card description -- FilsonPro Regular is
                   the lightest weight we have self-hosted for this family. */}
-              <span className="text-card-body font-normal text-dips-text-lavender">
+              {/* text-[13px], not the shared text-card-body (14px) token --
+                  overridden locally so StorySection's own badge (same token)
+                  isn't affected. */}
+              <span className="text-[13px] font-normal leading-[1.5] text-dips-text-lavender">
                 {t("socialProof")}
               </span>
             </div>
@@ -177,7 +180,10 @@ export default function Hero() {
             transition={{ duration: 0.7, delay: 0.35 }}
             className="mt-4"
           >
-            <p className="font-body text-subtitle-italic-lg italic text-dips-text-lavender">
+            {/* text-[21px], not the shared text-subtitle-italic-lg (24px)
+                token -- overridden locally so StorySection's own subtitle
+                (same token) isn't affected. */}
+            <p className="font-body text-[21px] italic leading-[1.4] text-dips-text-lavender">
               {t("subtitle")}
             </p>
           </motion.div>
