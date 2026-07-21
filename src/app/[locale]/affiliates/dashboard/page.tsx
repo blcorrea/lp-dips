@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { getAffiliateSessionId } from '@/lib/affiliate-auth';
 import { getAffiliateDashboardData } from '@/lib/affiliates';
 import { listCreatives } from '@/lib/creatives';
+import LandingHeader from '@/components/LandingHeader';
 import CopyLinkButton from './CopyLinkButton';
 import LogoutButton from './LogoutButton';
 import AffiliateCreativesGallery from './AffiliateCreativesGallery';
@@ -88,7 +89,11 @@ export default async function AffiliateDashboardPage({ params }: Props) {
   const tCreatives = await getTranslations({ locale, namespace: 'AffiliateCreatives' });
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-brand-purple to-[#3b1c5a] px-6 py-12">
+    <>
+      {/* Team feedback: bring this page back into the same site nav, and
+          unify the purple with the rest of the redesign. */}
+      <LandingHeader />
+      <main className="min-h-screen bg-gradient-to-b from-dips-purple-hero-start from-0% via-dips-purple-hero-mid via-[57.4%] to-dips-purple-hero-end to-100% px-6 py-12">
       <div className="mx-auto max-w-4xl space-y-8">
 
         {/* ── Header ──────────────────────────────────────────────────────── */}
@@ -184,6 +189,7 @@ export default async function AffiliateDashboardPage({ params }: Props) {
         </div>
 
       </div>
-    </main>
+      </main>
+    </>
   );
 }

@@ -27,13 +27,13 @@ export default function CopyLinkButton({ link }: CopyLinkButtonProps) {
         type="text"
         readOnly
         value={link}
-        className="flex-1 min-w-0 rounded-xl border border-brand-purple/20 bg-white px-4 py-2.5
+        className="flex-1 min-w-0 rounded-xl border border-dips-text-purple-deep/20 bg-white px-4 py-2.5
           text-[14px] text-brand-charcoal outline-none font-mono truncate"
       />
       <button
         type="button"
         onClick={handleCopy}
-        className="shrink-0 rounded-xl bg-brand-orange px-5 py-2.5 text-sm font-bold text-brand-purple
+        className="shrink-0 rounded-xl bg-brand-orange px-5 py-2.5 text-sm font-bold text-white
           transition-all duration-200 hover:bg-brand-orange/90 active:scale-95"
       >
         {copied ? t('copied') : t('copy')}

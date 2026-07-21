@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import Image from "next/image";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
+import { Link as LocaleLink, usePathname, routing } from "@/i18n/routing";
+import { cn } from "@/lib/utils";
 
 const TRUST_BAR_KEYS = [
   "trustBar1",
@@ -16,12 +18,72 @@ const TRUST_BAR_KEYS = [
   "trustBar6",
 ] as const;
 
+const LOCALE_LABELS: Record<string, string> = { en: "EN", es: "ES", pt: "PT" };
+
 function TrustBarDiamond() {
   return (
     <span
       aria-hidden="true"
       className="inline-block h-[6px] w-[6px] shrink-0 rotate-[43deg] bg-brand-orange"
     />
+  );
+}
+
+// Language switcher — shows the CURRENT locale only (e.g. "EN") with a small
+// chevron hinting it's switchable, not all 3 languages spelled out -- user
+// asked for something discreet, not a loud 3-way toggle. Desktop only for
+// now (next to Shop Now); the mobile drawer doesn't exist yet (RESP-01/02
+// TODO above), so mobile language switching stays out of scope here.
+function LanguageSwitcher() {
+  const pathname = usePathname(); // locale-agnostic path, from next-intl's own routing
+  const params = useParams();
+  const currentLocale = (params.locale as string) || routing.defaultLocale;
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  return (
+    // h-[44px] matches the Shop Now button's own height, for vertical
+    // centering. Horizontal centering is handled by the parent gutter strip
+    // in LandingHeader (this wrapper just shrinks to fit its own content).
+    <div ref={ref} className="relative flex h-[44px] items-center">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-haspopup="true"
+        aria-expanded={open}
+        className="flex items-center gap-1 text-nav-link text-dips-text-lavender-muted transition-colors duration-200 hover:text-brand-orange"
+      >
+        {LOCALE_LABELS[currentLocale] ?? currentLocale.toUpperCase()}
+        <ChevronDown className={cn("h-3.5 w-3.5 transition-transform duration-200", open && "rotate-180")} />
+      </button>
+
+      {open && (
+        <div className="absolute right-0 top-full z-10 mt-2 flex flex-col overflow-hidden rounded-xl border border-dips-card-tint-border bg-dips-purple-hero-start py-1 shadow-lg">
+          {routing.locales.map((l) => (
+            <LocaleLink
+              key={l}
+              href={pathname}
+              locale={l}
+              onClick={() => setOpen(false)}
+              className={cn(
+                "px-4 py-2 text-left text-nav-link transition-colors duration-200 hover:text-brand-orange",
+                l === currentLocale ? "text-white" : "text-dips-text-lavender-muted"
+              )}
+            >
+              {LOCALE_LABELS[l] ?? l.toUpperCase()}
+            </LocaleLink>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -105,7 +167,7 @@ export default function LandingHeader() {
             circled the empty gutter left of the logo and the seam between
             the trust bar and this nav, asking for slightly more breathing
             room in both. */}
-        <div className="flex h-[76px] w-full items-center justify-between px-5 md:px-[48px]">
+        <div className="relative flex h-[76px] w-full items-center justify-between px-5 md:px-[48px]">
           {/* Logo — two SVG layers, each preserveAspectRatio="none" and sized/
               positioned to their OWN sub-region of the 59x36 logo box (per Figma
               Dev Mode: purple layer left:0 top:9.47% w:100% h:90.53%; orange layer
@@ -162,13 +224,37 @@ export default function LandingHeader() {
 
           {/* Shop Now CTA (desktop) — h-[44px]/px-7/text-[14px] to match the
               Hero's own CTA size (see Hero.tsx's ctaPrimary anchor), was
-              h-[50px]/text-cta-button (16px), noticeably larger than Hero's. */}
+              h-[50px]/text-cta-button (16px), noticeably larger than Hero's.
+              Back to being a direct flex item (not grouped with the language
+              switcher) so its position is exactly what it was before the
+              switcher existed -- the switcher lives in the row's own right
+              padding gutter instead (see below), it doesn't share space
+              with this button.
+
+              transform-gpu (+ will-change-transform) forces this onto its
+              own GPU compositing layer from first paint -- without it,
+              Chrome shows faint antialiasing seams on the rounded-full
+              edge until the hover pseudo-class forces a repaint (user-
+              reported: hairline cracks on load, gone on hover). */}
           <Link
             href={`/${locale}#bundle`}
-            className="hidden h-[44px] items-center justify-center rounded-full bg-brand-orange px-7 text-[14px] font-cta font-semibold text-white transition-opacity duration-200 hover:opacity-90 md:flex"
+            className="hidden h-[44px] transform-gpu items-center justify-center rounded-full bg-brand-orange px-7 text-[14px] font-cta font-semibold text-white transition-opacity duration-200 will-change-transform hover:opacity-90 md:flex"
           >
             {t("shopNow")}
           </Link>
+
+          {/* Language switcher — lives in the row's own right padding gutter
+              (the md:px-[48px] strip), centered between Shop Now's right
+              edge and the page's true right margin, rather than sharing
+              space with Shop Now (which would have pushed it left of its
+              original position). absolute + inset-y-0 right-0 spans exactly
+              that padding width; flex items-center justify-center centers
+              the switcher within it regardless of locale label width. */}
+          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 hidden w-[48px] items-center justify-center md:flex">
+            <div className="pointer-events-auto">
+              <LanguageSwitcher />
+            </div>
+          </div>
 
           {/* Mobile toggle (scaffold only, no drawer yet — see TODO above) */}
           <button

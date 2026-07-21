@@ -46,7 +46,7 @@ export default function AffiliateLoginForm({ locale, initialError }: AffiliateLo
     return (
       <div className="rounded-[24px] bg-white px-8 py-10 shadow-[0_10px_40px_rgba(86,17,110,0.15)] text-center">
         <div className="text-5xl mb-4">📬</div>
-        <h2 className="font-heading text-brand-purple text-[26px] font-bold mb-3">
+        <h2 className="font-heading text-dips-text-purple-deep text-[26px] font-bold mb-3">
           {t('checkEmailTitle')}
         </h2>
         <p className="text-brand-charcoal/70 text-[15px] leading-relaxed">
@@ -82,8 +82,8 @@ export default function AffiliateLoginForm({ locale, initialError }: AffiliateLo
             onKeyDown={(e) => { if (e.key === 'Enter') handleSubmit(); }}
             placeholder={t('placeholderEmail')}
             className={`w-full rounded-xl border px-4 py-3 text-[15px] outline-none transition-colors
-              focus:border-brand-purple focus:ring-2 focus:ring-brand-purple/10
-              ${error === t('invalidEmail') ? 'border-red-400' : 'border-brand-purple/20'}`}
+              focus:border-dips-text-purple-deep focus:ring-2 focus:ring-dips-text-purple-deep/10
+              ${error === t('invalidEmail') ? 'border-red-400' : 'border-dips-text-purple-deep/20'}`}
           />
           {error === t('invalidEmail') && (
             <p className="mt-1 text-xs text-red-500">{error}</p>
@@ -94,7 +94,7 @@ export default function AffiliateLoginForm({ locale, initialError }: AffiliateLo
           type="button"
           onClick={handleSubmit}
           disabled={submitting}
-          className="w-full rounded-full bg-brand-orange px-8 py-4 text-base font-bold text-brand-purple
+          className="w-full rounded-full bg-brand-orange px-8 py-4 text-base font-bold text-white
             shadow-[0_10px_30px_rgba(242,117,33,0.28)] transition-all duration-300
             hover:scale-[1.02] hover:bg-brand-orange/90
             disabled:opacity-60 disabled:cursor-not-allowed"
@@ -104,7 +104,7 @@ export default function AffiliateLoginForm({ locale, initialError }: AffiliateLo
 
         <p className="text-center text-sm text-brand-charcoal/50">
           {t('loginNoAccount')}{' '}
-          <a href={`/${locale}/affiliates/join`} className="text-brand-purple font-semibold hover:underline">
+          <a href={`/${locale}/affiliates/join`} className="text-dips-text-purple-deep font-semibold hover:underline">
             {t('loginJoinLink')}
           </a>
         </p>
