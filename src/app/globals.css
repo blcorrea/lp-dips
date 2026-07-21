@@ -39,6 +39,35 @@
   font-display: swap;
 }
 
+/* Satoshi (self-hosted, from Fontshare) — the real card font per Figma.
+   Earlier phases substituted Plus Jakarta Sans because the files weren't in
+   the repo; different font metrics at the same declared size were making the
+   card text read as oversized. Regular (400) = card body, Bold (700) = card
+   titles. */
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ============================= */
 /* THEME VARIABLES */
 /* ============================= */
@@ -117,21 +146,20 @@
   /* ============================= */
   /* SPACING SCALE (named, additive) */
   /* ============================= */
-
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 16px;
-  --spacing-lg: 24px;
-  --spacing-xl: 32px;
-  --spacing-2xl: 48px;
-  --spacing-3xl: 64px;
+  /* --spacing-{xs..3xl} intentionally NOT declared here (moved to :root below).
+     Tailwind v4 auto-generates named utilities (max-w-xl, w-lg, p-sm, ...) from
+     ANY token registered under the --spacing-* namespace inside @theme, and that
+     silently overrides the framework's own --container-* scale for max-w-* --
+     e.g. max-w-xl became 32px instead of Tailwind's default 36rem, collapsing
+     every max-w-xs/sm/md/lg/xl/2xl/3xl usage across the app (14 sites, including
+     checkout/success and legal pages) to a few pixels. See 05-VISUAL-GAPS.md RC-1. */
   --spacing-card-padding: 25px;
 
   /* ============================= */
   /* TYPOGRAPHY SCALE (extended, additive) */
   /* ============================= */
 
-  --text-display-hero: 64px;
+  --text-display-hero: 58px;
   --text-display-hero--line-height: 1.05;
   --text-heading-lg: 54px;
   --text-heading-lg--line-height: 1.15;
@@ -155,7 +183,7 @@
   --text-card-body--line-height: 1.5;
   --text-cta-button: 16px;
   --text-cta-button--line-height: 1.1;
-  --text-nav-link: 14px;
+  --text-nav-link: 13px;
   --text-nav-link--line-height: 1.2;
   --text-trust-bar: 12px;
   --text-trust-bar--line-height: 1.2;
@@ -168,8 +196,24 @@
   /* FONT FAMILY TOKENS (redesign, additive) */
   /* ============================= */
 
-  --font-card: var(--font-plus-jakarta-sans), sans-serif;
+  --font-card: 'Satoshi', var(--font-plus-jakarta-sans), sans-serif;
   --font-cta: var(--font-dm-sans), sans-serif;
+}
+
+/* ============================= */
+/* SPACING SCALE (reference tokens, non-utility-generating) */
+/* ============================= */
+/* Plain CSS custom properties -- NOT inside @theme, so Tailwind does not turn
+   these into named utilities (max-w-xl, p-lg, ...). Use via arbitrary values,
+   e.g. p-[var(--space-lg)], if this named scale is ever needed directly. */
+:root {
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
 }
 
 /* ============================= */
@@ -264,4 +308,20 @@
 
 .legal-content a {
   color: var(--color-brand-orange);
+}
+
+/* ============================= */
+/* MARQUEE (trust bar) */
+/* ============================= */
+
+/* Content is rendered twice back-to-back (LandingHeader.tsx) and this
+   translates by exactly -50% -- since both halves are identical, the loop
+   is seamless with no visible jump/reset. */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }

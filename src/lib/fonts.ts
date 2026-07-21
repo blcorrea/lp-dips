@@ -1,9 +1,10 @@
 import { Plus_Jakarta_Sans, DM_Sans } from 'next/font/google';
 
 /**
- * Card titles/body (ingredient cards, bundle cards, review cards).
- * Satoshi substitute per the Phase 4 UI-SPEC — 400 for card body, 700 for card titles.
- * Feeds --font-card in globals.css via the CSS variable below.
+ * Fallback for the card font. The real card font is now Satoshi (self-hosted
+ * via @font-face in globals.css, matching Figma); Plus Jakarta Sans stays
+ * wired as the next-in-line fallback in --font-card while Satoshi loads.
+ * 400 for card body, 700 for card titles.
  */
 export const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -13,12 +14,14 @@ export const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 /**
- * CTA buttons — 700 only per the Phase 4 UI-SPEC.
+ * CTA buttons — spec is 700; 600 added so the Hero buttons can use a
+ * slightly thinner weight per user request (same "thinner over Figma
+ * default" treatment applied to the card description).
  * Feeds --font-cta in globals.css via the CSS variable below.
  */
 export const dmSans = DM_Sans({
   subsets: ['latin'],
-  weight: ['700'],
+  weight: ['600', '700'],
   display: 'swap',
   variable: '--font-dm-sans',
 });

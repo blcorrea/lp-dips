@@ -3,12 +3,32 @@ import { getTranslations } from "next-intl/server";
 import { getPurchasableDipsProduct } from "@/lib/shopify-product";
 import ProductPurchaseBox from "@/components/ProductPurchaseBox";
 import TrackViewItem from "@/components/TrackViewItem";
-import SocialMediaButtons from "@/components/SocialMediaButtons";
 import { getLocalizedPricing } from "@/lib/pricing";
 
 type BuySectionProps = {
   locale: string;
 };
+
+/*
+  BuySection — matched to the Figma frame (1440x699, two 717/723 panels,
+  full-bleed, no rounded card/shadow wrapper): compra à esquerda (bg
+  dips-cream = #FFF8F0), foto à direita (flat black/20 overlay, column
+  justify-between: badge+title+subtitle pinned to the top-right, the 3
+  benefit badges pinned to the bottom-right). Same structural pattern as
+  Story/Ingredients (full-bleed 50/50, 40px-ish panel padding).
+
+  Font sizes one step below the Figma spec (64->58, 16->14, 24->21),
+  carrying over the Hero/Story/Ingredients approved treatment.
+*/
+
+function Diamond() {
+  return (
+    <span
+      aria-hidden="true"
+      className="inline-block h-2 w-2 shrink-0 rotate-[43deg] bg-brand-orange"
+    />
+  );
+}
 
 export default async function BuySection({ locale }: BuySectionProps) {
   const t = await getTranslations({ locale, namespace: "BuySection" });
@@ -17,75 +37,92 @@ export default async function BuySection({ locale }: BuySectionProps) {
   if (!product) return null;
 
   const localizedPricing = getLocalizedPricing(locale);
+  const benefitKeys = ["benefit1", "benefit2", "benefit3"] as const;
 
   return (
     <section
       id="bundle"
-      className="scroll-mt-[72px] bg-dips-purple-section py-20 lg:py-28"
+      className="scroll-mt-[72px] bg-dips-cream"
     >
-      <div className="container mx-auto px-6">
-        <div className="mx-auto max-w-6xl overflow-hidden rounded-[36px] shadow-[0_28px_90px_rgba(0,0,0,0.24)]">
-          <div className="grid lg:grid-cols-[1.2fr_1fr]">
+      <div className="mx-auto grid max-w-[1440px] grid-cols-1 lg:grid-cols-2">
+        {/* LEFT (desktop) / SECOND (mobile): dips-cream panel — bundle cards
+            only, per Figma (05-VISUAL-GAPS.md GAP-14).
 
-            {/* LEFT: dips-cream panel — bundle cards */}
-            <div className="bg-dips-cream p-6 sm:p-8 lg:p-12">
-              <p className="text-brand-orange text-[12px] sm:text-[13px] font-bold tracking-[0.18em] uppercase">
-                {t("eyebrow")}
-              </p>
+            Mobile (RESP-04): Figma's mobile frame shows the PHOTO first and
+            this cream panel second (opposite of desktop) -- order-2 swaps
+            it after the photo below; lg reverts to order-1 (first, left
+            column). Also drops the extra py-12 (Figma mobile spec is
+            ~25px). */}
+        <div className="order-2 flex flex-col justify-center p-6 lg:order-1 lg:py-12 lg:p-10">
+          <ProductPurchaseBox
+            priceAmount={localizedPricing.price}
+            currencyCode={localizedPricing.currency}
+            buttonClassName="w-full"
+            productId={product.productId}
+            productName={product.title}
+            locale={locale}
+          />
+          <TrackViewItem
+            id={product.productId}
+            name={product.title}
+            price={localizedPricing.price}
+            quantity={1}
+            currency={localizedPricing.currency}
+          />
+        </div>
 
-              <p className="mt-3 text-dips-text-purple-deep/80 text-[16px] sm:text-[17px] leading-[1.55] font-medium max-w-[520px]">
-                {t("subtitle")}
-              </p>
+        {/* RIGHT (desktop) / FIRST (mobile): photo panel — justify-between
+            column, content pinned right.
 
-              <div className="mt-7">
-                <ProductPurchaseBox
-                  priceAmount={localizedPricing.price}
-                  currencyCode={localizedPricing.currency}
-                  buttonClassName="w-full"
-                  productId={product.productId}
-                  productName={product.title}
-                  locale={locale}
-                />
-                <TrackViewItem
-                  id={product.productId}
-                  name={product.title}
-                  price={localizedPricing.price}
-                  quantity={1}
-                  currency={localizedPricing.currency}
-                />
+            Mobile (RESP-04): order-1 puts this first (Figma mobile spec),
+            min-h-[699px] at the base too (was 420px), lg reverts to order-2
+            (second, right column). */}
+        <div className="relative order-1 flex min-h-[699px] flex-col justify-between overflow-hidden p-6 lg:order-2 lg:p-10">
+          <Image
+            src="/images/redesign/experience-couple-photo.png"
+            alt=""
+            fill
+            className="object-cover"
+            sizes="(max-width: 1024px) 100vw, 50vw"
+          />
+          {/* Flat 20% black overlay (Figma: linear-gradient(0deg, rgba(0,0,0,.2), rgba(0,0,0,.2)) -- not the previous bottom-heavy fade */}
+          <div className="absolute inset-0 bg-black/20" />
 
-                <SocialMediaButtons className="mt-6" compact />
-              </div>
-            </div>
+          {/* TOP GROUP — badge + title + subtitle, right-aligned.
+              Mobile (RESP-04): title 58->40px, subtitle 21->14px, badge
+              12px/rounded-[10px] (Figma mobile spec), tighter gap. */}
+          <div className="relative z-10 flex flex-col items-end gap-2.5 text-right lg:gap-4">
+            <span className="inline-flex w-fit items-center gap-2 rounded-[10px] border-2 border-dips-card-tint-2-border bg-dips-card-tint-2 p-3 text-[12px] font-bold text-[#eadae4] lg:rounded-card lg:px-[15px] lg:py-3 lg:text-[14px]">
+              <Diamond />
+              {t("eyebrow")}
+            </span>
 
-            {/* RIGHT: photo panel — heading-side + mini badges */}
-            <div className="relative min-h-[360px] lg:min-h-full">
-              <Image
-                src="/images/redesign/experience-couple-photo.png"
-                alt=""
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 40vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
-              <div className="absolute inset-0 flex flex-col items-end justify-end gap-6 p-8 text-right lg:p-12">
-                <h3 className="font-heading text-heading-side text-white max-w-[420px]">
-                  {t("title")}
-                </h3>
-                <div className="flex flex-col items-end gap-2">
-                  <span className="rounded-full border border-dips-card-lavender-border bg-dips-card-lavender px-4 py-1.5 text-[12px] font-semibold text-white">
-                    {t("benefit1")}
-                  </span>
-                  <span className="rounded-full border border-dips-card-lavender-border bg-dips-card-lavender px-4 py-1.5 text-[12px] font-semibold text-white">
-                    {t("benefit2")}
-                  </span>
-                  <span className="rounded-full border border-dips-card-lavender-border bg-dips-card-lavender px-4 py-1.5 text-[12px] font-semibold text-white">
-                    {t("benefit3")}
-                  </span>
-                </div>
-              </div>
-            </div>
+            {/* Figma authors "Bring the" / "Experience home." as two separate
+                text layers (manual editorial break) -- same <br/> rich-text
+                approach as Hero/Story (en only; es/pt wrap naturally). */}
+            <h3 className="font-heading text-[40px] font-bold leading-[1.2] text-white lg:text-[58px]">
+              {t.rich("title", { br: () => <br /> })}
+            </h3>
 
+            <p className="font-body text-[14px] italic leading-[1.4] text-dips-text-lavender lg:text-[21px]">
+              {t("subtitle")}
+            </p>
+          </div>
+
+          {/* BOTTOM GROUP — 3 benefit badges. Mobile (RESP-04): stacked
+              column at the LEFT edge (Figma mobile spec), rounded-[10px]/
+              12px text -- was a wrapped row at the right, which is the
+              lg-only treatment now. */}
+          <div className="relative z-10 flex flex-col items-start gap-[15px] lg:flex-row lg:flex-wrap lg:items-center lg:justify-between lg:gap-3">
+            {benefitKeys.map((key) => (
+              <span
+                key={key}
+                className="inline-flex items-center gap-2 rounded-[10px] border-2 border-[rgba(146,122,210,0.25)] bg-dips-card-lavender px-[15px] py-3 font-card text-[12px] font-bold text-white lg:rounded-card lg:text-[13px]"
+              >
+                <Diamond />
+                {t(key)}
+              </span>
+            ))}
           </div>
         </div>
       </div>
