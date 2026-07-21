@@ -723,3 +723,26 @@ Mesmo esquema: Copy-as-CSS do frame mobile (375×1429, Figma node `281:373`) + 2
 Todas as mudanças só na base; `lg:` mantém os valores desktop já aprovados. A reestruturação do card foi só de className (nenhuma mudança de `onClick`/estado) — vale conferir manualmente no browser que a seleção de bundle e o Buy Now continuam funcionando.
 
 Commit `ce98ce0`. Build + 71 testes verdes.
+
+## Addendum 2026-07-21 — Reviews mobile (RESP-05)
+
+Mesmo esquema: Copy-as-CSS do frame mobile (375×2093, Figma node `281:529`) + 3 prints, análise no Fable, plano commitado em `.planning/phases/05-landing-page-sections/RESP-05-REVIEWS-MOBILE-PLAN.md` antes da execução (Sonnet).
+
+Seção tranquila — a estrutura já batia (coluna única, mesma ordem Marcus→Tyson, mesmos tokens de card). Só tipografia e tamanhos internos precisavam encolher:
+
+| Item | Antes (mobile) | Depois (Figma mobile) |
+|---|---|---|
+| Título / subtítulo | 48px / 21px | **40px / 16px** (Figma 44/18, um passo abaixo) |
+| Padding vertical da seção | `py-20` | **`py-10`** (`sm:py-28` do tablet/desktop mantido intocado) |
+| Gap interno do card | 25px | **15px** |
+| Avatar (foto e fallback de iniciais) | 60px | **44px** |
+| Nome | 21px | **16px** (Figma 18, um passo abaixo) |
+| Estrelas | 18px | **16px** |
+| Role / país / quote / data | 13px / 13px / 16px / 13px | **12px / 10px / 12px+14 leading / 10px** (specs mobile literais — texto pequeno não reduz mais) |
+| Setas do carrossel | 60px agrupadas à direita | **50px espalhadas nas duas pontas** (`justify-between`, largura cheia) |
+
+Setas continuam desabilitadas (decisão do GAP-38: os 6 reviews já renderizam todos, sem necessidade de paginação real ainda). Todas as mudanças só na base; `lg:` mantém os valores desktop já aprovados.
+
+**Nota técnica:** um comentário JSX colocado logo após `return (` (antes do elemento raiz) quebrou o build (`Expected ',', got 'id'`) — comentários `{/* */}` só são válidos como filhos de um elemento JSX, não soltos antes dele. Corrigido movendo o comentário para fora do JSX, como comentário JS normal antes do `return`.
+
+Commit `b6b0bfa`. Build + 71 testes verdes.
