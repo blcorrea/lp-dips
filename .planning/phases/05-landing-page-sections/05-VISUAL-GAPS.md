@@ -501,4 +501,6 @@ Usuário apontou (2 prints anotados) dois pontos finos restantes: (1) uma manchi
 
 Build + 71 testes verdes.
 
+**Revertido na mesma rodada** (`cba5570`): o limiar conservador do conserto #2 trouxe de volta alguns pontos brancos de fundo em outros lugares da mesma borda — o usuário preferiu a versão anterior (`5448df0`, com a mordida na borda) a essa troca. A mordida na lateral da plataforma continua como imperfeição conhecida, não resolvida.
+
 **Próximo passo:** novo walkthrough a **1440px real** (`localhost:3001`) + Stripe click-through para fechar o checkpoint do 05-05 → merge → completar a fase. E me diz o veredito do GAP-21.
