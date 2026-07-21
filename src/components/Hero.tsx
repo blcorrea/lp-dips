@@ -72,14 +72,19 @@ export default function Hero() {
           it's clipped on the LEFT edge, which our page shares with Figma
           (equal widths) -- so simple viewport-relative absolute positioning +
           the section's overflow-hidden reproduces it for free. Confirmed
-          correct by the user; kept full-bleed (section-relative). */}
+          correct by the user; kept full-bleed (section-relative).
+
+          Mobile (RESP-01): Figma's 375px mobile frame has this blob smaller
+          and lower (~27% down the section, behind the badge/H1) instead of
+          pinned to top:4px -- top-[26%]/w-[110px] at the base, reverting to
+          the desktop-exact top-[4px]/w-[193px] at lg. */}
       <Image
         src="/images/redesign/blob-vector-2.svg"
         alt=""
         aria-hidden="true"
         width={193}
         height={308}
-        className="pointer-events-none absolute left-[-3.73%] top-[4px] z-0 rotate-[-167.8deg]"
+        className="pointer-events-none absolute left-[-3.73%] top-[26%] z-0 w-[110px] rotate-[-167.8deg] lg:top-[4px] lg:w-[193px]"
       />
 
       {/* 1440 canvas (see file header). Fluid stack below lg; fixed 937px
@@ -119,12 +124,17 @@ export default function Hero() {
             0.1s) so the box is present from the start beside the H1.
 
             Sized down slightly from the Figma-exact 57.07%/822px to
-            52%/750px per user request. */}
+            52%/750px per user request.
+
+            Mobile (RESP-01): Figma's mobile image is full-bleed edge-to-edge
+            (373.8px in a 375px viewport) -- the -mx-6 cancels the canvas's
+            own px-6 gutter so the image reaches both edges at the base,
+            reverting to the existing centered/max-width treatment at lg. */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="relative z-[5] mx-auto mt-4 w-full max-w-[420px] lg:absolute lg:right-[2.27%] lg:top-[84px] lg:mt-0 lg:w-[52%] lg:max-w-[750px]"
+          className="relative z-[5] -mx-6 mt-4 w-auto max-w-none lg:absolute lg:right-[2.27%] lg:top-[84px] lg:mx-0 lg:mt-0 lg:w-[52%] lg:max-w-[750px]"
         >
           <Image
             src="/images/redesign/hero-product.png"
@@ -138,8 +148,12 @@ export default function Hero() {
 
         {/* TEXT BLOCK -- Figma order (top to bottom): badge, headline, subtitle,
             [gap], trust items, CTAs. Figma frame left:78 top:384 => canvas
-            left:78 top:267; width up to 1062. Mobile: normal flow, centered. */}
-        <div className="relative z-10 mt-8 flex flex-col items-center text-center lg:absolute lg:left-[78px] lg:top-[267px] lg:mt-0 lg:max-w-[1062px] lg:items-start lg:text-left">
+            left:78 top:267; width up to 1062.
+
+            Mobile (RESP-01): Figma's 375px mobile frame left-aligns this
+            whole block (was centered here) -- items-start/text-left at the
+            base, same as lg. */}
+        <div className="relative z-10 mt-8 flex flex-col items-start text-left lg:absolute lg:left-[78px] lg:top-[267px] lg:mt-0 lg:max-w-[1062px]">
           {/* SOCIAL PROOF BADGE -- Figma places this ABOVE the headline (first
               child of the text block), not after the subtitle. */}
           <motion.div
@@ -171,7 +185,10 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 0.25 }}
             className="mt-6 max-w-xl lg:max-w-none"
           >
-            <h1 className="font-heading text-display-hero font-bold leading-[1.05] text-white">
+            {/* Mobile (RESP-01): Figma's mobile H1 is 40px -> 36px (one step
+                below, same convention as desktop), reverting to the
+                text-display-hero token (58px) at lg. */}
+            <h1 className="font-heading text-[36px] font-bold leading-[1.2] text-white lg:text-display-hero lg:leading-[1.05]">
               {t.rich("h1", {
                 hl: (chunks) => (
                   <span className="text-dips-text-headline-lilac">{chunks}</span>
@@ -190,24 +207,30 @@ export default function Hero() {
           >
             {/* text-[21px], not the shared text-subtitle-italic-lg (24px)
                 token -- overridden locally so StorySection's own subtitle
-                (same token) isn't affected. */}
-            <p className="font-body text-[21px] italic leading-[1.4] text-dips-text-lavender">
+                (same token) isn't affected. Mobile (RESP-01): Figma's mobile
+                subtitle is 19px -> 17px (one step below), 21px from lg. */}
+            <p className="font-body text-[17px] italic leading-[1.4] text-dips-text-lavender lg:text-[21px]">
               {t("subtitle")}
             </p>
           </motion.div>
 
           {/* MINI TRUST ITEMS (Figma: a 50px gap separates these + the CTAs from
-              the headline group -- hence the larger mt here). */}
+              the headline group -- hence the larger mt here).
+
+              Mobile (RESP-01): Figma's mobile frame stacks these in a column
+              (gap 15) instead of a wrapped row, in the full lavender
+              (dips-text-lavender) instead of the muted tone -- lg reverts to
+              the existing row/muted treatment. */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.45 }}
-            className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 lg:justify-start"
+            className="mt-10 flex flex-col items-start gap-[15px] lg:flex-row lg:flex-wrap lg:items-center lg:gap-x-6 lg:gap-y-2"
           >
             {TRUST_KEYS.map((key) => (
               <span
                 key={key}
-                className="flex items-center gap-2 text-trust-bar text-dips-text-lavender-muted"
+                className="flex items-center gap-2 text-trust-bar text-dips-text-lavender lg:text-dips-text-lavender-muted"
               >
                 <span
                   aria-hidden="true"
@@ -223,7 +246,7 @@ export default function Hero() {
             initial={{ opacity: 0, scale: 0.97 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.65, delay: 0.55 }}
-            className="mt-6 flex flex-wrap items-center justify-center gap-4 lg:justify-start"
+            className="mt-6 flex flex-wrap items-center justify-start gap-4"
           >
             {/* font-cta (DM Sans) was missing on both buttons -- they were
                 silently inheriting the body's FilsonPro instead of the
@@ -256,15 +279,34 @@ export default function Hero() {
             left:78 to right:78. Sharing the canvas with the large blob is what
             keeps the blob tucked behind the 4th card. Mobile: normal flow below
             the text. */}
-        <div className="relative z-10 mt-16 lg:absolute lg:inset-x-[78px] lg:top-[743px] lg:mt-0">
-          {/* gap-[15px], not the spec's 25px -- user asked to widen the cards
-              slightly so the 2-word-longer descriptions ("Crafted to deepen
-              connection and shared pleasure", 258px needed) fit Figma's 2
-              lines instead of 3. Narrowing the gap between cards gives each
-              one more width without touching the section's own side insets
-              or the card's internal padding. See 05-VISUAL-GAPS.md GAP-34
-              (4th refinement). */}
-          <div className="grid grid-cols-1 gap-[15px] sm:grid-cols-2 lg:grid-cols-4">
+        <div className="relative z-10 mt-16 overflow-hidden lg:overflow-visible lg:absolute lg:inset-x-[78px] lg:top-[743px] lg:mt-0">
+          {/* Large blob (mobile only) -- Figma's 375px mobile frame shows this
+              same blob peeking through the LAST card's translucent
+              background in the bottom-right corner (unlike desktop, where it
+              lives further up the canvas behind the whole row). A separate
+              instance instead of reusing/repositioning the desktop one above
+              (which is `hidden lg:block`) so the already-approved desktop
+              placement (GAP-30 + user refinement) can't regress. Painted
+              first (DOM order) so the grid's cards render on top of it. */}
+          <Image
+            src="/images/redesign/blob-vector-1.svg"
+            alt=""
+            aria-hidden="true"
+            width={341}
+            height={511}
+            className="pointer-events-none absolute -bottom-[120px] -right-[172px] z-0 w-[220px] rotate-[53.34deg] lg:hidden"
+          />
+          {/* Mobile (RESP-01): Figma's mobile frame uses the spec's original
+              25px gap for the single-column stack (no width-squeeze concern
+              there, since each card is full-width) -- lg:gap-[15px] keeps the
+              narrower desktop gap unchanged (see note below: user asked to
+              widen the cards slightly so the 2-word-longer descriptions
+              ("Crafted to deepen connection and shared pleasure", 258px
+              needed) fit Figma's 2 lines instead of 3. Narrowing the gap
+              between cards gives each one more width without touching the
+              section's own side insets or the card's internal padding. See
+              05-VISUAL-GAPS.md GAP-34 (4th refinement)). */}
+          <div className="grid grid-cols-1 gap-[25px] sm:grid-cols-2 lg:grid-cols-4 lg:gap-[15px]">
             {FEATURES.map((feature, index) => (
               <ScrollReveal
                 key={feature.titleKey}
