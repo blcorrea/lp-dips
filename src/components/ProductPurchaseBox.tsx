@@ -117,14 +117,16 @@ export default function ProductPurchaseBox({
               )}
             >
               {/* Thumbnail — dedicated per-bundle photo (buy-1/2/3.png,
-                  user-provided, bg removed), mirrored to match Figma's
-                  matrix(-1,...) horizontal-flip orientation, no boxed bg */}
+                  user-provided, bg removed). Already composed in the
+                  correct orientation -- no mirror needed (unlike the
+                  earlier single reused hero-product.png, which was
+                  mirrored to match Figma's flip). */}
               <div className="relative h-[74px] w-[110px] shrink-0">
                 <Image
                   src={bundle.image}
                   alt=""
                   fill
-                  className="scale-x-[-1] object-contain"
+                  className="object-contain"
                   sizes="110px"
                 />
               </div>
