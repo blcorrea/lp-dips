@@ -128,8 +128,40 @@
         "cta": "View product"
     },
     "Reviews": {
-        "title": "What people are saying",
-        "subtitle": "We care about what we put in our products. Only the good stuff—safe, effective, ethically sourced. Cheers to those who paved the way to discover, explore, and understand these traditional remedies."
+        "title": "What People Are Saying",
+        "subtitle": "We care about what we put in our products. Only the good stuff—safe, effective, ethically sourced. Cheers to those who paved the way to discover, explore, and understand these traditional remedies.",
+        "prev": "Previous reviews",
+        "next": "Next reviews",
+
+        "marcus_role": "Doctor",
+        "marcus_country": "United States",
+        "marcus_date": "3 days ago",
+        "marcus_quote": "An absolute game-changer for date night. The presentation is stunning, and the chocolate itself tastes like true luxury—rich, gourmet single-origin cocoa. But the real magic happens afterward. It brought this incredible, grounded energy to our evening, making us feel completely present and deeply connected to each other. It's a beautifully sophisticated way to elevate intimate moments.",
+
+        "liam_role": "Workout Beast",
+        "liam_country": "Germany",
+        "liam_date": "19 days ago",
+        "liam_quote": "From the beautiful packaging to the gold flecks on the chocolate, it feels like an exclusive ritual from the start. The taste is incredibly smooth, but the best part is how it heightens every touch and sensation. It completely melted away our workday stress and replaced it with a playful, effortless intimacy. It's the perfect gift for your partner.",
+
+        "elena_role": "Yoga Instructor",
+        "elena_country": "Switzerland",
+        "elena_date": "13 days ago",
+        "elena_quote": "We loved everything about this. The taste is phenomenal, and it creates this amazing, subtle warmth that makes sharing an evening together feel incredibly special. It's officially a staple for our weekends.",
+
+        "jessica_role": "Athlete",
+        "jessica_country": "United States",
+        "jessica_date": "1 month ago",
+        "jessica_quote": "With a busy routine, it's easy to slip into autopilot. We tried this on our anniversary, and it genuinely helped us slow down and tune into one another. It doesn't feel forced or artificial—just a gentle, warm wave of desire and complete focus on each other. It gave us one of the most memorable, deeply connected nights we've had in years.",
+
+        "david_role": "Doctor",
+        "david_country": "Switzerland",
+        "david_date": "9 days ago",
+        "david_quote": "I was skeptical at first, but Dips completely exceeded expectations. You can tell they use premium, high-quality botanical ingredients instead of cheap additives. There's no artificial rush—just a smooth, sensual wave of energy and relaxation that sets the perfect mood. Plus, the fact that it's 100% natural gives me total peace of mind. Highly recommend for any couple looking to spice things up cleanly.",
+
+        "tyson_role": "Singer",
+        "tyson_country": "Italy",
+        "tyson_date": "3 months ago",
+        "tyson_quote": "Exceptional quality. The flavor profile is easily on par with high-end artisan chocolatiers, and the subtle mood-boosting effects are undeniable. It turns a standard evening into a luxurious, adults-only experience."
     },
     "FAQ": {
         "title": "FAQs",

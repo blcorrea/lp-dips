@@ -129,7 +129,39 @@
     },
     "Reviews": {
         "title": "O que as pessoas estão dizendo",
-        "subtitle": "Nos importamos com o que colocamos em nossos produtos. Só coisa boa: segura, eficaz e obtida de forma ética. Um brinde a quem abriu o caminho para descobrir, explorar e compreender esses remédios tradicionais."
+        "subtitle": "Nos importamos com o que colocamos em nossos produtos. Só coisa boa: segura, eficaz e obtida de forma ética. Um brinde a quem abriu o caminho para descobrir, explorar e compreender esses remédios tradicionais.",
+        "prev": "Avaliações anteriores",
+        "next": "Próximas avaliações",
+
+        "marcus_role": "Médico",
+        "marcus_country": "Estados Unidos",
+        "marcus_date": "há 3 dias",
+        "marcus_quote": "Uma virada completa para a noite a dois. A apresentação é impressionante, e o próprio chocolate tem gosto de verdadeiro luxo — cacau gourmet rico, de origem única. Mas a verdadeira mágica acontece depois. Trouxe uma energia incrível e estável para a nossa noite, nos fazendo sentir completamente presentes e profundamente conectados um com o outro. É uma forma sofisticada e linda de elevar os momentos íntimos.",
+
+        "liam_role": "Fera da Academia",
+        "liam_country": "Alemanha",
+        "liam_date": "há 19 dias",
+        "liam_quote": "Desde a bela embalagem até os flocos dourados no chocolate, parece um ritual exclusivo desde o início. O sabor é incrivelmente suave, mas a melhor parte é como intensifica cada toque e sensação. Derreteu completamente o estresse do trabalho e o substituiu por uma intimidade divertida e sem esforço. É o presente perfeito para o seu parceiro.",
+
+        "elena_role": "Instrutora de Yoga",
+        "elena_country": "Suíça",
+        "elena_date": "há 13 dias",
+        "elena_quote": "Amamos tudo nisso. O sabor é fenomenal, e cria um calor sutil e incrível que faz compartilhar uma noite juntos parecer muito especial. Já é oficialmente indispensável nos nossos fins de semana.",
+
+        "jessica_role": "Atleta",
+        "jessica_country": "Estados Unidos",
+        "jessica_date": "há 1 mês",
+        "jessica_quote": "Com uma rotina tão corrida, é fácil entrar no piloto automático. Experimentamos isso no nosso aniversário, e realmente nos ajudou a desacelerar e nos conectar um com o outro. Não parece forçado nem artificial — só uma onda suave e calorosa de desejo e foco total um no outro. Nos deu uma das noites mais memoráveis e conectadas que tivemos em anos.",
+
+        "david_role": "Médico",
+        "david_country": "Suíça",
+        "david_date": "há 9 dias",
+        "david_quote": "No início eu era cético, mas a Dips superou completamente as expectativas. Dá pra perceber que usam ingredientes botânicos premium de alta qualidade em vez de aditivos baratos. Não tem aquele efeito artificial repentino — só uma onda suave e sensual de energia e relaxamento que cria o clima perfeito. Além disso, o fato de ser 100% natural me dá total tranquilidade. Recomendo muito para qualquer casal que queira apimentar as coisas de forma limpa.",
+
+        "tyson_role": "Cantor",
+        "tyson_country": "Itália",
+        "tyson_date": "há 3 meses",
+        "tyson_quote": "Qualidade excepcional. O perfil de sabor está facilmente à altura dos chocolateiros artesanais de alto nível, e os sutis efeitos de melhora do humor são inegáveis. Transforma uma noite comum em uma experiência luxuosa, só para adultos."
     },
     "FAQ": {
         "title": "Perguntas Frequentes",

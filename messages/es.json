@@ -130,7 +130,39 @@
     },
     "Reviews": {
         "title": "Lo que dicen las personas",
-        "subtitle": "Nos importa lo que ponemos en nuestros productos. Solo lo bueno: seguro, eficaz y obtenido de forma ética. Un brindis por quienes abrieron el camino para descubrir, explorar y comprender estos remedios tradicionales."
+        "subtitle": "Nos importa lo que ponemos en nuestros productos. Solo lo bueno: seguro, eficaz y obtenido de forma ética. Un brindis por quienes abrieron el camino para descubrir, explorar y comprender estos remedios tradicionales.",
+        "prev": "Reseñas anteriores",
+        "next": "Reseñas siguientes",
+
+        "marcus_role": "Médico",
+        "marcus_country": "Estados Unidos",
+        "marcus_date": "hace 3 días",
+        "marcus_quote": "Un cambio total para la noche de pareja. La presentación es impresionante, y el chocolate en sí sabe a verdadero lujo: rico cacao gourmet de origen único. Pero la verdadera magia ocurre después. Trajo una energía increíble y estable a nuestra noche, haciéndonos sentir completamente presentes y profundamente conectados el uno con el otro. Es una forma sofisticada y hermosa de elevar los momentos íntimos.",
+
+        "liam_role": "Fanático del Gimnasio",
+        "liam_country": "Alemania",
+        "liam_date": "hace 19 días",
+        "liam_quote": "Desde el hermoso empaque hasta los destellos dorados en el chocolate, se siente como un ritual exclusivo desde el principio. El sabor es increíblemente suave, pero lo mejor es cómo intensifica cada toque y sensación. Disolvió por completo el estrés del día de trabajo y lo reemplazó con una intimidad juguetona y sin esfuerzo. Es el regalo perfecto para tu pareja.",
+
+        "elena_role": "Instructora de Yoga",
+        "elena_country": "Suiza",
+        "elena_date": "hace 13 días",
+        "elena_quote": "Nos encantó todo de esto. El sabor es fenomenal, y crea una calidez sutil e increíble que hace que compartir una noche juntos se sienta muy especial. Ya es oficialmente infaltable en nuestros fines de semana.",
+
+        "jessica_role": "Atleta",
+        "jessica_country": "Estados Unidos",
+        "jessica_date": "hace 1 mes",
+        "jessica_quote": "Con una rutina tan ocupada, es fácil caer en el piloto automático. Lo probamos en nuestro aniversario y realmente nos ayudó a bajar el ritmo y conectar el uno con el otro. No se siente forzado ni artificial, solo una ola suave y cálida de deseo y enfoque total el uno en el otro. Nos regaló una de las noches más memorables y conectadas que hemos tenido en años.",
+
+        "david_role": "Médico",
+        "david_country": "Suiza",
+        "david_date": "hace 9 días",
+        "david_quote": "Al principio era escéptico, pero Dips superó por completo mis expectativas. Se nota que usan ingredientes botánicos premium de alta calidad en lugar de aditivos baratos. No hay un subidón artificial, solo una ola suave y sensual de energía y relajación que crea el ambiente perfecto. Además, el hecho de que sea 100% natural me da total tranquilidad. Lo recomiendo totalmente para cualquier pareja que busque darle un toque distinto de forma limpia.",
+
+        "tyson_role": "Cantante",
+        "tyson_country": "Italia",
+        "tyson_date": "hace 3 meses",
+        "tyson_quote": "Calidad excepcional. El perfil de sabor está fácilmente a la altura de los chocolateros artesanales de alta gama, y los sutiles efectos de mejora del ánimo son innegables. Convierte una noche cualquiera en una experiencia lujosa, solo para adultos."
     },
     "FAQ": {
         "title": "Preguntas Frecuentes",
