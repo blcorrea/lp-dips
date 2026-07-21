@@ -765,3 +765,25 @@ Seção mais simples até agora — estrutura, tokens, gap 10px, q1 aberta com b
 **Nota técnica (mesma classe de erro do RESP-05):** um comentário `//` colocado logo após `return (` (antes do elemento JSX raiz) quebrou o build. Comentários de linha `//` só funcionam em código JS puro, nunca dentro do JSX retornado — corrigido movendo para fora do `return`.
 
 Commit `7e38df5`. Build + 71 testes verdes.
+
+## Addendum 2026-07-21 — Footer mobile (RESP-07, varredura mobile concluída)
+
+Mesmo esquema: Copy-as-CSS do frame mobile (375×1148, Figma node `281:730` — última seção não capturada no `FIGMA-MOBILE-EXTRACTION.md` original por rate limit) + 2 prints, análise no Fable, plano commitado em `.planning/phases/05-landing-page-sections/RESP-07-FOOTER-MOBILE-PLAN.md` antes da execução (Sonnet).
+
+A coluna esquerda (logo, endereço, newsletter) já batia 100% com o spec mobile do Figma, incluindo os tamanhos já mapeados no GAP-40 (logo 94×58, endereço 16px, título newsletter 25px, input/botão 46px) — nenhuma mudança lá. Só a zona direita e o legal precisaram de ajuste:
+
+| Item | Antes (mobile) | Depois (Figma mobile) |
+|---|---|---|
+| Colunas de links | grid 2 colunas | **1 coluna empilhada** (gap 15px); `sm:`/`lg:` mantêm a grade atual |
+| Alinhamento da zona direita (links + Contact Us) | à direita (`items-end`/`text-right`, herdado do desktop) | **à esquerda** |
+| Headings das colunas | 20px | **16px** (Figma 18, um passo abaixo) |
+| Links | 16px, gap 5px | **13px, gap 2px** (Figma 14, um passo abaixo) |
+| Texto legal | 13px | **12px** (spec mobile literal) |
+
+**Mantidos (overrides já documentados no GAP-40):** endereço real da Dips Wellness Corporation, `info@dipschocolate.com`, Wholesale/Accessibility omitidos, © "Dips Chocolate" + disclaimer FDA, form de newsletter client-only.
+
+Todas as mudanças só na base; `lg:` mantém os valores desktop já aprovados.
+
+Commit `7fbbb70`. Build + 71 testes verdes.
+
+**Esta era a última seção da varredura de responsividade mobile.** Todas as 7 seções da landing (Hero, Story, Ingredients, Buy/Bundle, Reviews, FAQ, Footer) agora têm um tratamento mobile (375px) fiel ao Figma mobile, com os overrides funcionais de cada seção preservados. Falta: verificação visual manual em dispositivo/DevTools real (o trabalho até aqui foi validado só por build + testes automatizados, não por inspeção visual do agente) e o checkpoint human-verify final antes do merge do worktree.
