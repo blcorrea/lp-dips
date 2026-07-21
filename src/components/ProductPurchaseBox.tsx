@@ -23,6 +23,7 @@ const BUNDLES = [
     quantity:    1,
     discountKey: 'discount0',
     shipping:    'standard',
+    image:       '/images/redesign/buy-1.png',
   },
   {
     id:          '2x',
@@ -33,6 +34,7 @@ const BUNDLES = [
     quantity:    2,
     discountKey: 'discount2',
     shipping:    'standard',
+    image:       '/images/redesign/buy-2.png',
   },
   {
     id:          '3x',
@@ -43,6 +45,7 @@ const BUNDLES = [
     quantity:    3,
     discountKey: 'discount3',
     shipping:    'free',
+    image:       '/images/redesign/buy-3.png',
   },
 ] as const;
 
@@ -105,14 +108,20 @@ export default function ProductPurchaseBox({
                 isSelected
                   ? 'border-brand-orange bg-dips-card-ingredient-hl'
                   : 'border-dips-bundle-light-border bg-dips-bundle-light hover:border-brand-orange/40',
-                isMostPopular && 'mb-[14px]'
+                // "Most Popular" sits on the TOP edge of the 2x card (user
+                // request) -- the pill overlaps ~17px above the card's own
+                // border, so this card needs extra clearance ABOVE it (not
+                // below, now that the pill moved) to keep the gap between
+                // all 3 cards visually even.
+                isMostPopular && 'mt-[14px]'
               )}
             >
-              {/* Thumbnail — the actual (transparent) product photo, mirrored,
-                  per Figma (matrix(-1,...) = horizontal flip), no boxed bg */}
+              {/* Thumbnail — dedicated per-bundle photo (buy-1/2/3.png,
+                  user-provided, bg removed), mirrored to match Figma's
+                  matrix(-1,...) horizontal-flip orientation, no boxed bg */}
               <div className="relative h-[74px] w-[110px] shrink-0">
                 <Image
-                  src="/images/redesign/hero-product.png"
+                  src={bundle.image}
                   alt=""
                   fill
                   className="scale-x-[-1] object-contain"
@@ -161,7 +170,7 @@ export default function ProductPurchaseBox({
               </div>
 
               {isMostPopular && (
-                <span className="absolute -bottom-[17px] left-1/2 -translate-x-1/2 rounded-full bg-brand-orange px-[15px] py-2.5 font-body text-[12px] font-bold text-white">
+                <span className="absolute -top-[17px] left-1/2 -translate-x-1/2 rounded-full bg-brand-orange px-[15px] py-2.5 font-body text-[12px] font-bold text-white">
                   {t('mostPopular')}
                 </span>
               )}
