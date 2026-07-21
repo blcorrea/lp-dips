@@ -434,4 +434,14 @@ Build + 71 testes verdes.
 
 **Se ainda não aparecer:** pedir pro usuário also fazer hard-refresh (Ctrl+Shift+R) — cache do NAVEGADOR é um fator independente do cache do Next.js.
 
+## Addendum 2026-07-20 (9ª rodada) — resíduo de "quadro" no fundo removido de vez + imagem menor
+
+Usuário apontou que ainda sobrava um "quadro" com opacidade parcial visível nas bordas da imagem (o degradê suave de sombra da foto original caía dentro da zona de transição/feather do script, em vez de virar 100% transparente).
+
+**Correção:** limiar do corte "sempre transparente" (`WHITE_THRESHOLD`) subido de 60 → **170** (cobre todo o range do degradê de sombra — as cores do produto estão muito mais longe do branco que isso, então não corre risco de comer o produto), e a zona de transição suave (`FEATHER`) reduzida de 140 → **20** (só uma faixa fina de anti-serrilhado bem na borda real do produto). Verificado com amostras em pontos confirmados como fundo puro (fora da silhueta do produto) — todos com alpha 0. Commit `44c5886`.
+
+Também reduzida a imagem do produto de 57.07%/822px → **52%/750px**, por pedido do usuário.
+
+Build + 71 testes verdes.
+
 **Próximo passo:** novo walkthrough a **1440px real** (`localhost:3001`) + Stripe click-through para fechar o checkpoint do 05-05 → merge → completar a fase. E me diz o veredito do GAP-21.
