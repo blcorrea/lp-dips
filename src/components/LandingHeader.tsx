@@ -56,16 +56,34 @@ export default function LandingHeader() {
             width:1390px, left:25px inside the 1440px bar) -- was justify-center
             with a fixed gap, which clustered the items instead of spreading them
             edge to edge. See 05-VISUAL-GAPS.md GAP-22. */}
-        <div className="flex h-[45px] w-full items-center justify-between gap-4 bg-[rgba(45,26,105,0.4)] px-[25px]">
-          {TRUST_BAR_KEYS.map((key) => (
-            <span
-              key={key}
-              className="flex shrink-0 items-center gap-2 text-trust-bar text-dips-text-lavender-muted"
-            >
-              <TrustBarDiamond />
-              {t(key)}
-            </span>
-          ))}
+        {/* Marquee: content rendered TWICE back-to-back in one flex row
+            (group), the row animated by exactly -50% so it loops seamlessly
+            (the end of the first copy hands off to the identical start of
+            the second, no jump/reset visible) -- right-to-left per user
+            request. group/hover pauses on hover so the text is still
+            readable if someone wants to stop and read one. The second copy
+            is aria-hidden (decorative repeat, not new content) so screen
+            readers only announce the items once. */}
+        <div className="group h-[45px] w-full overflow-hidden bg-[rgba(45,26,105,0.4)]">
+          <div className="flex h-full w-max animate-[marquee_32s_linear_infinite] items-center gap-[50px] group-hover:[animation-play-state:paused] motion-reduce:animate-none">
+            {[0, 1].map((copy) => (
+              <div
+                key={copy}
+                aria-hidden={copy === 1 ? true : undefined}
+                className="flex shrink-0 items-center gap-[50px] pl-[25px]"
+              >
+                {TRUST_BAR_KEYS.map((key) => (
+                  <span
+                    key={key}
+                    className="flex shrink-0 items-center gap-2 text-trust-bar text-dips-text-lavender-muted"
+                  >
+                    <TrustBarDiamond />
+                    {t(key)}
+                  </span>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 

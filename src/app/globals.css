@@ -309,3 +309,19 @@
 .legal-content a {
   color: var(--color-brand-orange);
 }
+
+/* ============================= */
+/* MARQUEE (trust bar) */
+/* ============================= */
+
+/* Content is rendered twice back-to-back (LandingHeader.tsx) and this
+   translates by exactly -50% -- since both halves are identical, the loop
+   is seamless with no visible jump/reset. */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
