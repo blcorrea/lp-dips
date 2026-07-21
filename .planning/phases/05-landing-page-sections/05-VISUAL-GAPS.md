@@ -606,3 +606,23 @@ Os tokens do card já batiam exatos (bg `#231435`, borda `#39294C`, raio 15, pad
 **Copy das 6 perguntas/respostas mantida intocada** — é override funcional documentado; o Figma diverge em detalhes finos ("Is this product safe?" vs. o nosso "Is the product safe?") e a copy real vence.
 
 Commit `8e11d5f`. Build + 71 testes verdes.
+
+## Addendum 2026-07-21 — Seção 7 (Footer) reconstruída (GAP-40, fase concluída)
+
+Análise no Fable a partir do Copy-as-CSS da seção + print, plano commitado em `.planning/phases/05-landing-page-sections/GAP-40-FOOTER-PLAN.md` antes da execução (Sonnet).
+
+**Bug real encontrado (mesma família do GAP-24):** a logo do footer usava `fill+object-contain` nas duas camadas SVG — cada uma é `preserveAspectRatio="none"` cobrindo só a SUA sub-região, não a caixa toda, então esticar as duas independentemente deformava a camada laranja. Corrigido reaproveitando os mesmos assets do header (`logo-purple-part.svg`/`logo-orange-part.svg`) com posição/tamanho exatos, escalados ~1.6× (59×36 → 94×58).
+
+**Layout:** padding do container ajustado pra 50px (Figma); coluna esquerda 569/713 (era 1fr/1.4fr) e virou `justify-between` de verdade (logo+endereço em cima, newsletter embaixo — antes era tudo empilhado sem separação); zona direita reestruturada em duas linhas: fileira de colunas de links + **"Contact Us" numa segunda linha, alinhado à direita**, sob o Customer Care (antes estava dobrado dentro da própria coluna Customer Care). A âncora do nav "Contact" (`#footer-contact`) migrou pro novo bloco Contact Us dedicado.
+
+**Overrides funcionais mantidos** (dados reais vencem o Figma): `info@dipschocolate.com` (Figma mostra `help@dips.co` fictício); endereço real da Dips Wellness Corporation (só reformatado pro estilo de uma linha com pipes do Figma); "Track Order" agora **aponta pra página real** `/orders` (no Figma não tem destino real); Wholesale/Accessibility **omitidos** (não existem páginas reais pra eles).
+
+**Copy atualizada do Figma** (não é override): subtítulo da newsletter, placeholder "Your email", "Refunds and Returns"/"Terms and Conditions" por extenso, labels "Our Ingredients"/"F.A.Q.s", e uma **linha de disclaimer FDA nova** substituindo o bloco legal multi-linha antigo.
+
+**⚠️ Flag pro usuário — decisão que precisa de atenção:** removi da renderização as linhas `madeWith`, `productDesigned`, `registeredIn` (Florida) e **`ageRestriction` (18+)** — o Figma só tem © + disclaimer FDA, nenhuma dessas. A do 18+ é a mais sensível (compliance de produto adulto); as chaves continuam no JSON, é só reintroduzir uma linha se o usuário preferir manter.
+
+**Fontes** (padrão das seções anteriores): título newsletter 28→25, headings de coluna 22→20, links/endereço/email 18→16, placeholder/legal 14→13, Sign Up 16→14.
+
+Commit `efefb0e`. Build + 71 testes verdes.
+
+**Esta era a última seção da Fase 5** (GAP-35 a GAP-40 cobriram Story, Ingredients, Buy, Reviews, FAQ e Footer). Falta official fechamento: novo walkthrough completo a 1440px real + Stripe click-through pra fechar o checkpoint human-verify do 05-05 → merge do worktree → fase completa.
