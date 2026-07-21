@@ -50,7 +50,11 @@ function LanguageSwitcher() {
   }, []);
 
   return (
-    <div ref={ref} className="relative">
+    // h-[44px] + flex items-center matches the Shop Now button's own height
+    // exactly, so the switcher centers vertically in its reserved space
+    // instead of relying on the parent row's cross-axis centering (which
+    // left it looking top-aligned next to the taller CTA).
+    <div ref={ref} className="relative flex h-[44px] items-center">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
