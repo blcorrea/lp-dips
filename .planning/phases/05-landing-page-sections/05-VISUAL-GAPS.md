@@ -673,3 +673,27 @@ Estrutura já batia (foto com badge+título+subtítulo no topo, badges na base, 
 Todas as mudanças só na base; `lg:` mantém os valores desktop já aprovados. `justify-center` do painel (pedido do usuário em 2026-07-21) mantido nas duas larguras.
 
 Commit `ed08f39`. Build + 71 testes verdes.
+
+## Addendum 2026-07-21 — Ingredients mobile (RESP-03)
+
+Mesmo esquema: Copy-as-CSS do frame mobile (375×1097, Figma node `281:209`) + 2 prints, análise no Fable, plano commitado em `.planning/phases/05-landing-page-sections/RESP-03-INGREDIENTS-MOBILE-PLAN.md` antes da execução (Sonnet).
+
+**Mudança estrutural:** no mobile o Figma inverte a ordem do header — o **título vem primeiro**, o eyebrow itálico "The ingredients" vem **depois** (no desktop é o contrário). Resolvido com `order-*` entre os dois elementos, sem duplicar JSX; foi preciso adicionar `className="flex flex-col"` no `ScrollReveal` que os envolve, já que `order` só funciona entre filhos de um container flex/grid.
+
+| Item | Antes (mobile) | Depois (Figma mobile) |
+|---|---|---|
+| Ordem header | eyebrow → título | **título → eyebrow** (via `order-*`) |
+| Título | 44px fixo | **40px** (Figma 44, um passo abaixo) |
+| Eyebrow | 18px fixo | **14px** (Figma 16) |
+| Padding dos painéis | `p-6 py-12` | **`p-6`** (o `py-12` dobrava o respiro do Figma) |
+| Rows da lista | padding 25px, radius 15px | **15px / 12px (selecionada) / 10px (demais)** |
+| Nome/desc da linha | 14px/13px | **12px** (spec mobile literal — texto pequeno não reduz mais) |
+| Intro do painel direito | 21px | **16px** |
+| Card de detalhe | padding 25px, ícone 44px, nome 21px, desc 13px | **padding 20px, ícone 40px, nome 12px, desc 10px** (todos literais do spec mobile) |
+| Card Origins & Curiosities | padding 25px, título 14px, corpo 13px | **padding 15px, título 12px, corpo 10px** (literais) |
+
+**Override flagrado ao usuário:** a pill de keyword (RITUAL/STAMINA/...) pede 8px no Figma mobile — mantive em **10px** (o valor já usado no desktop) por legibilidade/acessibilidade; 8px de texto real seria ilegível. Ainda não confirmado pelo usuário, fica registrado aqui caso quiserem revisitar.
+
+Todas as mudanças só na base; `lg:` mantém os valores desktop já aprovados. Interatividade de seleção e hover-lift intocados.
+
+Commit `1c2dba2`. Build + 71 testes verdes.
