@@ -402,4 +402,24 @@ Build + 71 testes verdes.
 
 Build + 71 testes verdes.
 
+## Addendum 2026-07-20 (6ª rodada) — trust bar copy atualizada + ajustes de header
+
+**Trust bar:** usuário confirmou que o Figma atualizou o texto da trust bar. Substituídos os 6 itens (en/es/pt): Made in USA, Premium Arriba Cocoa, 30 Days Satisfaction Guarantee (typo "Gaurantee" corrigido), Fast & Discreet Shipping, 10,000+ Happy Couples, 100% Natural Ingredients — commit `16b2cad`.
+
+**Header (print anotado):**
+
+| # | Item | Correção | Commit |
+|---|---|---|---|
+| — | Fonte da tagline "Premium Chocolate" + links do menu grandes demais | Token compartilhado `--text-nav-link` (só usado nesses 2 lugares) reduzido de 14px → 13px | `3905cfa` |
+| — | Logo grande demais; pouco espaço à esquerda do logo e na costura trust-bar/nav | Logo escalado ~17% menor (59×36→49×30, sub-camadas na mesma proporção 5/6); padding esquerdo do nav 40px→48px; altura do nav 72px→76px | `96e027c` |
+| — | Botão "Buy Now" da Hero grande demais | Reduzido de h-50/16px pra h-44/14px (só esse botão — "How It Works?" e o "Shop Now" do header não foram tocados) | `96e027c` |
+
+Build + 71 testes verdes depois de cada commit.
+
+## Addendum 2026-07-20 (7ª rodada) — fundo da imagem do produto removido
+
+Usuário regenerou `hero-product.png` com fundo branco sólido em vez de transparente. Sem ImageMagick/Python funcional no ambiente (`convert` do Windows não é o do ImageMagick; os `python`/`python3` são só stubs da Microsoft Store), instalei `sharp` isolado numa pasta de scratchpad (não no projeto) e rodei um flood-fill a partir das bordas da imagem: só pixels **conectados à borda** através de uma cadeia branco/cinza-clara viram transparentes — impossível "furar" brilhos internos do produto (que ficariam isolados, sem conexão com a borda). Precisou de 2 passadas: a 1ª (limiar apertado) deixou uma "nuvem" de sombra cinza-clara residual perto do canto inferior direito; a 2ª (limiar mais largo, calibrado nos valores RGB reais dessa sombra) resolveu. Verificado numericamente (alpha 0 nos 4 cantos, alpha 255 no produto) e visualmente via composição sobre a cor exata do gradiente da Hero. Arquivo original (fundo branco) guardado fora do repo, no scratchpad, caso precise reverter. Commit `2333117`.
+
+Build + 71 testes verdes.
+
 **Próximo passo:** novo walkthrough a **1440px real** (`localhost:3001`) + Stripe click-through para fechar o checkpoint do 05-05 → merge → completar a fase. E me diz o veredito do GAP-21.
