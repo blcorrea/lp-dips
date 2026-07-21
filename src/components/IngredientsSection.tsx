@@ -150,7 +150,13 @@ export default function IngredientsSection() {
                     onClick={() => setSelectedIndex(index)}
                     aria-pressed={isSelected}
                     className={cn(
-                      'flex w-full items-center gap-[10px] rounded-card border-2 text-left transition-colors duration-200',
+                      // Hover = a pure visual "lift" (scale + shadow), same on
+                      // every card regardless of selection -- the highlight
+                      // COLOR only ever changes on click (isSelected below),
+                      // never on hover, per user request. hover:z-10 keeps the
+                      // lifted card above its neighbors instead of being
+                      // clipped underneath them while scaled up.
+                      'relative flex w-full items-center gap-[10px] rounded-card border-2 text-left transition-all duration-200 hover:z-10 hover:scale-[1.03] hover:shadow-[0_12px_32px_rgba(0,0,0,0.35)]',
                       isSelected
                         ? 'border-dips-card-ingredient-hl-border bg-dips-card-ingredient-hl p-card-padding'
                         : 'border-dips-card-ingredient-border bg-dips-card-ingredient px-card-padding py-5 hover:border-dips-card-ingredient-hl-border/60'
