@@ -2,6 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import { redirect } from 'next/navigation';
 import { getAffiliateSessionId } from '@/lib/affiliate-auth';
 import LandingHeader from '@/components/LandingHeader';
+import LandingFooter from '@/components/LandingFooter';
 import AffiliateLoginForm from './AffiliateLoginForm';
 
 type Props = {
@@ -48,6 +49,7 @@ export default async function AffiliateLoginPage({ params, searchParams }: Props
           <AffiliateLoginForm locale={locale} initialError={error ?? null} />
         </div>
       </main>
+      <LandingFooter />
     </>
   );
 }
