@@ -63,14 +63,20 @@ export default function LandingHeader() {
             request. group/hover pauses on hover so the text is still
             readable if someone wants to stop and read one. The second copy
             is aria-hidden (decorative repeat, not new content) so screen
-            readers only announce the items once. */}
+            readers only announce the items once.
+
+            No pl-[25px] on each copy -- that padding stacked with the outer
+            gap-[50px] between the two copies, producing a 75px seam at the
+            loop point vs. 50px between items within the same copy (user-
+            reported uneven spacing). The outer gap alone now spaces every
+            transition evenly, including the copy-to-copy seam. */}
         <div className="group h-[45px] w-full overflow-hidden bg-[rgba(45,26,105,0.4)]">
           <div className="flex h-full w-max animate-[marquee_32s_linear_infinite] items-center gap-[50px] group-hover:[animation-play-state:paused] motion-reduce:animate-none">
             {[0, 1].map((copy) => (
               <div
                 key={copy}
                 aria-hidden={copy === 1 ? true : undefined}
-                className="flex shrink-0 items-center gap-[50px] pl-[25px]"
+                className="flex shrink-0 items-center gap-[50px]"
               >
                 {TRUST_BAR_KEYS.map((key) => (
                   <span
