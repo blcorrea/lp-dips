@@ -100,7 +100,7 @@ export default function AffiliateJoinForm() {
     return (
       <div className="rounded-[24px] bg-white px-8 py-10 shadow-[0_10px_40px_rgba(86,17,110,0.10)] text-center">
         <div className="mb-4 text-5xl">🎉</div>
-        <h2 className="font-heading text-brand-purple text-[28px] font-bold mb-3">
+        <h2 className="font-heading text-dips-text-purple-deep text-[28px] font-bold mb-3">
           {t('successTitle')}
         </h2>
         <p className="text-brand-charcoal/70 text-[16px] leading-relaxed max-w-md mx-auto">
@@ -112,7 +112,7 @@ export default function AffiliateJoinForm() {
           <p className="text-xs font-semibold uppercase tracking-wide text-brand-charcoal/50">
             {t('successYourCode')}
           </p>
-          <p className="mt-1 font-mono text-lg font-bold text-brand-purple break-all">
+          <p className="mt-1 font-mono text-lg font-bold text-dips-text-purple-deep break-all">
             {form.ref}
           </p>
         </div>
@@ -120,7 +120,7 @@ export default function AffiliateJoinForm() {
         {/* Login CTA */}
         <a
           href={`/${locale}/affiliates/login`}
-          className="mt-6 inline-block w-full rounded-full bg-brand-orange px-8 py-4 text-base font-bold text-brand-purple
+          className="mt-6 inline-block w-full rounded-full bg-brand-orange px-8 py-4 text-base font-bold text-white
             shadow-[0_10px_30px_rgba(242,117,33,0.28)] transition-all duration-300
             hover:scale-[1.02] hover:bg-brand-orange/90"
         >
@@ -138,7 +138,7 @@ export default function AffiliateJoinForm() {
   return (
     <div className="rounded-[24px] bg-white px-6 py-8 sm:px-8 sm:py-10 shadow-[0_10px_40px_rgba(86,17,110,0.10)]">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
-        <h2 className="font-heading text-brand-purple text-[24px] sm:text-[28px] font-bold">
+        <h2 className="font-heading text-dips-text-purple-deep text-[24px] sm:text-[28px] font-bold">
           {t('formTitle')}
         </h2>
 
@@ -154,7 +154,7 @@ export default function AffiliateJoinForm() {
           className="text-brand-charcoal/50 text-sm hover:text-brand-charcoal/70 transition-colors"
         >
           {t('alreadyAffiliate')}{' '}
-          <span className="font-semibold text-brand-purple hover:underline">
+          <span className="font-semibold text-dips-text-purple-deep hover:underline">
             {t('alreadyAffiliateCta')}
           </span>
         </a>
@@ -172,8 +172,8 @@ export default function AffiliateJoinForm() {
             onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
             placeholder={t('placeholderName')}
             className={`w-full rounded-xl border px-4 py-3 text-[15px] outline-none transition-colors
-              focus:border-brand-purple focus:ring-2 focus:ring-brand-purple/10
-              ${errors.name ? 'border-red-400' : 'border-brand-purple/20'}`}
+              focus:border-dips-text-purple-deep focus:ring-2 focus:ring-dips-text-purple-deep/10
+              ${errors.name ? 'border-red-400' : 'border-dips-text-purple-deep/20'}`}
           />
           {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name}</p>}
         </div>
@@ -189,8 +189,8 @@ export default function AffiliateJoinForm() {
             onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
             placeholder={t('placeholderEmail')}
             className={`w-full rounded-xl border px-4 py-3 text-[15px] outline-none transition-colors
-              focus:border-brand-purple focus:ring-2 focus:ring-brand-purple/10
-              ${errors.email ? 'border-red-400' : 'border-brand-purple/20'}`}
+              focus:border-dips-text-purple-deep focus:ring-2 focus:ring-dips-text-purple-deep/10
+              ${errors.email ? 'border-red-400' : 'border-dips-text-purple-deep/20'}`}
           />
           {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
         </div>
@@ -204,8 +204,8 @@ export default function AffiliateJoinForm() {
             value={form.type}
             onChange={(e) => setForm((p) => ({ ...p, type: e.target.value as AffiliateType }))}
             className={`w-full rounded-xl border px-4 py-3 text-[15px] outline-none transition-colors bg-white
-              focus:border-brand-purple focus:ring-2 focus:ring-brand-purple/10
-              ${errors.type ? 'border-red-400' : 'border-brand-purple/20'}
+              focus:border-dips-text-purple-deep focus:ring-2 focus:ring-dips-text-purple-deep/10
+              ${errors.type ? 'border-red-400' : 'border-dips-text-purple-deep/20'}
               ${!form.type ? 'text-brand-charcoal/40' : 'text-brand-charcoal'}`}
           >
             <option value="" disabled>{t('placeholderType')}</option>
@@ -229,8 +229,8 @@ export default function AffiliateJoinForm() {
             value={form.instagram}
             onChange={(e) => handleInstagramChange(e.target.value)}
             placeholder={t('placeholderInstagram')}
-            className="w-full rounded-xl border border-brand-purple/20 px-4 py-3 text-[15px] outline-none transition-colors
-              focus:border-brand-purple focus:ring-2 focus:ring-brand-purple/10"
+            className="w-full rounded-xl border border-dips-text-purple-deep/20 px-4 py-3 text-[15px] outline-none transition-colors
+              focus:border-dips-text-purple-deep focus:ring-2 focus:ring-dips-text-purple-deep/10"
           />
         </div>
 
@@ -250,8 +250,8 @@ export default function AffiliateJoinForm() {
             }
             placeholder={t('placeholderRef')}
             className={`w-full rounded-xl border px-4 py-3 text-[15px] outline-none transition-colors
-              focus:border-brand-purple focus:ring-2 focus:ring-brand-purple/10
-              ${errors.ref ? 'border-red-400' : 'border-brand-purple/20'}`}
+              focus:border-dips-text-purple-deep focus:ring-2 focus:ring-dips-text-purple-deep/10
+              ${errors.ref ? 'border-red-400' : 'border-dips-text-purple-deep/20'}`}
           />
           <p className="mt-1 text-xs text-brand-charcoal/50">{t('refHint')}</p>
           {errors.ref && <p className="mt-1 text-xs text-red-500">{errors.ref}</p>}
@@ -267,7 +267,7 @@ export default function AffiliateJoinForm() {
           type="button"
           onClick={handleSubmit}
           disabled={submitting}
-          className="w-full rounded-full bg-brand-orange px-8 py-4 text-base font-bold text-brand-purple
+          className="w-full rounded-full bg-brand-orange px-8 py-4 text-base font-bold text-white
             shadow-[0_10px_30px_rgba(242,117,33,0.28)] transition-all duration-300
             hover:scale-[1.02] hover:bg-brand-orange/90
             disabled:opacity-60 disabled:cursor-not-allowed"

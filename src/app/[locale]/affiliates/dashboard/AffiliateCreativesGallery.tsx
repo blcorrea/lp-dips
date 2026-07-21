@@ -118,7 +118,7 @@ function CreativeCard({ row, t }: { row: CreativeRow; t: T }) {
             href={getDownloadUrl(row.url)}
             download={row.fileName}
             aria-label={`${t('download')} — ${row.title}`}
-            className="inline-flex items-center rounded-xl bg-brand-orange px-4 py-2 text-xs font-bold text-brand-purple transition-all duration-200 hover:bg-brand-orange/90 active:scale-95"
+            className="inline-flex items-center rounded-xl bg-brand-orange px-4 py-2 text-xs font-bold text-white transition-all duration-200 hover:bg-brand-orange/90 active:scale-95"
           >
             {t('download')}
           </a>

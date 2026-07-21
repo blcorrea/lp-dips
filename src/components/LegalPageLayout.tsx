@@ -32,9 +32,9 @@ export default async function LegalPageLayout({
               ← {t("backToHome")}
             </Link>
 
-            <div className="rounded-[28px] border border-brand-purple/10 bg-brand-cream p-8 shadow-sm lg:p-12">
+            <div className="rounded-[28px] border border-dips-text-purple-deep/10 bg-brand-cream p-8 shadow-sm lg:p-12">
 
-              <h1 className="mb-4 text-4xl font-bold tracking-tight text-brand-purple lg:text-5xl">
+              <h1 className="mb-4 text-4xl font-bold tracking-tight text-dips-text-purple-deep lg:text-5xl">
                 {title}
               </h1>
 

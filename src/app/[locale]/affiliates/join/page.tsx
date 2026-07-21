@@ -1,4 +1,5 @@
 import { getTranslations } from 'next-intl/server';
+import LandingHeader from '@/components/LandingHeader';
 import AffiliateJoinForm from './AffiliateJoinForm';
 
 type Props = {
@@ -19,7 +20,12 @@ export default async function AffiliateJoinPage({ params }: Props) {
   const t = await getTranslations({ locale, namespace: 'AffiliateJoin' });
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-brand-purple to-[#3b1c5a] py-20 px-6">
+    <>
+      {/* Team feedback: bring this page back into the same site nav (links
+          to home/story/order/contact) instead of being a fully standalone
+          island, and unify the purple with the rest of the redesign. */}
+      <LandingHeader />
+      <main className="min-h-screen bg-gradient-to-b from-dips-purple-hero-start from-0% via-dips-purple-hero-mid via-[57.4%] to-dips-purple-hero-end to-100% py-20 px-6">
       <div className="mx-auto max-w-5xl">
 
         {/* Header */}
@@ -57,6 +63,7 @@ export default async function AffiliateJoinPage({ params }: Props) {
         </div>
 
       </div>
-    </main>
+      </main>
+    </>
   );
 }
