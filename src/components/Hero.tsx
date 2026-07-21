@@ -111,12 +111,15 @@ export default function Hero() {
             end of the headline on purpose (text is z-10 above, image z-[5]
             below), matching Figma where "night." sits in front of the podium.
             Mobile: normal flow, first, centered. Fade-in leads the text (delay
-            0.1s) so the box is present from the start beside the H1. */}
+            0.1s) so the box is present from the start beside the H1.
+
+            Sized down slightly from the Figma-exact 57.07%/822px to
+            52%/750px per user request. */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="relative z-[5] mx-auto mt-4 w-full max-w-[420px] lg:absolute lg:right-[2.27%] lg:top-[84px] lg:mt-0 lg:w-[57.07%] lg:max-w-[822px]"
+          className="relative z-[5] mx-auto mt-4 w-full max-w-[420px] lg:absolute lg:right-[2.27%] lg:top-[84px] lg:mt-0 lg:w-[52%] lg:max-w-[750px]"
         >
           <Image
             src="/images/redesign/hero-product.png"
