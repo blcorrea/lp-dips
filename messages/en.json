@@ -548,6 +548,8 @@
     },
     "AffiliateJoin": {
         "eyebrow": "Partner Program",
+        "alreadyAffiliate": "Already an affiliate?",
+        "alreadyAffiliateCta": "Log in here",
         "title": "Earn with Dips",
         "subtitle": "Join our affiliate program and earn 7% commission on every sale you generate. Share your unique link, grow with us.",
         "benefit1": "7% commission on every sale",

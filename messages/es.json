@@ -549,6 +549,8 @@
     },
     "AffiliateJoin": {
         "eyebrow": "Programa de Socios",
+        "alreadyAffiliate": "¿Ya eres afiliado?",
+        "alreadyAffiliateCta": "Inicia sesión aquí",
         "title": "Gana con Dips",
         "subtitle": "Únete a nuestro programa de afiliados y gana un 7% de comisión por cada venta que generes. Comparte tu enlace único y crece con nosotros.",
         "benefit1": "7% de comisión por cada venta",

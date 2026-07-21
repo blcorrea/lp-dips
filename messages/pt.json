@@ -548,6 +548,8 @@
     },
     "AffiliateJoin": {
         "eyebrow": "Programa de Parceiros",
+        "alreadyAffiliate": "Já é afiliado?",
+        "alreadyAffiliateCta": "Faça login aqui",
         "title": "Ganhe com a Dips",
         "subtitle": "Junte-se ao nosso programa de afiliados e ganhe 7% de comissão em cada venda que gerar. Compartilhe seu link único e cresça com a gente.",
         "benefit1": "7% de comissão em cada venda",
