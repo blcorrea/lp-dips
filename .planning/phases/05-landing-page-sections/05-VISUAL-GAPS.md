@@ -444,4 +444,14 @@ Também reduzida a imagem do produto de 57.07%/822px → **52%/750px**, por pedi
 
 Build + 71 testes verdes.
 
+## Addendum 2026-07-20 (10ª rodada) — halo fino de borda removido; triângulo laranja é o blob da Hero, não a imagem
+
+Usuário apontou (com setas vermelhas) resíduos finos nas bordas da caixa/plataforma/farelo, e um triângulo laranja estranho aparecendo perto do canto inferior direito.
+
+**Halo de borda:** a zona de transição suave (feather) ainda deixava pixels de mistura produto+fundo com alpha baixo-mas-não-zero bem na borda real, visíveis como um contorno claro fino contra o fundo escuro da página. Trocado pra alpha binário (sem gradiente) + erosão de 2px do contorno opaco (dilatando a máscara de fundo duas vezes) pra eliminar esse resíduo por completo. Commit `6096f5d`.
+
+**Triângulo laranja:** não é resíduo do corte de fundo — é o **blob decorativo grande da própria Hero** (`blob-vector-1.svg`, z-0, posicionado dentro do mesmo canvas) aparecendo por trás da imagem do produto. Como a imagem foi reduzida na rodada anterior (57%→52%), sua borda esquerda recuou (ela é ancorada por `right`), expondo uma fatia do blob que antes ficava coberta. **Não mexi nisso ainda** — é uma decisão de layout (encolher o blob, mover a imagem, ou aceitar o blob aparecendo), não um bug de processamento de imagem. Perguntei ao usuário como prefere resolver.
+
+Build + 71 testes verdes.
+
 **Próximo passo:** novo walkthrough a **1440px real** (`localhost:3001`) + Stripe click-through para fechar o checkpoint do 05-05 → merge → completar a fase. E me diz o veredito do GAP-21.
