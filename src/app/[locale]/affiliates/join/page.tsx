@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import LandingHeader from '@/components/LandingHeader';
+import LandingFooter from '@/components/LandingFooter';
 import AffiliateJoinForm from './AffiliateJoinForm';
 
 type Props = {
@@ -64,6 +65,7 @@ export default async function AffiliateJoinPage({ params }: Props) {
 
       </div>
       </main>
+      <LandingFooter />
     </>
   );
 }
