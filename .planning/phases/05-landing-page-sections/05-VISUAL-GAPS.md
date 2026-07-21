@@ -746,3 +746,22 @@ Setas continuam desabilitadas (decisão do GAP-38: os 6 reviews já renderizam t
 **Nota técnica:** um comentário JSX colocado logo após `return (` (antes do elemento raiz) quebrou o build (`Expected ',', got 'id'`) — comentários `{/* */}` só são válidos como filhos de um elemento JSX, não soltos antes dele. Corrigido movendo o comentário para fora do JSX, como comentário JS normal antes do `return`.
 
 Commit `b6b0bfa`. Build + 71 testes verdes.
+
+## Addendum 2026-07-21 — FAQ mobile (RESP-06)
+
+Mesmo esquema: Copy-as-CSS do frame mobile (375×957, Figma node `281:675` — não capturado no `FIGMA-MOBILE-EXTRACTION.md` original por rate limit, este dump fechou a lacuna) + 1 print, análise no Fable, plano commitado em `.planning/phases/05-landing-page-sections/RESP-06-FAQ-MOBILE-PLAN.md` antes da execução (Sonnet).
+
+Seção mais simples até agora — estrutura, tokens, gap 10px, q1 aberta com borda laranja e chevron já batiam. Só 4 ajustes:
+
+| Item | Antes (mobile) | Depois (Figma mobile) |
+|---|---|---|
+| Padding vertical da seção | `py-20` | **`py-10`** (`lg:py-28` mantido) |
+| Título / subtítulo | 48px / 21px | **40px / 16px** (Figma 44/18, um passo abaixo) |
+| Padding do item | 25px | **20px** |
+| Pergunta / resposta | 16px / 16px | **14px / 13px** (Figma 16/14, um passo abaixo) |
+
+**Mantidos:** o hover de borda laranja nas perguntas (pedido do usuário, não existe no Figma), a copy real das perguntas/respostas (override do GAP-39), `whitespace-pre-line` da resposta de composição, e o chevron atual.
+
+**Nota técnica (mesma classe de erro do RESP-05):** um comentário `//` colocado logo após `return (` (antes do elemento JSX raiz) quebrou o build. Comentários de linha `//` só funcionam em código JS puro, nunca dentro do JSX retornado — corrigido movendo para fora do `return`.
+
+Commit `7e38df5`. Build + 71 testes verdes.
