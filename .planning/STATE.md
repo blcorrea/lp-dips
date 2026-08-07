@@ -31,7 +31,7 @@ See: .planning/PROJECT.md (updated 2026-07-16)
 Phase: 5 (Landing Page Sections) — EXECUTING
 Plan: 1 of 5
 Status: Executing Phase 5
-Last activity: 2026-07-16 — Phase 5 execution started
+Last activity: 2026-08-07 — Completed quick task 260807-cid: mobile nav drawer in LandingHeader
 
 Progress: [█████░░░░░] 50% (3 of 6 phases complete)
 
@@ -91,6 +91,7 @@ None yet.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 260618-gjn | Affiliate creatives UI tweaks: full-aspect photos, denser 4-5 col grid, remove admin video poster upload (first-frame default) | 2026-06-18 | 5168eb3 | [260618-gjn-affiliate-creatives-ui-tweaks-photos-sho](./quick/260618-gjn-affiliate-creatives-ui-tweaks-photos-sho/) |
+| 260807-cid | Fix mobile menu — implement the LandingHeader mobile drawer (hamburger toggled the icon but rendered no panel) | 2026-08-07 | 1a244be | [260807-cid-fix-mobile-menu-drawer-in-landingheader](./quick/260807-cid-fix-mobile-menu-drawer-in-landingheader/) |
 
 ## Deferred Items
 
