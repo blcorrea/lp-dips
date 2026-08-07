@@ -31,10 +31,11 @@ function TrustBarDiamond() {
 
 // Language switcher — shows the CURRENT locale only (e.g. "EN") with a small
 // chevron hinting it's switchable, not all 3 languages spelled out -- user
-// asked for something discreet, not a loud 3-way toggle. Desktop only for
-// now (next to Shop Now); the mobile drawer doesn't exist yet (RESP-01/02
-// TODO above), so mobile language switching stays out of scope here.
-function LanguageSwitcher() {
+// asked for something discreet, not a loud 3-way toggle. Rendered twice: in
+// the desktop right-padding gutter, and at the bottom of the mobile drawer.
+// onNavigate lets the mobile instance also dismiss the drawer when a locale
+// is picked (the desktop instance passes nothing).
+function LanguageSwitcher({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname(); // locale-agnostic path, from next-intl's own routing
   const params = useParams();
   const currentLocale = (params.locale as string) || routing.defaultLocale;
@@ -72,7 +73,10 @@ function LanguageSwitcher() {
               key={l}
               href={pathname}
               locale={l}
-              onClick={() => setOpen(false)}
+              onClick={() => {
+                setOpen(false);
+                onNavigate?.();
+              }}
               className={cn(
                 "px-4 py-2 text-left text-nav-link transition-colors duration-200 hover:text-brand-orange",
                 l === currentLocale ? "text-white" : "text-dips-text-lavender-muted"
@@ -92,13 +96,38 @@ export default function LandingHeader() {
   const params = useParams();
   const locale = (params.locale as string) || "en";
 
-  // TODO(Phase 6): mobile drawer for LandingHeader nav (RESP-01/02).
-  // Toggle button is kept present so the component isn't architecturally
-  // locked out of a mobile nav pattern later — no drawer is implemented yet.
   const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
+
+  // Close the drawer on any client navigation. The nav is mostly same-page
+  // hash links (#hero, #story, ...) which each close it via their own
+  // onClick, but /affiliates/join is a real route change -- without this the
+  // drawer would survive into the next page since <header> never unmounts.
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  // Escape closes the drawer (standard dismissible-overlay behavior). Bound
+  // only while open so we don't keep a listener on every page.
+  useEffect(() => {
+    if (!mobileOpen) return;
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setMobileOpen(false);
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [mobileOpen]);
 
   const navLinkClass =
     "text-nav-link text-dips-text-lavender-muted transition-colors duration-200 hover:text-brand-orange";
+
+  const mobileLinks = [
+    { href: `/${locale}#hero`, label: t("menu") },
+    { href: `/${locale}#story`, label: t("ourStory") },
+    { href: `/${locale}#bundle`, label: t("order") },
+    { href: `/${locale}/affiliates/join`, label: t("affiliates") },
+    { href: `/${locale}#footer-contact`, label: t("contact") },
+  ];
 
   return (
     <>
@@ -167,7 +196,9 @@ export default function LandingHeader() {
             circled the empty gutter left of the logo and the seam between
             the trust bar and this nav, asking for slightly more breathing
             room in both. */}
-        <div className="relative flex h-[76px] w-full items-center justify-between px-5 md:px-[48px]">
+        {/* z-50 keeps this row above the mobile backdrop (z-40, also a child of
+            this header) so the X stays tappable while the drawer is open. */}
+        <div className="relative z-50 flex h-[76px] w-full items-center justify-between px-5 md:px-[48px]">
           {/* Logo — two SVG layers, each preserveAspectRatio="none" and sized/
               positioned to their OWN sub-region of the 59x36 logo box (per Figma
               Dev Mode: purple layer left:0 top:9.47% w:100% h:90.53%; orange layer
@@ -256,16 +287,69 @@ export default function LandingHeader() {
             </div>
           </div>
 
-          {/* Mobile toggle (scaffold only, no drawer yet — see TODO above) */}
+          {/* Mobile toggle */}
           <button
             className="flex text-dips-text-lavender-muted md:hidden"
-            onClick={() => setMobileOpen(!mobileOpen)}
+            onClick={() => setMobileOpen((o) => !o)}
             aria-label="Toggle menu"
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-nav"
             type="button"
           >
             {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
+
+        {/* Mobile drawer — rendered INSIDE <header> (below the nav row, still
+            within the sticky/z-50 box) so it drops down attached to the bar
+            and stays above page content while scrolled. Everything here is
+            md:hidden; the desktop nav above is untouched.
+
+            Panel first, backdrop after it in the DOM but at a lower z-index:
+            the backdrop is fixed and starts at the top of the viewport, so
+            without that ordering it would sit over the panel and swallow the
+            taps meant for the links. */}
+        {mobileOpen && (
+          <>
+            <nav
+              id="mobile-nav"
+              className="relative z-50 flex flex-col gap-1 border-t border-dips-card-tint-border bg-dips-purple-hero-start px-5 pb-6 pt-3 md:hidden"
+            >
+              {mobileLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileOpen(false)}
+                  className={cn(navLinkClass, "py-3")}
+                >
+                  {link.label}
+                </Link>
+              ))}
+
+              {/* Shop Now — same pill treatment as the desktop CTA, full width
+                  here since it's the drawer's primary action. */}
+              <Link
+                href={`/${locale}#bundle`}
+                onClick={() => setMobileOpen(false)}
+                className="mt-3 flex h-[44px] transform-gpu items-center justify-center rounded-full bg-brand-orange px-7 text-[14px] font-cta font-semibold text-white transition-opacity duration-200 will-change-transform hover:opacity-90"
+              >
+                {t("shopNow")}
+              </Link>
+
+              <div className="mt-2 flex justify-start">
+                <LanguageSwitcher onNavigate={() => setMobileOpen(false)} />
+              </div>
+            </nav>
+
+            {/* Backdrop — tap anywhere outside the panel to dismiss. */}
+            <button
+              type="button"
+              aria-label="Close menu"
+              onClick={() => setMobileOpen(false)}
+              className="fixed inset-0 z-40 h-full w-full cursor-default bg-black/40 md:hidden"
+            />
+          </>
+        )}
       </header>
     </>
   );
