@@ -5,6 +5,10 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import BuyNowButton from './BuyNowButton';
 import { cn } from '@/lib/utils';
+import {
+  FREE_SHIPPING_PROMO_ACTIVE,
+  STANDARD_SHIPPING_COST,
+} from '@/lib/shipping-promo';
 
 // ── Bundle definitions ────────────────────────────────────────────────────────
 // Prices are the REAL Stripe-backed values -- NOT the Figma mock's
@@ -85,7 +89,14 @@ export default function ProductPurchaseBox({
   const [selectedId, setSelectedId] = useState<'1x' | '2x' | '3x'>('2x');
 
   const selectedBundle = BUNDLES.find((b) => b.id === selectedId)!;
-  const total = selectedBundle.totalPrice + (selectedBundle.shipping === 'free' ? 0 : 6.97);
+
+  // While the limited-time promo runs, shipping is free on EVERY bundle --
+  // the standard rate stays visible (struck through) so the saving shows.
+  // Outside the promo only the 3x bundle ships free, as before.
+  const shippingIsFree =
+    FREE_SHIPPING_PROMO_ACTIVE || selectedBundle.shipping === 'free';
+  const total =
+    selectedBundle.totalPrice + (shippingIsFree ? 0 : STANDARD_SHIPPING_COST);
 
   return (
     <div className="space-y-[25px]">
@@ -204,13 +215,29 @@ export default function ProductPurchaseBox({
         </div>
         <div className="flex flex-col items-end gap-[5px]">
           <span className="font-card text-[12px] text-[#96838f] lg:text-[13px]">{t('shipping')}</span>
-          {selectedBundle.shipping === 'free' ? (
+          {FREE_SHIPPING_PROMO_ACTIVE ? (
+            // Promo: the standard rate stays on screen, struck through, next
+            // to the free price + the limited-time note underneath.
+            <>
+              <span className="flex items-baseline gap-[8px]">
+                <span className="font-card text-[13px] text-[#96838f] line-through lg:text-[15px]">
+                  ${STANDARD_SHIPPING_COST.toFixed(2)}
+                </span>
+                <span className="font-card text-[16px] font-bold text-green-600 lg:text-[18px]">
+                  {t('freeShipping')}
+                </span>
+              </span>
+              <span className="font-card text-[11px] font-bold uppercase tracking-[0.04em] text-brand-orange lg:text-[12px]">
+                {t('freeShippingLimited')}
+              </span>
+            </>
+          ) : selectedBundle.shipping === 'free' ? (
             <span className="font-card text-[16px] font-bold text-green-600 lg:text-[18px]">
               {t('freeShipping')}
             </span>
           ) : (
             <span className="font-card text-[16px] font-bold text-dips-text-purple-deep lg:text-[18px]">
-              $6.97
+              ${STANDARD_SHIPPING_COST.toFixed(2)}
             </span>
           )}
         </div>

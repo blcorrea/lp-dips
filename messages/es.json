@@ -372,6 +372,7 @@
         "addedToCart": "¡Agregado al Carrito!",
         "freeShipping": "Envío Gratis",
         "freeShippingDesc": "En pedidos superiores a $50",
+        "freeShippingLimited": "Gratis por tiempo limitado",
         "fastDelivery": "Entrega Rápida",
         "fastDeliveryDesc": "2-5 días hábiles",
         "secureCheckout": "Pago Seguro",
@@ -540,11 +541,12 @@
         "box3": "3x Cajas",
         "discount0": "0% de Descuento",
         "discount2": "7% de Descuento",
-        "discount3": "16% de Descuento + Envío Gratis",
+        "discount3": "16% de Descuento",
         "mostPopular": "Más Popular",
         "unitPrice": "Precio Unitario",
         "shipping": "Envío",
         "freeShipping": "Gratis",
+        "freeShippingLimited": "Gratis por tiempo limitado",
         "buyNow": "Comprar Ahora"
     },
     "AffiliateJoin": {
