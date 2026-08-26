@@ -371,6 +371,7 @@
         "addedToCart": "Added to Cart!",
         "freeShipping": "Free Shipping",
         "freeShippingDesc": "On orders over $50",
+        "freeShippingLimited": "Free for a limited time",
         "fastDelivery": "Fast Delivery",
         "fastDeliveryDesc": "2-5 business days",
         "secureCheckout": "Secure Checkout",
@@ -539,11 +540,12 @@
         "box3": "3x Boxes",
         "discount0": "0% Discount",
         "discount2": "7% Discount",
-        "discount3": "16% Discount + Free Shipping",
+        "discount3": "16% Discount",
         "mostPopular": "Most Popular",
         "unitPrice": "Unit Price",
         "shipping": "Shipping",
         "freeShipping": "Free",
+        "freeShippingLimited": "Free for a limited time",
         "buyNow": "Buy Now"
     },
     "AffiliateJoin": {
