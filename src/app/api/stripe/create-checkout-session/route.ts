@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { getPurchasableDipsProduct } from '@/lib/shopify-product';
 import { getLocalizedPricing, isSupportedLocale } from '@/lib/pricing';
-import { AUTOMATIC_TAX_ENABLED } from '@/lib/stripe-tax';
+import { AUTOMATIC_TAX_ENABLED, PRODUCT_TAX_CODE } from '@/lib/stripe-tax';
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 const siteUrl         = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
@@ -137,6 +137,9 @@ export async function POST(request: NextRequest) {
                   name:        product.title,
                   description: product.description,
                   images:      product.imageUrl ? [product.imageUrl] : [],
+                  // Candy is taxable in FL while generic groceries are exempt —
+                  // the tax code decides whether Stripe Tax charges anything.
+                  ...(AUTOMATIC_TAX_ENABLED ? { tax_code: PRODUCT_TAX_CODE } : {}),
                   metadata: {
                     shopify_product_id: product.productId,
                     shopify_variant_id: product.variantId,
