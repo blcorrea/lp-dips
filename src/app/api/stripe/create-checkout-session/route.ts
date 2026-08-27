@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { getPurchasableDipsProduct } from '@/lib/shopify-product';
 import { getLocalizedPricing, isSupportedLocale } from '@/lib/pricing';
+import { AUTOMATIC_TAX_ENABLED } from '@/lib/stripe-tax';
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 const siteUrl         = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
@@ -98,6 +99,11 @@ export async function POST(request: NextRequest) {
 
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
+      // Stripe Tax: adds Florida sales tax to the total, but ONLY when the
+      // shipping address entered on Stripe's page is in a registered
+      // jurisdiction (FL). See src/lib/stripe-tax.ts for the ops checklist
+      // required before enabling the flag.
+      ...(AUTOMATIC_TAX_ENABLED ? { automatic_tax: { enabled: true } } : {}),
       ...(clientReferenceId ? { client_reference_id: clientReferenceId } : {}),
       success_url: `${siteUrl}/${normalizedLocale}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url:  `${siteUrl}/${normalizedLocale}/product/dips-chocolate`,
@@ -124,6 +130,9 @@ export async function POST(request: NextRequest) {
               price_data: {
                 currency:    localizedPricing.currency.toLowerCase(),
                 unit_amount: Math.round(localizedPricing.price * 100),
+                // "exclusive" = tax is added on top of the advertised price
+                // (required by automatic_tax; inert while the flag is off).
+                ...(AUTOMATIC_TAX_ENABLED ? { tax_behavior: 'exclusive' as const } : {}),
                 product_data: {
                   name:        product.title,
                   description: product.description,
