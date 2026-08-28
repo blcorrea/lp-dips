@@ -11,6 +11,7 @@ import BuyNowButton from '@/components/BuyNowButton';
 import { VariantSelector } from '@/components/products/VariantSelector';
 import { QuantitySelector } from '@/components/products/QuantitySelector';
 import { Star, Package, Truck, Shield, ArrowLeft } from 'lucide-react';
+import { FREE_SHIPPING_PROMO_ACTIVE } from '@/lib/shipping-promo';
 import { notFound } from 'next/navigation';
 
 export default function ProductDetailPage() {
@@ -184,7 +185,12 @@ export default function ProductDetailPage() {
                   <Package className="w-6 h-6 text-brand-purple" />
                   <div>
                     <p className="font-semibold text-sm text-gray-900">{t('freeShipping')}</p>
-                    <p className="text-xs text-gray-500">{t('freeShippingDesc')}</p>
+                    {/* Promo: free on every order, no $50 threshold. */}
+                    <p className="text-xs text-gray-500">
+                      {FREE_SHIPPING_PROMO_ACTIVE
+                        ? t('freeShippingLimited')
+                        : t('freeShippingDesc')}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">

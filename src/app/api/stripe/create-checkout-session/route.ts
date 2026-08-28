@@ -3,6 +3,7 @@ import Stripe from 'stripe';
 import { getPurchasableDipsProduct } from '@/lib/shopify-product';
 import { getLocalizedPricing, isSupportedLocale } from '@/lib/pricing';
 import { AUTOMATIC_TAX_ENABLED, PRODUCT_TAX_CODE } from '@/lib/stripe-tax';
+import { FREE_SHIPPING_PROMO_ACTIVE } from '@/lib/shipping-promo';
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 const siteUrl         = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
@@ -34,7 +35,7 @@ function attrString(value: unknown): string | undefined {
 }
 
 export async function POST(request: NextRequest) {
-  if (!shippingRateId) {
+  if (!shippingRateId && !FREE_SHIPPING_PROMO_ACTIVE) {
     console.warn('⚠️ STRIPE_SHIPPING_RATE_ID not set — checkout will have no shipping option');
   }
 
@@ -95,7 +96,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const isFreeShippingBundle = priceId === bundle3xPriceId;
+    // The limited-time promo makes shipping free on every bundle AND on the
+    // plain quantity path (no priceId). Outside the promo, only the 3x bundle
+    // ships free and everything else gets the standard Stripe shipping rate.
+    const shipsFree = FREE_SHIPPING_PROMO_ACTIVE || priceId === bundle3xPriceId;
 
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
@@ -107,7 +111,7 @@ export async function POST(request: NextRequest) {
       ...(clientReferenceId ? { client_reference_id: clientReferenceId } : {}),
       success_url: `${siteUrl}/${normalizedLocale}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url:  `${siteUrl}/${normalizedLocale}/product/dips-chocolate`,
-      shipping_options: isFreeShippingBundle
+      shipping_options: shipsFree
         ? []
         : shippingRateId
           ? [{ shipping_rate: shippingRateId }]
