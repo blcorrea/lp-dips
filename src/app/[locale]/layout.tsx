@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   },
 
   description:
-    'A chocolate made to tease. Crafted with pure Arriba Cocoa Nibs and natural aphrodisiac ingredients for indulgent moments.',
+    'A chocolate made to tease. Crafted with pure Arriba Cocoa Nibs and natural ingredients for indulgent moments.',
 
   alternates: {
     canonical: 'https://www.dipschocolate.com',
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     siteName:    'Dips Chocolate',
     title:       'Dips Chocolate — Share it. Feel it. Love it.',
     description:
-      'A chocolate made to tease. Crafted with pure Arriba Cocoa Nibs and natural aphrodisiac ingredients for indulgent moments.',
+      'A chocolate made to tease. Crafted with pure Arriba Cocoa Nibs and natural ingredients for indulgent moments.',
     url:         'https://www.dipschocolate.com',
     locale:      'en_US',
     images: [
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     card:        'summary_large_image',
     title:       'Dips Chocolate — Share it. Feel it. Love it.',
     description:
-      'A chocolate made to tease. Crafted with pure Arriba Cocoa Nibs and natural aphrodisiac ingredients for indulgent moments.',
+      'A chocolate made to tease. Crafted with pure Arriba Cocoa Nibs and natural ingredients for indulgent moments.',
     images: ['https://www.dipschocolate.com/images/og-image.jpg'],
   },
 };

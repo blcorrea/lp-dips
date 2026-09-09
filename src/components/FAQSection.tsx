@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/routing';
 import ScrollReveal from './animations/ScrollReveal';
 import {
   Accordion,
@@ -66,7 +67,16 @@ export default function FAQSection() {
                   {/* Mobile (RESP-06): 13px/1.3 leading (16->13, one step
                       below the Figma mobile spec's 14px). */}
                   <AccordionContent className="whitespace-pre-line pt-[5px] text-[13px] lg:text-[16px] leading-[1.3] lg:leading-[1.35] text-dips-text-lavender">
-                    {t(q.replace('q', 'a'))}
+                    {t.rich(q.replace('q', 'a'), {
+                      link: (chunks) => (
+                        <Link
+                          href="/return-policy"
+                          className="text-brand-orange underline underline-offset-2 hover:text-brand-orange/80"
+                        >
+                          {chunks}
+                        </Link>
+                      ),
+                    })}
                   </AccordionContent>
                 </AccordionItem>
               ))}
