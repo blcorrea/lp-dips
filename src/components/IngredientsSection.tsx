@@ -25,6 +25,14 @@ const INGREDIENTS: Ingredient[] = [
     originsKey: 'cocoa_origins',
   },
   {
+    nameKey: 'blend_name',
+    keywordKey: 'blend_keyword',
+    image: '/images/redesign/ing-icon-herbal.png',
+    descKey: 'blend_desc',
+    originsTitleKey: 'blend_originsTitle',
+    originsKey: 'blend_origins',
+  },
+  {
     nameKey: 'maca_name',
     keywordKey: 'maca_keyword',
     image: '/images/redesign/ing-icon-maca.png',
@@ -47,14 +55,6 @@ const INGREDIENTS: Ingredient[] = [
     descKey: 'theanine_desc',
     originsTitleKey: 'theanine_originsTitle',
     originsKey: 'theanine_origins',
-  },
-  {
-    nameKey: 'blend_name',
-    keywordKey: 'blend_keyword',
-    image: '/images/redesign/ing-icon-herbal.png',
-    descKey: 'blend_desc',
-    originsTitleKey: 'blend_originsTitle',
-    originsKey: 'blend_origins',
   },
   {
     nameKey: 'fenugreek_name',

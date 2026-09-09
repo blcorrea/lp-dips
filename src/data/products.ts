@@ -37,7 +37,7 @@ export const products: Product[] = [
     id: "1",
     name: "Dips",
     slug: "dips",
-    description: "A chocolate made to tease. Crafted with pure Arriba Cocoa Nibs and natural aphrodisiac ingredients - Maca Root Powder, L-Theanine, Ginger Powder, and Fenugreek Powder - Dips awakens the senses, ignites desire, and turns shared pleasure into an intense and irresistible experience.",
+    description: "A chocolate made to tease. Crafted with pure Arriba Cocoa Nibs and natural ingredients - Maca Root Powder, L-Theanine, Ginger Powder, and Fenugreek Powder - Dips awakens the senses, ignites desire, and turns shared pleasure into an intense and irresistible experience.",
     shortDescription: "Unwrap your passion",
     category: "Chocolate",
     images: [
@@ -81,7 +81,7 @@ export const products: Product[] = [
     ],
     features: [
       "Made with pure Arriba Cocoa Nibs",
-      "Natural aphrodisiac ingredients",
+      "Natural ingredients",
       "Maca Root, L-Theanine, Ginger & Fenugreek",
       "Eco-friendly and sustainable"
     ],
