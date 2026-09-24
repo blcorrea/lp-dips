@@ -121,16 +121,16 @@ export default function IngredientsSection() {
       id="ingredients"
       className="scroll-mt-[72px] bg-dips-purple-section"
     >
-      <div className="mx-auto grid max-w-[1440px] grid-cols-1 lg:grid-cols-2">
+      <div className="mx-auto grid max-w-[1440px] grid-cols-1 lg:grid-cols-2 lg:grid-rows-[auto_auto] lg:gap-y-8">
         {/* LEFT PANEL: badge + eyebrow + title + interactive ingredient list.
             Mobile (RESP-03): p-6 (was p-6 py-12, the extra py-12 doubled the
             Figma mobile spec's ~25px breathing room); lg keeps py-12. */}
-        <div className="flex flex-col justify-center p-6 lg:py-12 lg:p-10">
+        <div className="flex flex-col p-6 lg:grid lg:grid-rows-subgrid lg:row-span-2 lg:py-12 lg:p-10">
           {/* className="flex flex-col" here so order-* below (title before
               eyebrow on mobile, per RESP-03) actually applies -- order only
               works between flex/grid siblings, and ScrollReveal's own
               wrapper div has no display set otherwise. */}
-          <ScrollReveal direction="up" delay={0.1} duration={0.8} className="flex flex-col">
+          <ScrollReveal direction="up" delay={0.1} duration={0.8} className="flex flex-col lg:self-end">
             {/* Mobile (RESP-03): p-3/12px, was px-[15px] py-3/14px. */}
             <span className="order-0 inline-flex w-fit items-center gap-2 rounded-card border-2 border-dips-card-tint-2-border bg-dips-card-tint-2 p-3 text-[12px] font-bold text-[#eadae4] lg:px-[15px] lg:py-3 lg:text-[14px]">
               <Diamond />
@@ -141,7 +141,7 @@ export default function IngredientsSection() {
                 and the eyebrow AFTER it (inverted vs. desktop) -- order-*
                 swaps them without duplicating markup. Sizes: title 44->40px,
                 eyebrow 18->14px (one step below the Figma mobile spec). */}
-            <h2 className="order-1 mt-6 font-heading text-[40px] font-bold leading-[1.2] text-white lg:order-2 lg:mb-8 lg:mt-0 lg:text-[44px]">
+            <h2 className="order-1 mt-6 font-heading text-[40px] font-bold leading-[1.2] text-white lg:order-2 lg:mt-0 lg:text-[44px]">
               {t('sectionTitle')}
             </h2>
             <p className="order-2 mb-6 mt-1 font-body text-[14px] italic leading-[1.2] text-dips-text-lavender lg:order-1 lg:mb-1 lg:mt-6 lg:text-[18px]">
@@ -149,7 +149,7 @@ export default function IngredientsSection() {
             </p>
           </ScrollReveal>
 
-          <ScrollReveal direction="up" delay={0.15} duration={0.6}>
+          <ScrollReveal direction="up" delay={0.15} duration={0.6} className="lg:self-start">
             <div className="flex flex-col gap-[10px]">
               {INGREDIENTS.map((ingredient, index) => {
                 const isSelected = index === selectedIndex;
@@ -226,10 +226,13 @@ export default function IngredientsSection() {
 
         {/* RIGHT PANEL: intro + detail card for the selected ingredient.
             Mobile (RESP-03): gap-6/p-6 (was gap-12/p-6 py-12 -- matches the
-            Figma mobile spec's tighter 25px rhythm); lg keeps the existing
-            desktop spacing. */}
-        <div className="flex flex-col gap-6 p-6 lg:gap-12 lg:py-12 lg:p-10">
-          <ScrollReveal direction="up" delay={0.1} duration={0.8}>
+            Figma mobile spec's tighter 25px rhythm). lg: both panels are
+            subgrids of the outer 2-row grid (row 1 = header | intro, row 2 =
+            list | detail card) so the detail card starts flush with the
+            first ingredient row and the intro sits on the title's baseline;
+            the outer lg:gap-y-8 replaces the old title mb-8 / right gap-12. */}
+        <div className="flex flex-col gap-6 p-6 lg:grid lg:grid-rows-subgrid lg:row-span-2 lg:py-12 lg:p-10">
+          <ScrollReveal direction="up" delay={0.1} duration={0.8} className="lg:self-end">
             {/* Mobile (RESP-03): 18->16px, one step below the Figma mobile
                 spec (18px). */}
             <p className="font-card text-[16px] font-normal leading-[1.35] text-dips-text-lavender-muted lg:text-[21px]">
@@ -237,7 +240,7 @@ export default function IngredientsSection() {
             </p>
           </ScrollReveal>
 
-          <ScrollReveal direction="up" delay={0.2} duration={0.7}>
+          <ScrollReveal direction="up" delay={0.2} duration={0.7} className="lg:self-start">
             {/* Detail card — re-renders from the selection state; icon is the
                 same asset as the selected left-hand row. Mobile (RESP-03):
                 p-5 (was p-card-padding/25px, Figma mobile spec is 20px). */}
