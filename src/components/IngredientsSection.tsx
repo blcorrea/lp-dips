@@ -130,7 +130,7 @@ export default function IngredientsSection() {
               eyebrow on mobile, per RESP-03) actually applies -- order only
               works between flex/grid siblings, and ScrollReveal's own
               wrapper div has no display set otherwise. */}
-          <ScrollReveal direction="up" delay={0.1} duration={0.8} className="flex flex-col lg:self-end">
+          <ScrollReveal direction="up" delay={0.1} duration={0.8} className="flex flex-col lg:[align-self:last_baseline]">
             {/* Mobile (RESP-03): p-3/12px, was px-[15px] py-3/14px. */}
             <span className="order-0 inline-flex w-fit items-center gap-2 rounded-card border-2 border-dips-card-tint-2-border bg-dips-card-tint-2 p-3 text-[12px] font-bold text-[#eadae4] lg:px-[15px] lg:py-3 lg:text-[14px]">
               <Diamond />
@@ -229,10 +229,14 @@ export default function IngredientsSection() {
             Figma mobile spec's tighter 25px rhythm). lg: both panels are
             subgrids of the outer 2-row grid (row 1 = header | intro, row 2 =
             list | detail card) so the detail card starts flush with the
-            first ingredient row and the intro sits on the title's baseline;
-            the outer lg:gap-y-8 replaces the old title mb-8 / right gap-12. */}
-        <div className="flex flex-col gap-6 p-6 lg:grid lg:grid-rows-subgrid lg:row-span-2 lg:py-12 lg:p-10">
-          <ScrollReveal direction="up" delay={0.1} duration={0.8} className="lg:self-end">
+            first ingredient row, and row 1 uses align-self: last baseline so
+            the intro's last line shares the title's baseline (bottom-edge
+            alignment is off by the font-size difference). The outer
+            lg:gap-y-8 replaces the old title mb-8 / right gap-12; gap-6 is
+            max-lg only because a subgrid's own gap overrides the parent's
+            and shifts its items by half the difference. */}
+        <div className="flex flex-col max-lg:gap-6 p-6 lg:grid lg:grid-rows-subgrid lg:row-span-2 lg:py-12 lg:p-10">
+          <ScrollReveal direction="up" delay={0.1} duration={0.8} className="lg:[align-self:last_baseline]">
             {/* Mobile (RESP-03): 18->16px, one step below the Figma mobile
                 spec (18px). */}
             <p className="font-card text-[16px] font-normal leading-[1.35] text-dips-text-lavender-muted lg:text-[21px]">
