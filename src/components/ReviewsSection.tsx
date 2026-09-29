@@ -18,7 +18,9 @@ import { reviews, type Review } from '@/data/reviews';
   onto it: the role slot shows Amazon's "Verified Purchase" badge, the
   review title sits above the quote, and the footer credits Amazon next to
   the real review date. A badge under the subtitle flags the whole section
-  as real Amazon reviews. Avatars are initials (no reviewer photos).
+  as real Amazon reviews. No reviewer names or photos (we don't have the
+  reviewers' permission to publish them): the name slot shows a generic
+  "Amazon customer" and the avatar is a generic person icon.
 
   Font sizes one step below the Figma spec (54->48, 24->21 subtitle, 24->21
   name, 18->16 quote, 14->13 role/country/date), carrying over the
@@ -29,19 +31,10 @@ import { reviews, type Review } from '@/data/reviews';
 // 7 reviews over 3 columns: the 3-card column holds the shortest reviews and
 // sits in the middle, so the uneven column heights read as symmetric.
 const COLUMNS: readonly (readonly string[])[] = [
-  ['heliane', 'anthony'],
-  ['paola', 'paulo', 'ljshopsnow'],
-  ['maria', 'tbd'],
+  ['r1', 'r6'],
+  ['r2', 'r5', 'r7'],
+  ['r4', 'r3'],
 ];
-
-function initials(name: string): string {
-  return name
-    .split(/[\s&]+/)
-    .slice(0, 2)
-    .map((w) => w[0])
-    .join('')
-    .toUpperCase();
-}
 
 const AVATAR_COLORS = [
   'bg-[#c97d2f]',
@@ -53,7 +46,8 @@ const AVATAR_COLORS = [
 ];
 
 function avatarColor(id: string): string {
-  return AVATAR_COLORS[id.charCodeAt(0) % AVATAR_COLORS.length];
+  // Last char: the ids (r1..r7) all share their first one.
+  return AVATAR_COLORS[id.charCodeAt(id.length - 1) % AVATAR_COLORS.length];
 }
 
 // ── Stars (Figma: 5x 18px squares, #FFCD00) ───────────────────────────────────
@@ -81,13 +75,15 @@ function Stars({ count }: { count: number }) {
 
 function ReviewCard({
   review,
-  role,
+  author,
+  verifiedLabel,
   country,
   date,
   source,
 }: {
   review: Review;
-  role: string;
+  author: string;
+  verifiedLabel: string;
   country: string;
   date: string;
   source: string;
@@ -100,36 +96,42 @@ function ReviewCard({
       <div className="flex items-center gap-[10px] lg:gap-[15px]">
         <div className="relative h-11 w-11 shrink-0 lg:h-[60px] lg:w-[60px]">
           <div
-            className={`flex h-11 w-11 items-center justify-center rounded-full text-[18px] font-bold text-white lg:h-[60px] lg:w-[60px] ${avatarColor(review.id)}`}
+            className={`flex h-11 w-11 items-center justify-center rounded-full text-white lg:h-[60px] lg:w-[60px] ${avatarColor(review.id)}`}
           >
-            {initials(review.name)}
+            <svg className="h-6 w-6 lg:h-8 lg:w-8" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 12a4.5 4.5 0 100-9 4.5 4.5 0 000 9zm0 2c-4.14 0-7.5 2.46-7.5 5.5 0 .83.67 1.5 1.5 1.5h12c.83 0 1.5-.67 1.5-1.5 0-3.04-3.36-5.5-7.5-5.5z" />
+            </svg>
           </div>
         </div>
 
-        <div className="flex flex-1 items-center justify-between gap-[10px]">
+        {/* flex-wrap: on narrow cards (lg at ~1024px) the stars/country
+            block drops below the name instead of squeezing it. */}
+        <div className="flex flex-1 flex-wrap items-center justify-between gap-x-[10px] gap-y-[8px]">
           {/* Mobile (RESP-05): name 21->16px, one step below the Figma
               mobile spec (18px); role stays literal at 12/13px. */}
           <div className="flex flex-col gap-[5px]">
-            <span className="font-heading text-[16px] font-bold leading-[1.2] text-white lg:text-[21px]">
-              {review.name}
+            {/* lg 18px (was 21px): the generic "Amazon customer" label
+                broke onto 2 lines at 21px on wide screens. */}
+            <span className="whitespace-nowrap font-heading text-[16px] font-bold leading-[1.2] text-white lg:text-[18px]">
+              {author}
             </span>
             {/* Role slot: Amazon's "Verified Purchase" badge (orange, like on
-                Amazon) or a plain "Amazon customer" when it wasn't shown. */}
-            {review.verified ? (
-              <span className="flex items-center gap-1 text-[12px] font-bold text-brand-orange lg:text-[13px]">
+                Amazon), left empty when Amazon didn't show it. */}
+            {review.verified && (
+              <span className="flex items-center gap-1 whitespace-nowrap text-[12px] font-bold text-brand-orange lg:text-[13px]">
                 <svg className="h-3.5 w-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
                 </svg>
-                {role}
+                {verifiedLabel}
               </span>
-            ) : (
-              <span className="text-[12px] text-[#9499a9] lg:text-[13px]">{role}</span>
             )}
           </div>
 
           {/* Mobile (RESP-05): stars 16px (was 18px); country 10px (Figma
               mobile spec literal, was 13px). */}
-          <div className="flex flex-col items-end gap-[10px]">
+          {/* items-start (was items-end) so the block still lines up with
+              the name when it wraps below it. */}
+          <div className="flex flex-col items-start gap-[10px]">
             <Stars count={review.stars} />
             <span className="flex items-center gap-[5px] whitespace-nowrap text-[10px] text-white lg:text-[13px]">
               <span aria-hidden="true">{review.flag}</span>
@@ -152,9 +154,10 @@ function ReviewCard({
 
       {/* Source (left) + real review date (right). Mobile (RESP-05): 10px
           (Figma mobile spec literal), was 13px. */}
-      <div className="flex items-center justify-between gap-[10px] text-[10px] text-dips-text-lavender lg:text-[13px]">
-        <span>{source}</span>
-        <span>{date}</span>
+      {/* Wraps as whole items (date drops to its own line) on narrow cards. */}
+      <div className="flex flex-wrap items-center justify-between gap-x-[10px] gap-y-1 text-[10px] text-dips-text-lavender lg:text-[13px]">
+        <span className="whitespace-nowrap">{source}</span>
+        <span className="whitespace-nowrap">{date}</span>
       </div>
     </div>
   );
@@ -201,7 +204,8 @@ export default function ReviewsSection() {
                   <ReviewCard
                     key={key}
                     review={review}
-                    role={review.verified ? t('verified') : t('amazonCustomer')}
+                    author={t('amazonCustomer')}
+                    verifiedLabel={t('verified')}
                     country={t(`country_${review.country}`)}
                     date={dateFormat.format(new Date(`${review.date}T00:00:00Z`))}
                     source={t('reviewedOn')}
