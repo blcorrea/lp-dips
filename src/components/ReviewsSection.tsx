@@ -1,7 +1,6 @@
 "use client";
 
-import Image from 'next/image';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { reviews, type Review } from '@/data/reviews';
 
 /*
@@ -14,11 +13,12 @@ import { reviews, type Review } from '@/data/reviews';
   [Marcus,Liam] [Elena,Jessica] [David,Tyson]), not CSS `columns` (which
   fills unpredictably once card heights vary).
 
-  Content: the 12 placeholder reviews were replaced with the Figma's 6 real
-  reviews (data/reviews.ts docs itself as placeholder content -- Figma wins
-  here per the project's Figma-is-source-of-truth default). Figma uses
-  round profile photos we don't have assets for; falls back to initials
-  (photoUrl ready for real photos later).
+  Content: the 7 real Amazon reviews (data/reviews.ts) replaced the Figma's
+  6 mock reviews. The card keeps the Figma anatomy but maps Amazon's fields
+  onto it: the role slot shows Amazon's "Verified Purchase" badge, the
+  review title sits above the quote, and the footer credits Amazon next to
+  the real review date. A badge under the subtitle flags the whole section
+  as real Amazon reviews. Avatars are initials (no reviewer photos).
 
   Font sizes one step below the Figma spec (54->48, 24->21 subtitle, 24->21
   name, 18->16 quote, 14->13 role/country/date), carrying over the
@@ -26,10 +26,12 @@ import { reviews, type Review } from '@/data/reviews';
   yellow (#FFCD00), not the brand-orange used in the Hero's own star spec.
 */
 
+// 7 reviews over 3 columns: the 3-card column holds the shortest reviews and
+// sits in the middle, so the uneven column heights read as symmetric.
 const COLUMNS: readonly (readonly string[])[] = [
-  ['marcus', 'liam'],
-  ['elena', 'jessica'],
-  ['david', 'tyson'],
+  ['heliane', 'anthony'],
+  ['paola', 'paulo', 'ljshopsnow'],
+  ['maria', 'tbd'],
 ];
 
 function initials(name: string): string {
@@ -82,13 +84,13 @@ function ReviewCard({
   role,
   country,
   date,
-  quote,
+  source,
 }: {
   review: Review;
   role: string;
   country: string;
   date: string;
-  quote: string;
+  source: string;
 }) {
   return (
     // Mobile (RESP-05): gap-[15px] (Figma mobile spec), was 25px -- lg keeps 25px.
@@ -97,21 +99,11 @@ function ReviewCard({
           Mobile (RESP-05): avatar 44px (was 60px), gap-[10px] (was 15px). */}
       <div className="flex items-center gap-[10px] lg:gap-[15px]">
         <div className="relative h-11 w-11 shrink-0 lg:h-[60px] lg:w-[60px]">
-          {review.photoUrl ? (
-            <Image
-              src={review.photoUrl}
-              alt={review.name}
-              fill
-              className="rounded-full object-cover"
-              sizes="60px"
-            />
-          ) : (
-            <div
-              className={`flex h-11 w-11 items-center justify-center rounded-full text-[18px] font-bold text-white lg:h-[60px] lg:w-[60px] ${avatarColor(review.id)}`}
-            >
-              {initials(review.name)}
-            </div>
-          )}
+          <div
+            className={`flex h-11 w-11 items-center justify-center rounded-full text-[18px] font-bold text-white lg:h-[60px] lg:w-[60px] ${avatarColor(review.id)}`}
+          >
+            {initials(review.name)}
+          </div>
         </div>
 
         <div className="flex flex-1 items-center justify-between gap-[10px]">
@@ -121,14 +113,25 @@ function ReviewCard({
             <span className="font-heading text-[16px] font-bold leading-[1.2] text-white lg:text-[21px]">
               {review.name}
             </span>
-            <span className="text-[12px] text-[#9499a9] lg:text-[13px]">{role}</span>
+            {/* Role slot: Amazon's "Verified Purchase" badge (orange, like on
+                Amazon) or a plain "Amazon customer" when it wasn't shown. */}
+            {review.verified ? (
+              <span className="flex items-center gap-1 text-[12px] font-bold text-brand-orange lg:text-[13px]">
+                <svg className="h-3.5 w-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+                </svg>
+                {role}
+              </span>
+            ) : (
+              <span className="text-[12px] text-[#9499a9] lg:text-[13px]">{role}</span>
+            )}
           </div>
 
           {/* Mobile (RESP-05): stars 16px (was 18px); country 10px (Figma
               mobile spec literal, was 13px). */}
           <div className="flex flex-col items-end gap-[10px]">
             <Stars count={review.stars} />
-            <span className="flex items-center gap-[5px] text-[10px] text-white lg:text-[13px]">
+            <span className="flex items-center gap-[5px] whitespace-nowrap text-[10px] text-white lg:text-[13px]">
               <span aria-hidden="true">{review.flag}</span>
               {country}
             </span>
@@ -136,14 +139,23 @@ function ReviewCard({
         </div>
       </div>
 
-      {/* Quote. Mobile (RESP-05): 12px/14 leading (Figma mobile spec
-          literal), was 16px/1.25. */}
-      <p className="font-body text-[12px] leading-[14px] text-[#9499a9] lg:text-[16px] lg:leading-[1.25]">
-        &ldquo;{quote}&rdquo;
-      </p>
+      {/* Amazon review title + quote, verbatim. Quote mobile (RESP-05):
+          12px/14 leading (Figma mobile spec literal), was 16px/1.25. */}
+      <div className="flex flex-col gap-[6px] lg:gap-[10px]">
+        <p className="font-heading text-[14px] font-bold leading-[1.25] text-white lg:text-[18px]">
+          {review.title}
+        </p>
+        <p className="font-body text-[12px] leading-[14px] text-[#9499a9] lg:text-[16px] lg:leading-[1.25]">
+          &ldquo;{review.quote}&rdquo;
+        </p>
+      </div>
 
-      {/* Date. Mobile (RESP-05): 10px (Figma mobile spec literal), was 13px. */}
-      <p className="text-right text-[10px] text-dips-text-lavender lg:text-[13px]">{date}</p>
+      {/* Source (left) + real review date (right). Mobile (RESP-05): 10px
+          (Figma mobile spec literal), was 13px. */}
+      <div className="flex items-center justify-between gap-[10px] text-[10px] text-dips-text-lavender lg:text-[13px]">
+        <span>{source}</span>
+        <span>{date}</span>
+      </div>
     </div>
   );
 }
@@ -152,6 +164,9 @@ function ReviewCard({
 
 export default function ReviewsSection() {
   const t = useTranslations('Reviews');
+  const locale = useLocale();
+  // Fixed UTC so the server and client render the same calendar day.
+  const dateFormat = new Intl.DateTimeFormat(locale, { dateStyle: 'long', timeZone: 'UTC' });
 
   // Mobile (RESP-05): py-10 (Figma mobile spec is ~40px vertical), was
   // py-20 -- sm:py-28 (tablet/desktop, unchanged) already takes over from
@@ -169,6 +184,11 @@ export default function ReviewsSection() {
           <p className="mx-auto mt-4 max-w-2xl text-[16px] leading-[1.35] text-dips-text-lavender lg:text-[21px]">
             {t('subtitle')}
           </p>
+          {/* Flags every card below as a real Amazon review. */}
+          <p className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-4 py-2 text-[13px] font-bold text-white lg:text-[14px]">
+            <Stars count={5} />
+            {t('amazonBadge')}
+          </p>
         </div>
 
         {/* 3 explicit columns (Figma pairs), top-aligned, natural heights */}
@@ -181,10 +201,10 @@ export default function ReviewsSection() {
                   <ReviewCard
                     key={key}
                     review={review}
-                    role={t(`${key}_role`)}
-                    country={t(`${key}_country`)}
-                    date={t(`${key}_date`)}
-                    quote={t(`${key}_quote`)}
+                    role={review.verified ? t('verified') : t('amazonCustomer')}
+                    country={t(`country_${review.country}`)}
+                    date={dateFormat.format(new Date(`${review.date}T00:00:00Z`))}
+                    source={t('reviewedOn')}
                   />
                 );
               })}
@@ -194,7 +214,7 @@ export default function ReviewsSection() {
 
         {/* Carousel arrows — Figma: bottom-right, prev dark (#2B1543), next
             brand-orange (#F16B16 normalized per DSGN-03). Disabled for now --
-            all 6 reviews already render at once, so there's nothing to page
+            all 7 reviews already render at once, so there's nothing to page
             to yet; wire up real pagination once there are enough reviews to
             need it, instead of carrying dead state today. */}
         {/* Mobile (RESP-05): arrows spread across the full width
