@@ -197,11 +197,15 @@ export function popPendingCheckout(): PendingCheckout | null {
 
 // ── Influencer / UTM attribution ──────────────────────────────────────────
 //
-// Captured from the URL on first arrival (first-touch wins) and persisted in
-// localStorage so it survives navigation and refreshes up to ATTRIBUTION_TTL_MS.
-// BuyNowButton reads it back via getAttribution() and forwards it to the
-// checkout API. Stored in localStorage rather than sessionStorage so the
-// influencer credit isn't lost if the user opens the buy page in a new tab.
+// Captured from the URL on arrival and persisted in localStorage so it survives
+// navigation and refreshes up to ATTRIBUTION_TTL_MS. BuyNowButton reads it back
+// via getAttribution() and forwards it to the checkout API. Stored in
+// localStorage rather than sessionStorage so the influencer credit isn't lost
+// if the user opens the buy page in a new tab.
+//
+// Precedence (see shouldReplaceAttribution): a referral code always beats a
+// UTM-only record, so a click on a brand link (e.g. the official Instagram bio)
+// never blocks an affiliate's commission. Between two refs, first touch wins.
 
 const ATTRIBUTION_STORAGE_KEY = 'dips_attribution';
 const ATTRIBUTION_TTL_MS      = 30 * 24 * 60 * 60 * 1000; // 30 days
@@ -222,11 +226,32 @@ function sanitizeParam(value: string | null): string | undefined {
   return trimmed.length > 0 ? trimmed : undefined;
 }
 
+function isFresh(record: Attribution, now: number): boolean {
+  return typeof record.capturedAt === 'number' && now - record.capturedAt < ATTRIBUTION_TTL_MS;
+}
+
+/**
+ * Decides whether an incoming attribution overwrites the stored one.
+ *
+ * - Nothing stored, or the stored record expired → replace.
+ * - Stored record has a ref → keep it (the first affiliate keeps the credit).
+ * - Stored record is UTM-only and the incoming one has a ref → replace, so
+ *   UTM-only traffic never blocks a commission.
+ * - Otherwise (UTM-only over UTM-only) → keep, first touch wins.
+ */
+export function shouldReplaceAttribution(
+  existing: Attribution | null,
+  incoming: Attribution,
+  now: number = Date.now()
+): boolean {
+  if (!existing || !isFresh(existing, now)) return true;
+  if (existing.ref) return false;
+  return Boolean(incoming.ref);
+}
+
 /**
  * Reads ref/utm_* from the given URL search string and persists them to
- * localStorage on FIRST touch only. Subsequent calls are no-ops if attribution
- * was already captured and is still within TTL — the influencer who originally
- * brought the user keeps the credit.
+ * localStorage, following the precedence rules in shouldReplaceAttribution.
  */
 export function captureAttribution(
   search: string,
@@ -259,14 +284,15 @@ export function captureAttribution(
 
   try {
     const existingRaw = localStorage.getItem(ATTRIBUTION_STORAGE_KEY);
+    let existing: Attribution | null = null;
     if (existingRaw) {
-      const existing = JSON.parse(existingRaw) as Attribution;
-      const fresh =
-        typeof existing.capturedAt === 'number' &&
-        Date.now() - existing.capturedAt < ATTRIBUTION_TTL_MS;
-      // First-touch wins: keep the existing record while it's still fresh.
-      if (fresh) return;
+      try {
+        existing = JSON.parse(existingRaw) as Attribution;
+      } catch {
+        // Corrupt record — treat as absent so it gets overwritten.
+      }
     }
+    if (!shouldReplaceAttribution(existing, incoming)) return;
     localStorage.setItem(ATTRIBUTION_STORAGE_KEY, JSON.stringify(incoming));
   } catch {
     // localStorage may be unavailable (private browsing, quota, iframe).
