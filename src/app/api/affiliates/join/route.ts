@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
       email,
       instagram,
       type:           rawType,
-      commissionRate: 0.07, // fixed 7% for self-signup
+      commissionRate: 0.15, // fixed 15% for self-signup
       // Auto-activate so the affiliate can log in and share their link
       // immediately. Admins can review and deactivate from /admin/affiliates.
       active:         true,
