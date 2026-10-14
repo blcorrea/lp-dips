@@ -124,3 +124,113 @@ Route-specific errors:
 | 502 | `storage_failed` | Vercel Blob rejected the upload, safe to retry |
 
 Editing or removing a creative stays in the admin UI (`/admin/creatives`).
+
+---
+
+## UGC submissions
+
+Customers and affiliates send videos through the public page
+`/{en|es|pt}/submit-video`. A logged-in affiliate gets the form pre-filled and
+the submission is credited to them. Customers fill in name, email, an optional
+@ and an optional order email.
+
+Every submitter has to tick the content-license checkbox. The row stores which
+license version was accepted (`rightsTermsVersion`) and when
+(`rightsAcceptedAt`). The license text is still a **draft**
+(`2026-10-14-draft`) awaiting sign-off from João and the client.
+
+Submission lifecycle: `pending_upload` → `new` → `reviewed`.
+
+- `pending_upload`: the form was sent but the video upload hasn't finished. The machine never sees these.
+- `new`: the video is uploaded and verified. This is the machine's queue.
+- `reviewed`: the machine stored a verdict.
+
+### Submission object
+
+The list and PATCH endpoints both return submissions in this shape:
+
+```json
+{
+  "id": "cmh…",
+  "status": "new",
+  "video": {
+    "url": "https://….public.blob.vercel-storage.com/ugc/cmh…/my-video-XyZ987.mov",
+    "mimeType": "video/quicktime",
+    "fileSize": 73400320,
+    "fileName": "my-video-XyZ987.mov"
+  },
+  "author": {
+    "type": "affiliate",
+    "name": "Ana Souza",
+    "email": "ana@example.com",
+    "instagram": "ana.doces",
+    "affiliateId": "cmf…",
+    "affiliateRef": "ana"
+  },
+  "orderEmail": null,
+  "locale": "pt",
+  "rightsTermsVersion": "2026-10-14-draft",
+  "rightsAcceptedAt": "2026-10-14T20:11:02.000Z",
+  "submittedAt": "2026-10-14T20:12:40.000Z",
+  "review": null
+}
+```
+
+- `author.type` is `"affiliate"` or `"customer"`. For customers, `affiliateId` and `affiliateRef` are `null`.
+- `author.instagram` has no leading `@` and is `null` if not given. Use it for the repost credit.
+- `submittedAt` is when the upload finished. The queue is ordered by this field.
+- `review` is `null` until reviewed, then `{ "verdict": "repost" | "repost_edit" | "reject", "score": 0–100, "reasons": [string], "reviewedAt": ISO }`.
+- `video.url` is a public but unguessable Blob URL that can be downloaded directly.
+
+### GET /api/machine/ugc
+
+Lists submissions, oldest first.
+
+| Query | Default | Values |
+|---|---|---|
+| `status` | `new` | `new`, `reviewed`, `all` (= new + reviewed) |
+| `limit` | `50` | integer 1–100 |
+| `cursor` | none | `nextCursor` from the previous page |
+
+`200 OK`:
+
+```json
+{ "ok": true, "submissions": [ /* submission objects */ ], "nextCursor": "cmh…" }
+```
+
+`nextCursor` is `null` on the last page. Paging is safe while you review:
+PATCHing a row between pages never makes the next page skip a submission.
+
+Errors: `400 invalid_field` with `field` set to `status`, `limit` or `cursor`
+(an unknown cursor is a 400).
+
+### PATCH /api/machine/ugc/:id
+
+Stores the machine's verdict and sets `status` to `reviewed`. Sending it again
+overwrites the previous review, so a human override can be re-sent.
+
+```json
+{
+  "verdict": "repost_edit",
+  "score": 72.5,
+  "reasons": ["Strong hook in the first 2s", "Trim the last 4s", "Product visible"]
+}
+```
+
+| Field | Type | Rules |
+|---|---|---|
+| `verdict` | string | `repost`, `repost_edit` or `reject` |
+| `score` | number | 0–100, decimals allowed |
+| `reasons` | string[] | 0–20 items, each 1–500 chars (trimmed). May be an empty array |
+
+`200 OK`:
+
+```json
+{ "ok": true, "submission": { /* submission object, status "reviewed", review filled */ } }
+```
+
+| HTTP | `error` | When |
+|---|---|---|
+| 400 | `invalid_field` | Bad `verdict`, `score` or `reasons` (see `field`) |
+| 404 | `not_found` | No submission with this id |
+| 409 | `not_uploaded` | Submission is still `pending_upload` |

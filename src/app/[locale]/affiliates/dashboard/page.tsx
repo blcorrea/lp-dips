@@ -172,6 +172,20 @@ export default async function AffiliateDashboardPage({ params }: Props) {
           )}
         </div>
 
+        {/* ── Submit a video (UGC) ─────────────────────────────────────────── */}
+        <div className="rounded-2xl bg-white/10 backdrop-blur-sm px-6 py-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 className="text-white font-semibold text-[16px]">{t('submitVideoTitle')}</h2>
+            <p className="text-white/60 text-sm mt-1">{t('submitVideoBody')}</p>
+          </div>
+          <a
+            href={`/${locale}/submit-video`}
+            className="inline-flex shrink-0 items-center justify-center rounded-xl bg-brand-orange px-5 py-2.5 text-sm font-bold text-white transition-all duration-200 hover:bg-brand-orange/90 active:scale-95"
+          >
+            {t('submitVideoCta')}
+          </a>
+        </div>
+
         {/* ── Criativos section ────────────────────────────────────────────── */}
         <div className="rounded-2xl bg-white/10 backdrop-blur-sm overflow-hidden">
           <div className="px-6 py-4 border-b border-white/10">
