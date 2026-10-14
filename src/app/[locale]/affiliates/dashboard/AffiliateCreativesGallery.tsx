@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { getDownloadUrl } from '@vercel/blob';
 import Image from 'next/image';
 import { Video } from 'lucide-react';
@@ -15,11 +15,18 @@ interface AffiliateCreativesGalleryProps {
 
 type T = ReturnType<typeof useTranslations<'AffiliateCreatives'>>;
 
+/** Caption in the viewer's locale, falling back to the default (English) one. */
+function captionForLocale(row: CreativeRow, locale: string): string | null {
+  if (locale === 'es') return row.captionEs ?? row.caption;
+  if (locale === 'pt') return row.captionPt ?? row.caption;
+  return row.caption;
+}
+
 // ── Single card ───────────────────────────────────────────────────────────────
 // Extracted so each card owns its own `copied` state and `<video>` ref (a ref
 // cannot be created per-iteration inside a .map()).
 
-function CreativeCard({ row, t }: { row: CreativeRow; t: T }) {
+function CreativeCard({ row, t, locale }: { row: CreativeRow; t: T; locale: string }) {
   const [copied, setCopied] = useState(false);
   // For a video WITHOUT a poster: the icon overlay is shown until the affiliate
   // presses play, then it hides so the playing video is visible.
@@ -38,7 +45,7 @@ function CreativeCard({ row, t }: { row: CreativeRow; t: T }) {
     }
   }
 
-  const caption = row.caption;
+  const caption = captionForLocale(row, locale);
 
   return (
     // D-10: glassmorphism card — NOT the admin white-card style
@@ -146,6 +153,7 @@ function CreativeCard({ row, t }: { row: CreativeRow; t: T }) {
 
 export default function AffiliateCreativesGallery({ rows }: AffiliateCreativesGalleryProps) {
   const t = useTranslations('AffiliateCreatives');
+  const locale = useLocale();
 
   return (
     // D-09: dense thumbnail grid. The dashboard container is capped at max-w-4xl
@@ -154,7 +162,7 @@ export default function AffiliateCreativesGallery({ rows }: AffiliateCreativesGa
     // previews as fit the available width instead — ~4 cols on narrow, ~5 on wide.
     <div className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3">
       {rows.map((row) => (
-        <CreativeCard key={row.id} row={row} t={t} />
+        <CreativeCard key={row.id} row={row} t={t} locale={locale} />
       ))}
     </div>
   );

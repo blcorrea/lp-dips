@@ -28,7 +28,11 @@ export type CreativeRow = {
   id:                string;
   title:             string;
   description:       string | null;
+  /** English caption — fallback for locales without their own */
   caption:           string | null;
+  captionEs:         string | null;
+  captionPt:         string | null;
+  externalId:        string | null;
   type:              CreativeType;
   /** Public CDN URL returned by Vercel Blob after upload */
   url:               string;
@@ -50,6 +54,9 @@ export type CreateCreativeInput = {
   title:              string;
   description?:       string | null;
   caption?:           string | null;
+  captionEs?:         string | null;
+  captionPt?:         string | null;
+  externalId?:        string | null;
   type:               CreativeType;
   url:                string;
   blobPath:           string;
@@ -63,7 +70,7 @@ export type CreateCreativeInput = {
 };
 
 export type UpdateCreativeInput = Partial<Pick<CreateCreativeInput,
-  'title' | 'description' | 'caption' | 'thumbnailUrl' | 'thumbnailBlobPath' |
+  'title' | 'description' | 'caption' | 'captionEs' | 'captionPt' | 'thumbnailUrl' | 'thumbnailBlobPath' |
   'sortOrder' | 'active'>>;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -75,6 +82,9 @@ function toRow(c: {
   title: string;
   description: string | null;
   caption: string | null;
+  captionEs: string | null;
+  captionPt: string | null;
+  externalId: string | null;
   type: CreativeType;
   url: string;
   blobPath: string;
@@ -93,6 +103,9 @@ function toRow(c: {
     title:             c.title,
     description:       c.description,
     caption:           c.caption,
+    captionEs:         c.captionEs,
+    captionPt:         c.captionPt,
+    externalId:        c.externalId,
     type:              c.type,
     url:               c.url,
     blobPath:          c.blobPath,
@@ -124,6 +137,21 @@ export async function listCreatives(
     orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
   });
   return rows.map(toRow);
+}
+
+/** Returns the creative with this caller-supplied externalId, or null. */
+export async function findCreativeByExternalId(externalId: string): Promise<CreativeRow | null> {
+  const row = await prisma.affiliateCreative.findUnique({ where: { externalId } });
+  return row ? toRow(row) : null;
+}
+
+/**
+ * Next free sortOrder, so new creatives append at the end with distinct values
+ * (CR-01: equal sortOrder values make the reorder swap a silent no-op).
+ */
+export async function nextCreativeSortOrder(): Promise<number> {
+  const max = await prisma.affiliateCreative.aggregate({ _max: { sortOrder: true } });
+  return (max._max.sortOrder ?? -1) + 1;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
