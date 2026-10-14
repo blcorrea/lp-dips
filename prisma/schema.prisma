@@ -64,6 +64,26 @@ enum CreativeType {
   VIDEO
 }
 
+enum UgcAuthorType {
+  CUSTOMER
+  AFFILIATE
+}
+
+enum UgcStatus {
+  /// Row created, video not uploaded yet — never exposed to the machine.
+  PENDING_UPLOAD
+  /// Video uploaded, waiting for the machine's review.
+  NEW
+  /// The machine stored a verdict.
+  REVIEWED
+}
+
+enum UgcVerdict {
+  REPOST
+  REPOST_EDIT
+  REJECT
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Order
 // ─────────────────────────────────────────────────────────────────────────────
@@ -197,8 +217,9 @@ model Affiliate {
   commissionRate Decimal  @default(0.15)
   active    Boolean       @default(true)
 
-  commissions  Commission[]
-  loginTokens  AffiliateLoginToken[]
+  commissions    Commission[]
+  loginTokens    AffiliateLoginToken[]
+  ugcSubmissions UgcSubmission[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -337,4 +358,58 @@ model AffiliateCreative {
   updatedAt DateTime @updatedAt
 
   @@index([active, sortOrder])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// UgcSubmission — videos sent by customers/affiliates via /{locale}/submit-video,
+// scored and judged by the creatives machine (GET/PATCH /api/machine/ugc)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model UgcSubmission {
+  id          String        @id @default(cuid())
+  status      UgcStatus     @default(PENDING_UPLOAD)
+
+  // ── Author ──────────────────────────────────────────────────────────────────
+  /// AFFILIATE only when submitted with a logged-in affiliate session.
+  authorType  UgcAuthorType
+  affiliateId String?
+  affiliate   Affiliate?    @relation(fields: [affiliateId], references: [id], onDelete: SetNull)
+  name        String
+  /// Stored lowercased.
+  email       String
+  /// Without the leading @.
+  instagram   String?
+  /// Email used on a Dips order, when the customer gave one.
+  orderEmail  String?
+  locale      String
+
+  // ── Content license (repost with credit) ────────────────────────────────────
+  rightsTermsVersion String
+  rightsAcceptedAt   DateTime
+
+  // ── Video (set once the upload completes) ───────────────────────────────────
+  videoUrl   String?
+  blobPath   String?
+  fileName   String?
+  /// File size in bytes
+  fileSize   Int?
+  mimeType   String?
+  uploadedAt DateTime?
+
+  // ── Machine review ──────────────────────────────────────────────────────────
+  verdict    UgcVerdict?
+  /// Rubric score, 0–100.
+  score      Float?
+  reasons    String[]     @default([])
+  reviewedAt DateTime?
+
+  /// sha256(ip + SESSION_SECRET) — per-IP throttling without storing the IP.
+  ipHash     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, createdAt])
+  @@index([ipHash, createdAt])
+  @@index([affiliateId])
 }
