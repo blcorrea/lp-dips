@@ -16,7 +16,7 @@ import { prisma } from '@/lib/prisma';
 //
 // Metadata branch (any other body):
 //   Calls updateCreative() with only the fields present in the request body
-//   (title, description, caption, active). Supports the active toggle (D-10)
+//   (title, description, caption/captionEs/captionPt, active). Supports the active toggle (D-10)
 //   and generic metadata edit (D-08). Maps P2025 → 404.
 
 export async function PATCH(
@@ -88,6 +88,14 @@ export async function PATCH(
       caption:
         raw.caption !== undefined
           ? (typeof raw.caption === 'string' ? raw.caption || null : null)
+          : undefined,
+      captionEs:
+        raw.captionEs !== undefined
+          ? (typeof raw.captionEs === 'string' ? raw.captionEs || null : null)
+          : undefined,
+      captionPt:
+        raw.captionPt !== undefined
+          ? (typeof raw.captionPt === 'string' ? raw.captionPt || null : null)
           : undefined,
       active:
         raw.active !== undefined ? Boolean(raw.active) : undefined,

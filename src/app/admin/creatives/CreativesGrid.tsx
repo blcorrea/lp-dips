@@ -41,11 +41,11 @@ export default function CreativesGrid({ rows }: { rows: CreativeRow[] }) {
   const [progress, setProgress]   = useState(0);
 
   // Create form state
-  const [form, setForm]         = useState({ title: '', description: '', caption: '' });
+  const [form, setForm]         = useState({ title: '', description: '', caption: '', captionEs: '', captionPt: '' });
   const [assetFile, setAssetFile]   = useState<File | null>(null);
 
   // Edit form state (per-card)
-  const [editForm, setEditForm] = useState({ title: '', description: '', caption: '', active: true });
+  const [editForm, setEditForm] = useState({ title: '', description: '', caption: '', captionEs: '', captionPt: '', active: true });
 
   // ── Helpers ───────────────────────────────────────────────────────────────
 
@@ -134,6 +134,8 @@ export default function CreativesGrid({ rows }: { rows: CreativeRow[] }) {
           title:             form.title.trim(),
           description:       form.description.trim() || null,
           caption:           form.caption.trim() || null,
+          captionEs:         form.captionEs.trim() || null,
+          captionPt:         form.captionPt.trim() || null,
           url:               assetBlob.url,
           blobPath:          assetBlob.pathname,
           fileName:          assetFile.name,
@@ -147,7 +149,7 @@ export default function CreativesGrid({ rows }: { rows: CreativeRow[] }) {
       if (res.ok && data.ok) {
         flash(true, `Creative "${form.title}" uploaded.`);
         setShowCreate(false);
-        setForm({ title: '', description: '', caption: '' });
+        setForm({ title: '', description: '', caption: '', captionEs: '', captionPt: '' });
         setAssetFile(null);
         router.refresh();
       } else {
@@ -169,7 +171,14 @@ export default function CreativesGrid({ rows }: { rows: CreativeRow[] }) {
     e.preventDefault();
     await patchCreative(
       row.id,
-      { title: editForm.title.trim(), description: editForm.description.trim() || null, caption: editForm.caption.trim() || null, active: editForm.active },
+      {
+        title:       editForm.title.trim(),
+        description: editForm.description.trim() || null,
+        caption:     editForm.caption.trim() || null,
+        captionEs:   editForm.captionEs.trim() || null,
+        captionPt:   editForm.captionPt.trim() || null,
+        active:      editForm.active,
+      },
       'Creative updated.'
     );
     setEditingId(null);
@@ -251,12 +260,32 @@ export default function CreativesGrid({ rows }: { rows: CreativeRow[] }) {
             </div>
             {/* Caption */}
             <div className="sm:col-span-2">
-              <label htmlFor="create-caption" className={labelCls}>Caption</label>
+              <label htmlFor="create-caption" className={labelCls}>Caption (EN, default)</label>
               <textarea
                 id="create-caption"
                 rows={3}
                 value={form.caption}
                 onChange={(e) => setForm((f) => ({ ...f, caption: e.target.value }))}
+                className={`${inputCls} w-full`}
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <label htmlFor="create-captionEs" className={labelCls}>Caption (ES, optional — falls back to EN)</label>
+              <textarea
+                id="create-captionEs"
+                rows={3}
+                value={form.captionEs}
+                onChange={(e) => setForm((f) => ({ ...f, captionEs: e.target.value }))}
+                className={`${inputCls} w-full`}
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <label htmlFor="create-captionPt" className={labelCls}>Caption (PT, optional — falls back to EN)</label>
+              <textarea
+                id="create-captionPt"
+                rows={3}
+                value={form.captionPt}
+                onChange={(e) => setForm((f) => ({ ...f, captionPt: e.target.value }))}
                 className={`${inputCls} w-full`}
               />
             </div>
@@ -395,6 +424,8 @@ export default function CreativesGrid({ rows }: { rows: CreativeRow[] }) {
                         title:       row.title,
                         description: row.description ?? '',
                         caption:     row.caption ?? '',
+                        captionEs:   row.captionEs ?? '',
+                        captionPt:   row.captionPt ?? '',
                         active:      row.active,
                       });
                     }}
@@ -466,12 +497,32 @@ export default function CreativesGrid({ rows }: { rows: CreativeRow[] }) {
                     </div>
                     {/* Caption */}
                     <div>
-                      <label htmlFor={`edit-caption-${row.id}`} className={labelCls}>Caption</label>
+                      <label htmlFor={`edit-caption-${row.id}`} className={labelCls}>Caption (EN, default)</label>
                       <textarea
                         id={`edit-caption-${row.id}`}
                         rows={3}
                         value={editForm.caption}
                         onChange={(e) => setEditForm((f) => ({ ...f, caption: e.target.value }))}
+                        className={`${inputCls} w-full`}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor={`edit-captionEs-${row.id}`} className={labelCls}>Caption (ES, optional — falls back to EN)</label>
+                      <textarea
+                        id={`edit-captionEs-${row.id}`}
+                        rows={3}
+                        value={editForm.captionEs}
+                        onChange={(e) => setEditForm((f) => ({ ...f, captionEs: e.target.value }))}
+                        className={`${inputCls} w-full`}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor={`edit-captionPt-${row.id}`} className={labelCls}>Caption (PT, optional — falls back to EN)</label>
+                      <textarea
+                        id={`edit-captionPt-${row.id}`}
+                        rows={3}
+                        value={editForm.captionPt}
+                        onChange={(e) => setEditForm((f) => ({ ...f, captionPt: e.target.value }))}
                         className={`${inputCls} w-full`}
                       />
                     </div>

@@ -3,11 +3,11 @@ import { isAdminAuthenticated } from '@/lib/admin-auth';
 import {
   createCreative,
   listCreatives,
+  nextCreativeSortOrder,
   ACCEPTED_IMAGE_MIME,
   ACCEPTED_VIDEO_MIME,
 } from '@/lib/creatives';
 import { CreativeType } from '@/generated/prisma/client/client';
-import { prisma } from '@/lib/prisma';
 
 // ── GET /api/admin/creatives ──────────────────────────────────────────────────
 
@@ -75,24 +75,23 @@ export async function POST(request: NextRequest) {
   // ── optional fields ────────────────────────────────────────────────────────
   const description       = typeof raw.description       === 'string' ? raw.description       || null : null;
   const caption           = typeof raw.caption           === 'string' ? raw.caption           || null : null;
+  const captionEs         = typeof raw.captionEs         === 'string' ? raw.captionEs         || null : null;
+  const captionPt         = typeof raw.captionPt         === 'string' ? raw.captionPt         || null : null;
   const thumbnailUrl      = typeof raw.thumbnailUrl      === 'string' ? raw.thumbnailUrl      || null : null;
   const thumbnailBlobPath = typeof raw.thumbnailBlobPath === 'string' ? raw.thumbnailBlobPath || null : null;
   const fileName          = typeof raw.fileName          === 'string' ? raw.fileName          : '';
   const fileSize          = typeof raw.fileSize          === 'number' ? raw.fileSize          : 0;
 
   try {
-    // ── sortOrder (CR-01) ──────────────────────────────────────────────────
-    // Assign a distinct, increasing sortOrder so freshly uploaded creatives
-    // append at the end with unique values. Without this every row keeps the
-    // schema default (0) and the reorder swap in [id]/route.ts is a silent
-    // no-op (swapping two equal sortOrder values changes nothing).
-    const max = await prisma.affiliateCreative.aggregate({ _max: { sortOrder: true } });
-    const sortOrder = (max._max.sortOrder ?? -1) + 1;
+    // sortOrder (CR-01): append at the end with a distinct value.
+    const sortOrder = await nextCreativeSortOrder();
 
     const creative = await createCreative({
       title,
       description,
       caption,
+      captionEs,
+      captionPt,
       type,
       url,
       blobPath,

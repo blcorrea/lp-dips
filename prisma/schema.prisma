@@ -313,7 +313,12 @@ model AffiliateCreative {
   id                String       @id @default(cuid())
   title             String
   description       String?
+  /// Default (English) caption — also the fallback when a locale has none.
   caption           String?
+  captionEs         String?
+  captionPt         String?
+  /// Caller-supplied id for idempotent machine uploads (POST /api/machine/creatives).
+  externalId        String?      @unique
   type              CreativeType
   /// Public URL returned by Vercel Blob after upload
   url               String
