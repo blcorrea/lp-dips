@@ -647,7 +647,7 @@ function buildAffiliateWelcomeHtml(args: {
     </h1>
     <p style="margin:0 0 24px;font-size:16px;color:${CHARCOAL};line-height:1.6;">
       Your Dips affiliate account is <strong>active</strong> — you can start
-      sharing right away and earn <strong>7% commission</strong> on every sale
+      sharing right away and earn <strong>15% commission</strong> on every sale
       you generate.
     </p>
 
